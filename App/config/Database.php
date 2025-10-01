@@ -1,5 +1,6 @@
 <?php 
-
+    namespace App\config;
+    
     class Database {
         private $host = "locahost";
         private $user = "root";
