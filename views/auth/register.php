@@ -9,7 +9,7 @@
     if($_SERVER['REQUEST_METHOD'] == "POST") {
         $user["first_name"] = trim(htmlspecialchars($_POST['first_name']));
         $user["last_name"] = trim(htmlspecialchars($_POST['last_name']));
-        $user["middle_name"] = isset($_POST['middle_name']) ? trim(htmlspecialchars($_POST['first_name'])) : "";
+        $user["middle_name"] = isset($_POST['middle_name']) ? trim(htmlspecialchars($_POST['middle_name'])) : "";
         $user["email"] = trim(htmlspecialchars($_POST['email']));
         $user["password"] = trim(htmlspecialchars($_POST['password']));
 
