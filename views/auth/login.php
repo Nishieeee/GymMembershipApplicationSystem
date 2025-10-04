@@ -7,7 +7,7 @@
 
     $login = ["email" => "", "password"=> ""];
     $loginErrors = ["email" => "", "password"=> ""];
-
+    $loginError = "";
     if($_SERVER['REQUEST_METHOD'] == 'GET') {
         $login["email"] = isset($_GET['email']) ? trim(htmlspecialchars($_GET['email'])) : "";
         $login["password"] = isset($_GET['password']) ? trim(htmlspecialchars($_GET['password'])) : "";
@@ -15,7 +15,7 @@
         if(empty($login['email'])) {
             $loginErrors['email'] = "Email is Required.";
         }
-        if(!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+        if(!filter_var($login['email'], FILTER_VALIDATE_EMAIL)) {
             $loginErrors['email'] = "Email is invalid";
         }
 
@@ -25,7 +25,11 @@
 
 
         if(empty(array_filter($loginErrors))) {
-            $Auth->login($email, $password);
+            if($Auth->login($login['email'], $login['password'])) {
+                header("location: ../../public/index.php");
+            } else {
+                $loginError = "Error Login please try again.";
+            }
         }
     }
 
@@ -41,9 +45,12 @@
 </head>
 <body>
     <form method="get">
-        <input type="email" name="email" id="" placeholder="Email">
-        <input type="password" name="password" id="" placeholder="password">
+        <input type="email" name="email" id="" placeholder="Email" value="<?= $login['email'] ?>">
+        <p><?= $loginErrors['email'] ?></p>
+        <input type="password" name="password" id="" placeholder="password" value="<?= $login['password'] ?>">
+        <p><?= $loginErrors['password'] ?></p>
         <input type="submit" value="Login">
+        <p><?= $loginError ?></p>
     </form>
 </body>
 </html>
