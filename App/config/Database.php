@@ -1,8 +1,7 @@
 <?php 
-    namespace App\config;
     
     class Database {
-        private $host = "locahost";
+        private $host = "localhost";
         private $user = "root";
         private $password = "";
         private $dbname = "gym";
