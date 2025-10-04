@@ -9,8 +9,8 @@
     $loginErrors = ["email" => "", "password"=> ""];
     $loginError = "";
     if($_SERVER['REQUEST_METHOD'] == 'GET') {
-        $login["email"] = isset($_GET['email']) ? trim(htmlspecialchars($_GET['email'])) : "";
-        $login["password"] = isset($_GET['password']) ? trim(htmlspecialchars($_GET['password'])) : "";
+        $login["email"] = trim(htmlspecialchars($_GET['email']));
+        $login["password"] = trim(htmlspecialchars($_GET['password']));
 
         if(empty($login['email'])) {
             $loginErrors['email'] = "Email is Required.";
@@ -28,7 +28,7 @@
             if($Auth->login($login['email'], $login['password'])) {
                 header("location: ../../public/index.php");
             } else {
-                $loginError = "Error Login please try again.";
+                $loginError = "Invalid Email or Password.";
             }
         }
     }
@@ -42,6 +42,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gymazing!</title>
+    <style>
+        p {
+            color: red;
+        }
+    </style>
 </head>
 <body>
     <form method="get">

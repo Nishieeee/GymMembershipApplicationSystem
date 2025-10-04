@@ -26,7 +26,9 @@ session_start();
 
         public function Register(array $userData) {
             if($this->userModel->addMember($userData)) {
-                header("location: login.php");
+                return true;
+            } else {
+                return false;
             }
         }
     }
