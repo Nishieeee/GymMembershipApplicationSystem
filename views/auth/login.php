@@ -13,13 +13,13 @@
         $login["password"] = isset($_GET['password']) ? trim(htmlspecialchars($_GET['password'])) : "";
 
         if(empty($login['email'])) {
-            $loginErrors['email'] = "Email is Required.";
+            $loginErrors['email'] = "Email is required.";
         } else if(!filter_var($login['email'], FILTER_VALIDATE_EMAIL)) {
             $loginErrors['email'] = "Email is invalid";
         }
 
         if(empty($login['password'])) {
-            $loginErrors['password'] = "Password is Required.";
+            $loginErrors['password'] = "Password is required.";
         }
 
 
@@ -45,23 +45,23 @@
 </head>
 <body>
     <main class="min-h-screen w-full bg-[var(--primary)] flex items-center justify-center font-sans">
-        <div class="p-2 h-110 w-100 bg-[var(--primary)] border border-gray-500/50 shadow-md rounded-md ">
+        <div class="p-1 w-80 bg-[var(--primary)] border border-gray-500/50 shadow-md rounded-md ">
             <form method="GET" class="p-5">
                 <div class="my-8 flex items-center justify-center">
                     <h1 class="text-4xl text-blue-600 font-bold ">Gymazing!</h1>
                 </div>
-                <div class="m-2 ">
-                    <label for="email" class="text-zinc-700 text-lg font-900">Email</label>
-                    <input type="email" name="email" placeholder="example@email.com" value="<?= $login['email'] ?? "" ?>" class="p-2 w-full rounded-md border border-gray-500/50 bg-gray-300/50">
+                <div class="w-full mb-3">
+                    <label for="email" class="text-zinc-700 text-md font-900">Email</label>
+                    <input type="email" name="email" placeholder="example@email.com" value="<?= $login['email'] ?? "" ?>" class="w-full p-1 text-sm border border-gray-500/50 rounded-sm">
                     <p class="text-red-500 text-sm m-1"><?= $loginErrors['email'] ?></p>
                 </div>
-                <div class="m-2">
-                    <label for="password" class="text-zinc-700 text-lg">Password</label>
-                    <input type="password" name="password" id="password" placeholder="********" value="<?= $login['password'] ?>" class="p-2 w-full rounded-md border border-gray-500/50 bg-gray-300/50">
+                <div class="w-full mb-3 ">
+                    <label for="password" class="text-zinc-700 text-md">Password</label>
+                    <input type="password" name="password" id="password" placeholder="********" value="<?= $login['password'] ?>" class="w-full p-1 text-sm border border-gray-500/50 rounded-sm">
                     <p class="text-red-500 text-sm m-1" ><?= $loginErrors['password'] ?></p>
                 </div>
-                <div class="flex items-center justify-center">
-                    <input type="submit" value="Login" class="h-10 w-30 border bg-blue-600 text-white rounded-lg">
+                <div class="w-full my-2 flex items-center justify-center">
+                    <input type="submit" value="Login" class="w-45 p-2 border bg-blue-600 text-white rounded-lg">
                 </div>
                 <!-- <div class="p-2">
                     <p class="text-red-500 text-sm m-1"><?= $loginError ?></p>
