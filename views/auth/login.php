@@ -1,0 +1,61 @@
+<?php 
+    require_once "../../App/controllers/AuthController.php";
+    require_once "../../App/models/User.php";
+
+    $user = new User();
+    $Auth = new AuthController($user);
+
+    $login = ["email" => "", "password"=> ""];
+    $loginErrors = ["email" => "", "password"=> ""];
+    $loginError = "";
+    if($_SERVER['REQUEST_METHOD'] == 'GET') {
+        $login["email"] = trim(htmlspecialchars($_GET['email']));
+        $login["password"] = trim(htmlspecialchars($_GET['password']));
+
+        if(empty($login['email'])) {
+            $loginErrors['email'] = "Email is Required.";
+        }
+        if(!filter_var($login['email'], FILTER_VALIDATE_EMAIL)) {
+            $loginErrors['email'] = "Email is invalid";
+        }
+
+        if(empty($login['password'])) {
+            $loginErrors['password'] = "Password is Required";
+        }
+
+
+        if(empty(array_filter($loginErrors))) {
+            if($Auth->login($login['email'], $login['password'])) {
+                header("location: ../../public/index.php");
+            } else {
+                $loginError = "Invalid Email or Password.";
+            }
+        }
+    }
+
+?>
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gymazing!</title>
+    <style>
+        p {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+    <form method="get">
+        <input type="email" name="email" id="" placeholder="Email" value="<?= $login['email'] ?>">
+        <p><?= $loginErrors['email'] ?></p>
+        <input type="password" name="password" id="" placeholder="password" value="<?= $login['password'] ?>">
+        <p><?= $loginErrors['password'] ?></p>
+        <input type="submit" value="Login">
+        <p><?= $loginError ?></p>
+    </form>
+</body>
+</html>
