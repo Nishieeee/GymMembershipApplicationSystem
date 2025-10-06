@@ -15,7 +15,7 @@
         protected $db;
 
         public function findByEmail($email) {
-            $sql = "SELECT * FROM members WHERE email = :email";
+            $sql = "SELECT email, password FROM members WHERE email = :email";
 
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":email", $email);
