@@ -1,9 +1,6 @@
-* {
-    padding: 0;
-    margin: 0;
-    box-sizing: border-box;
-    font-family: sans-serif;
-}
 :root {
-    --primary-color: 
+    --primary: #0D6EFD;
+    --accent: #20C997;
+    --background: #F8F9FA;
+    --text: #212529;
 }
