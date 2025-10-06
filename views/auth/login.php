@@ -63,9 +63,9 @@
                 <div class="w-full my-2 flex items-center justify-center">
                     <input type="submit" value="Login" class="w-45 p-2 border bg-blue-600 text-white rounded-lg">
                 </div>
-                <!-- <div class="p-2">
+                <div class="p-2">
                     <p class="text-red-500 text-sm m-1"><?= $loginError ?></p>
-                </div> -->
+                </div>
                 <div class="flex-1 text-center items-center justify-center">
                     <a href="#" class="text-sm text-blue-500 underline">Forgot Password?</a>
                     <p class="text-sm">Create new Account. <a href="register.php" class="text-blue-500 underline">Sign up</a></p>
