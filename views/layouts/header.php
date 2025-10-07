@@ -20,8 +20,8 @@
     <script src="../../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
 </head>
 <body>
-    <header>
-        <div class="font-sans bg-transparent shadow-md flex items-center justify-evenly px-20 py-4">
+    <header class="">
+        <div class="font-sans bg-transparent shadow-md flex items-center justify-evenly px-8 py-4">
             <div class="w-90 flex items-center ">
                 <h1 class="font-bold text-white text-lg">GYMAZING</h1>
             </div>
