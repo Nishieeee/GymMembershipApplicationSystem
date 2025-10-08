@@ -23,7 +23,7 @@
     </script>
     
 </head>
-<body>
+<body class="bg-linear-to-r from-neutral-950 via-neutral-800 to-neutral-600">
     
     <!-- header -->
     <?php include '../views/layouts/header.php'?>
