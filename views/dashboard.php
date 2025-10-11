@@ -30,7 +30,6 @@
     $user['plan_name'] = isset($userPlan['plan_name']) ? $userPlan['plan_name'] : "";
     $user['end_date'] = isset($userPlan['end_date']) ? $userPlan['end_date'] : "";
     $user['status'] = isset($userPlan['status']) ? $userPlan['status'] : "";
-    
     $stats = [
         ["label" => "Classes Attended", "value" => 24, "icon" => "📚"],
         ["label" => "Workouts This Month", "value" => 12, "icon" => "💪"],
@@ -161,7 +160,7 @@
 </head>
 <body class="gradient-bg min-h-screen">
     
-    <?php include_once __DIR__ . "/layouts/navbar.php" ?>
+    
 
     <!-- Main Content -->
     <main class="pt-24 pb-12">

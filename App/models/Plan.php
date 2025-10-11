@@ -27,15 +27,18 @@
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":user_id", $user_id);
 
+            
             if($query->execute()) {
-                if(empty($query->fetch())) {
-                    return null;
+                $rows = $query->fetch();
+                if($rows) {
+                    return $rows;
                 } else {
-                    return $query->fetch();
+                    return null;
                 }
             } else {
-                return "failed";
+                return null;
             }
+            
         }
 
 
