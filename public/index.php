@@ -142,7 +142,7 @@
         </section>
 
         <!-- Services Section -->
-        <section class="py-16 lg:py-24 bg-neutral-900">
+        <section class="py-16 lg:py-24 bg-neutral-900" id="about">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12 lg:mb-16">
                     <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
@@ -170,7 +170,7 @@
         </section>
 
         <!-- Membership Plans Section -->
-        <section class="py-16 lg:py-24 bg-zinc-800">
+        <section class="py-16 lg:py-24 bg-zinc-800" id="plans">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12 lg:mb-16">
                     <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">

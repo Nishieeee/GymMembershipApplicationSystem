@@ -21,7 +21,7 @@ session_start();
 
         public function logout() {
             session_destroy();
-            header("location: /public/index.php");
+            header("location: ../../public/index.php");
         }
 
         public function Register(array $userData) {

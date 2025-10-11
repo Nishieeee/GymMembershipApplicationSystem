@@ -79,7 +79,11 @@
 <body class="gradient-bg min-h-screen">
     <?php include_once __DIR__ . "/layouts/navbar.php" ?>
     <main class="min-h-screen">
-        
+        <section class=" p-6 lg:p-24">
+            <div class="bg-neutral-900 rounded-lg shadow-md ">
+                
+            </div>
+        </section>
     </main>
 
 </body>
