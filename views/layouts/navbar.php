@@ -198,8 +198,7 @@ $user_initial = substr($user_name, 0, 1);
         </div>
     </header>
 
-    <!-- Spacer to prevent content from hiding under fixed header -->
-    <div class="h-20 lg:h-24"></div>
+
 
     <script>
         $(document).ready(function() {

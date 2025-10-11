@@ -181,7 +181,7 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 max-w-7xl mx-auto">
                     <?php foreach($plans as $plan) { ?>
-                        <div class="plan-card bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+                        <div class="plan-card bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col transition-all duration-250 ease-in-out">
                             <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-8 text-center text-white">
                                 <h3 class="text-3xl font-bold mb-2"><?= $plan['plan_name'] ?></h3>
                                 <div class="text-5xl font-bold">
