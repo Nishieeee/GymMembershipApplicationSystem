@@ -118,6 +118,7 @@ $user_initial = substr($user_name, 0, 1);
                 <nav class="hidden lg:flex items-center space-x-6">
                     <a href="dashboard.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Dashboard</a>
                     <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Classes</a>
+                    <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">My Payments</a>
                     <a href="profile.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Profile</a>
                 </nav>
 

@@ -8,22 +8,13 @@
         header("location: /auth/login.php");
     }
 
-    // Sample data - replace with actual database queries
+    //user data (needs work)
     $user = $userObj->getMemberSubcription($user_id); 
-    // [
-    //     "name" => "Jhon Clein",
-    //     "email" => "test@gmail.com",
-    //     "phone" => "+63 123 456 7890",
-    //     "plan" => "Premium",
-    //     "membership_date" => "2024-01-15",
-    //     "expiry_date" => "2025-01-15",
-    //     "status" => "Active"
-    // ];
 
     $stats = [
         ["label" => "Classes Attended", "value" => 24, "icon" => "📚"],
         ["label" => "Workouts This Month", "value" => 12, "icon" => "💪"],
-        ["label" => "Days Remaining", "value" => 95, "icon" => "📅"],
+        ["label" => "Days Remaining", "value" => 30, "icon" => "📅"],
         ["label" => "Personal Trainer", "value" => "Yes", "icon" => "👨‍🏫"]
     ];
 
@@ -164,7 +155,7 @@
                         <span class="font-semibold">Status:</span> 
                         <span class="inline-block px-3 py-1 bg-green-500 rounded-full text-sm font-bold ml-2"><?= $user['status'] ?></span>
                     </p>
-                    <p class="text-blue-100 text-lg mt-2">Your <?= $user['plan_name'] ?> expires in <span class="font-bold">95 days</span></p>
+                    <p class="text-blue-100 text-lg mt-2">Your <?= $user['plan_name'] ?> expires in <span class="font-bold">30 days</span></p>
                 </div>
             </div>
 
@@ -309,7 +300,7 @@
             </div>
         </div>
     </main>
-
+    <?php include_once __DIR__ . "/layouts/footer.php" ?>                            
     <script>
         $(document).ready(function() {
             // Mobile menu toggle
