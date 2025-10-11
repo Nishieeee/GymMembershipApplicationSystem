@@ -39,7 +39,21 @@
                 return null;
             }
         }
+        public function getMemberSubcription($user_id) {
+            $sql = "select CONCAT(m.first_name, ' ', m.last_name) as name, m.phone_no, m.created_at, p.plan_name, s.end_date, s.status from members m
+            join subscriptions s on s.user_id = m.user_id
+            join membership_plans p on p.plan_id = s.plan_id
+            where m.user_id = :user_id";
 
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":user_id", $user_id);
+
+            if($query->execute()) {
+                return $query->fetch();
+            } else {
+                return null;
+            }
+        }
         public function addMember(array $UserData) {
             $sql = "INSERT INTO `members`( `first_name`, `last_name`, `middle_name`, `email`, `age` , `gender` , `password`, `role`, `created_at`) VALUES (:first_name , :last_name, :middle_name, :email, :age, :gender, :password1, 'member' , NOW())";
             $query = $this->connect()->prepare($sql);
