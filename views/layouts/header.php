@@ -133,7 +133,7 @@
                         </div>
                     <?php } else { ?>
                         <!-- Guest buttons -->
-                        <a href="../views/auth/login.php" 
+                        <a href="./views/auth/login.php" 
                            class="px-5 py-2.5 text-white font-semibold hover:text-blue-400 transition-colors duration-200">
                             Login
                         </a>

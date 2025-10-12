@@ -160,7 +160,7 @@
 </head>
 <body class="gradient-bg min-h-screen">
     
-    
+    <?php include_once __DIR__ . "/layouts/navbar.php" ?>
 
     <!-- Main Content -->
     <main class="pt-24 pb-12">
@@ -246,7 +246,7 @@
                             </div>
                         </div>
                         <button class="mt-6 w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300">
-                            <?=  isset($userPlan) ? "Upgrade Plan" : "Subscribe" ?>
+                            <a href="plans.php"><?=  isset($userPlan) ? "Upgrade Plan" : "Subscribe" ?></a>
                         </button>
                     </div>
 
@@ -350,31 +350,6 @@
         </div>
     </main>
     <?php include_once __DIR__ . "/layouts/footer.php" ?>                            
-    <script>
-        $(document).ready(function() {
-            // Mobile menu toggle
-            $('#mobileMenuBtn').click(function() {
-                $(this).toggleClass('active');
-                $('#mobileMenu').toggleClass('active');
-            });
-
-            // Close mobile menu when clicking a link
-            $('#mobileMenu a').click(function() {
-                $('#mobileMenuBtn').removeClass('active');
-                $('#mobileMenu').removeClass('active');
-            });
-
-            // Smooth scroll
-            $('a[href^="#"]').click(function(e) {
-                var target = $(this.hash);
-                if (target.length) {
-                    e.preventDefault();
-                    $('html, body').animate({
-                        scrollTop: target.offset().top - 100
-                    }, 800);
-                }
-            });
-        });
-    </script>
+    <script src="../public/assets/js/dashboard.js"></script>
 </body>
 </html>
