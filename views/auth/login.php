@@ -47,8 +47,15 @@
     <main class="min-h-screen w-full bg-[var(--primary)] flex items-center justify-center font-sans">
         <div class="p-1 w-80 bg-[var(--primary)] border border-gray-500/50 shadow-md rounded-md ">
             <form method="GET" class="p-5">
-                <div class="my-8 flex items-center justify-center">
-                    <h1 class="text-4xl text-blue-600 font-bold ">Gymazing!</h1>
+            <div class="mb-3 flex items-center space-x-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center shadow-lg">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h1 class="font-bold text-slate-900 text-xl lg:text-2xl tracking-wider">
+                        GYM<span class="text-blue-400">AZING</span>
+                    </h1>
                 </div>
                 <div class="w-full mb-3">
                     <label for="email" class="text-zinc-700 text-md font-900">Email</label>
