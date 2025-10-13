@@ -367,6 +367,90 @@
 
 
     </main>
+     <!-- Add/Edit Plan Modal -->
+     <div id="planModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
+            <button class="modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">Add New Plan</h3>
+            
+            <form id="planForm" class="space-y-4" method="post">
+                <div>
+                    <label class="block text-white font-semibold mb-2">Plan Name</label>
+                    <input type="text" name="plan_name" required 
+                           class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="e.g., Platinum">
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Price (Monthly)</label>
+                        <input type="number" name="price" required 
+                               class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="999">
+                    </div>
+
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Duration (Days)</label>
+                        <input type="number" name="duration" required 
+                               class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="30">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-white font-semibold mb-2">Description</label>
+                    <textarea name="description" rows="3" required 
+                              class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                              placeholder="Describe this plan"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-white font-semibold mb-2">Features (comma separated)</label>
+                    <input type="text" name="features" required 
+                           class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                           placeholder="Unlimited access, Personal trainer, Classes">
+                </div>
+
+                <div class="flex items-center">
+                    <input type="checkbox" id="isFeatured" name="is_featured" class="mr-3">
+                    <label for="isFeatured" class="text-white font-semibold">Mark as featured plan</label>
+                </div>
+
+                <div id="planFormMessage" class="hidden"></div>
+
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" class="modal-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" id="submitPlanBtn" class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
+                        Create Plan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Member Details Modal -->
+    <div id="memberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
+            <button class="member-modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">Member Details</h3>
+            
+            <div id="memberDetails" class="space-y-4">
+                <!-- Details will be populated via jQuery -->
+            </div>
+
+            <div class="flex space-x-4 mt-6">
+                <button type="button" class="member-modal-close flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                    Close
+                </button>
+                <button type="button" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                    Edit Member
+                </button>
+            </div>
+        </div>
+    </div>
     <script>
         $(document).ready(function() {
             // ===== TAB SWITCHING =====
@@ -380,6 +464,29 @@
                 // Add active class to clicked button and corresponding content
                 $(this).addClass('active').removeClass('text-gray-400');
                 $('#' + tabName).addClass('active');
+            });
+
+            // ===== PLAN MODAL =====
+            $('#btnAddPlan').on('click', function() {
+                $('#planForm')[0].reset();
+                $('#planForm h3').text('Add New Plan');
+                $('#submitPlanBtn').text('Create Plan');
+                $('#planModal').addClass('show');
+                $('body').css('overflow', 'hidden');
+            });
+
+            // Close plan modal
+            $('.modal-close, .modal-cancel').on('click', function() {
+                $(this).closest('.modal-backdrop').removeClass('show');
+                $('body').css('overflow', 'auto');
+            });
+
+            // Close modal when clicking backdrop
+            $('#planModal, #memberModal').on('click', function(e) {
+                if ($(e.target).is(this)) {
+                    $(this).removeClass('show');
+                    $('body').css('overflow', 'auto');
+                }
             });
         });
     </script>
