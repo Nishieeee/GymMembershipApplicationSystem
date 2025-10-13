@@ -126,14 +126,21 @@
                                 <span>Account</span>
                             </button>
                             <div class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
-                                <a href="dashboard.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-t-lg transition-colors">Dashboard</a>
-                                <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
-                                <a href="logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>
+                                <?php $_SESSION['role'] == ""?>
+                                <?php if($_SESSION['role'] == 'member') { ?>
+                                    <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
+                                    <a href="../views/dashboard.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
+                                    <a href="../views/auth/logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>    
+                                <?php } else if($_SESSION['role'] == 'admin') { ?>
+                                    <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
+                                    <a href="../views/dashboard.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
+                                    <a href="../views/auth/logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>
+                                <?php } ?>
                             </div>
                         </div>
                     <?php } else { ?>
                         <!-- Guest buttons -->
-                        <a href="login.php" 
+                        <a href="../views/auth/login.php" 
                            class="px-5 py-2.5 text-white font-semibold hover:text-blue-400 transition-colors duration-200">
                             Login
                         </a>

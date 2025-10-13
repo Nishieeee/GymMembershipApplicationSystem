@@ -24,64 +24,64 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gymazing - Transform Your Body & Mind</title>
     <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <style>
-        /* Custom gradient background */
-        .gradient-bg {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
-        }
-        
-        /* Animated gradient for hero */
-        .hero-gradient {
-            background: linear-gradient(135deg, rgba(29, 78, 216, 0.1) 0%, rgba(30, 58, 138, 0.2) 100%);
-        }
-        
-        /* Smooth transitions */
-        * {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-        
-        /* Custom scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-        
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
-        }
-        
-        ::-webkit-scrollbar-thumb {
-            background: #1e3a8a;
-            border-radius: 5px;
-        }
-        
-        ::-webkit-scrollbar-thumb:hover {
-            background: #1e40af;
-        }
+    <style href="../public/assets/css/style.css">
+         /* Custom gradient background */
+    .gradient-bg {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
+    }
 
-        /* Card hover effects */
-        .service-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 20px 40px rgba(29, 78, 216, 0.3);
-        }
+    /* Animated gradient for hero */
+    .hero-gradient {
+        background: linear-gradient(135deg, rgba(29, 78, 216, 0.1) 0%, rgba(30, 58, 138, 0.2) 100%);
+    }
 
-        .plan-card:hover {
-            transform: translateY(-12px);
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-        }
+    /* Smooth transitions */
+    * {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
 
-        /* Button pulse animation */
-        @keyframes pulse {
-            0%, 100% {
-                opacity: 1;
-            }
-            50% {
-                opacity: 0.8;
-            }
-        }
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+    }
 
-        .btn-primary:hover {
-            animation: pulse 2s infinite;
+    ::-webkit-scrollbar-track {
+        background: #1a1a1a;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: #1e3a8a;
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #1e40af;
+    }
+
+    /* Card hover effects */
+    .service-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(29, 78, 216, 0.3);
+    }
+
+    .plan-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Button pulse animation */
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
         }
+        50% {
+            opacity: 0.8;
+        }
+    }
+
+    .btn-primary:hover {
+        animation: pulse 2s infinite;
+    }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
@@ -142,7 +142,7 @@
         </section>
 
         <!-- Services Section -->
-        <section class="py-16 lg:py-24 bg-neutral-900">
+        <section class="py-16 lg:py-24 bg-neutral-900" id="about">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12 lg:mb-16">
                     <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
@@ -170,7 +170,7 @@
         </section>
 
         <!-- Membership Plans Section -->
-        <section class="py-16 lg:py-24 bg-zinc-800">
+        <section class="py-16 lg:py-24 bg-zinc-800" id="plans">
             <div class="container mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12 lg:mb-16">
                     <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
@@ -181,7 +181,7 @@
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10 max-w-7xl mx-auto">
                     <?php foreach($plans as $plan) { ?>
-                        <div class="plan-card bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+                        <div class="plan-card bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col transition-all duration-250 ease-in-out">
                             <div class="bg-gradient-to-r from-blue-600 to-blue-800 p-8 text-center text-white">
                                 <h3 class="text-3xl font-bold mb-2"><?= $plan['plan_name'] ?></h3>
                                 <div class="text-5xl font-bold">
