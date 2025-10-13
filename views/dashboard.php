@@ -5,7 +5,6 @@
     $userObj = new User();
     $planObj = new Plan();
 
-    echo $_SESSION['user_id'];
     if(isset($_SESSION['user_id'])) {
         $user_id = $_SESSION['user_id'];
         $userInfo = $userObj->getMember($user_id);

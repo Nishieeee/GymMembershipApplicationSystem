@@ -14,6 +14,18 @@
 
         protected $db;
 
+        public function getAllMembers() {
+            $sql = "SELECT user_id FROM members";
+
+            $query = $this->connect()->prepare($sql);
+
+
+            if($query->execute()) {
+                return $query->fetchAll();
+            } else {
+                return null;
+            }
+        }
         public function findByEmail($email) {
             $sql = "SELECT user_id, role, email, password FROM members WHERE email = :email";
 

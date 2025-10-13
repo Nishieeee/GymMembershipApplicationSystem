@@ -1,9 +1,14 @@
 <?php 
-    session_start();
-    // Check if user is admin
+
+    include_once "../../App/controllers/adminController.php";
+    $admin = new Admin();
+
     if(!$_SESSION['role'] == 'admin') {
         header("location: /auth/login.php");
     }
+    // fetch all members from db
+    $members = $admin->displayAllUsers();
+    
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -230,7 +235,7 @@
         </div>
         <!-- tab navigation -->
         <div class="mb-8">
-        <div class="bg-neutral-900 rounded-t-xl border-b border-gray-700 flex items-center">
+            <div class="bg-neutral-900 rounded-t-xl border-b border-gray-700 flex items-center">
                 <button class="tab-button active px-6 py-4 text-white font-semibold hover:text-blue-400 transition-colors" data-tab="members">
                     <span class="mr-2"></span> Members
                 </button>
@@ -240,6 +245,74 @@
                 <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="revenue">
                     <span class="mr-2"></span> Revenue
                 </button>
+            </div>
+            <!-- members tab -->
+            <div id="members" class="tab-content active bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <!-- search container -->
+                    <div class="mb-6 flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1 relative">
+                            <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <input type="text" id="searchMembers" placeholder="Search by name, email, or ID..." class="search-input w-full pl-10 pr-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <select id="filterStatus" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="trial">Trial</option>
+                        </select>
+
+                        <select id="filterPlan" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Plans</option>
+                            <option value="basic">Basic</option>
+                            <option value="standard">Premium</option>
+                            <option value="premium">Elite</option>
+                        </select>
+                        <button class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                            Search
+                        </button>
+                    </div>
+                    <!-- members table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-white">
+                            <thead class="border-b border-gray-700 bg-gray-800">
+                                <tr>
+                                    <th class="text-left px-6 py-3 font-semibold">Name</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Email</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Plan</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Join Date</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Status</th>
+                                    <th class="text-center px-6 py-3 font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php foreach($members as $member) {?>
+                                    <tr class="table-row border-b border-gray-700">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3">JD</div>
+                                                    <span><?= $member['name'] ?></span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $member['email'] ?></td>
+                                        <td class="px-6 py-4"><?= $member['plan_name'] ?></td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $member['created_at'] ?></td>
+                                        <td class="px-6 py-4">
+                                            <span class="status-badge status-active"><?= $member['status'] ?></span>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <button class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
+                                            <button class="btn-edit-member text-green-400 hover:text-green-300 mr-3">Edit</button>
+                                            <button class="btn-delete-member text-red-400 hover:text-red-300">Delete</button>
+                                        </td>
+                                    </tr>
+                                <?php }?>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
 
