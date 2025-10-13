@@ -452,6 +452,8 @@
 
 
     </main>
+    <!-- Admin Navbar -->
+    <?php include_once "./../layouts/footer.php" ?>
     <!-- Add/Edit Plan Modal -->
     <div id="planModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
