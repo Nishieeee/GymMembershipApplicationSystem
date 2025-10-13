@@ -8,6 +8,7 @@
     }
     // fetch all members from db
     $members = $admin->displayAllUsers();
+    $plans = $admin->getAllPlans();
     
 ?>
 <!DOCTYPE html>
@@ -322,6 +323,43 @@
                             <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">3</button>
                             <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">Next →</button>
                         </div>
+                    </div>
+                </div>
+            </div>
+            <div id="plans" class="tab-content bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <!-- Add Plan Button -->
+                    <div class="mb-6 flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-white">Membership Plans</h2>
+                        <button id="btnAddPlan" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors flex items-center">
+                            <span class="mr-2">+</span> Add New Plan
+                        </button>
+                    </div>
+                    <!-- Plans Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <?php foreach($plans as $plan) { ?>
+                            <div class="plan-card rounded-xl p-6 border border-gray-700">
+                                <div class="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h3 class="text-2xl font-bold text-white"><?= $plan['plan_name'] ?></h3>
+                                        <p class="text-gray-400 text-sm">Entry level plan</p>
+                                    </div>
+                                    <span class="px-3 py-1 <?php if($plan['status'] == 'active') { echo'bg-blue-600'; } else if($plan['status'] == 'inactive') { echo 'bg-yellow-600'; } else if($plan['status'] == "removed") { echo "bg-red-600"; } ?> text-white text-xs font-bold rounded-full"><?= $plan['status'] ?></span>
+                                </div>
+
+                                <div class="mb-6">
+                                    <p class="text-4xl font-bold text-white">₱<?= $plan['price'] ?><span class="text-lg text-gray-400">/mo</span></p>
+                                    <p class="text-gray-400 text-sm mt-1">89 active members</p>
+                                </div>
+
+                                <p class="text-gray-300 text-sm mb-6"><?= $plan['description'] ?></p>
+
+                                <div class="flex space-x-2">
+                                    <button class="btn-edit-plan flex-1 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">Edit</button>
+                                    <button class="btn-delete-plan flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors">Delete</button>
+                                </div>
+                            </div>    
+                        <?php }?>
                     </div>
                 </div>
             </div>

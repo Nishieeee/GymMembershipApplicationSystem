@@ -20,6 +20,18 @@
                 return null;
             }
         }
+        public function getAllPlans() {
+            $sql = "SELECT * FROM membership_plans";
+
+            $query = $this->connect()->prepare($sql);
+
+            if($query->execute()) {
+                return $query->fetchAll();
+            } else {
+                return null;
+            }
+            
+        }
     };
 
 ?>
