@@ -200,36 +200,66 @@
             <!-- Statistics Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
                 <div class="stat-card rounded-xl p-6 text-center cursor-pointer">
-                    <div class="text-4xl mb-3">👥</div>
+                    <div class="text-4xl mb-3"></div>
                     <p class="text-gray-400 text-sm font-medium mb-1">Total Members</p>
                     <p class="text-3xl font-bold text-white">1,256</p>
                     <p class="text-green-400 text-xs mt-2">↑ 12% from last month</p>
                 </div>
 
                 <div class="stat-card rounded-xl p-6 text-center cursor-pointer">
-                    <div class="text-4xl mb-3">💰</div>
+                    <div class="text-4xl mb-3"></div>
                     <p class="text-gray-400 text-sm font-medium mb-1">Monthly Revenue</p>
                     <p class="text-3xl font-bold text-white">₱125.5K</p>
                     <p class="text-green-400 text-xs mt-2">↑ 8% from last month</p>
                 </div>
 
                 <div class="stat-card rounded-xl p-6 text-center cursor-pointer">
-                    <div class="text-4xl mb-3">📋</div>
+                    <div class="text-4xl mb-3"></div>
                     <p class="text-gray-400 text-sm font-medium mb-1">Active Plans</p>
                     <p class="text-3xl font-bold text-white">3</p>
                     <p class="text-blue-400 text-xs mt-2">Create new plan</p>
                 </div>
 
                 <div class="stat-card rounded-xl p-6 text-center cursor-pointer">
-                    <div class="text-4xl mb-3">✅</div>
+                    <div class="text-4xl mb-3"></div>
                     <p class="text-gray-400 text-sm font-medium mb-1">Active Trials</p>
                     <p class="text-3xl font-bold text-white">89</p>
                     <p class="text-orange-400 text-xs mt-2">5 expiring soon</p>
                 </div>
             </div>
         </div>
+        <!-- tab navigation -->
+        <div class="mb-8">
+        <div class="bg-neutral-900 rounded-t-xl border-b border-gray-700 flex items-center">
+                <button class="tab-button active px-6 py-4 text-white font-semibold hover:text-blue-400 transition-colors" data-tab="members">
+                    <span class="mr-2"></span> Members
+                </button>
+                <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="plans">
+                    <span class="mr-2"></span> Plans
+                </button>
+                <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="revenue">
+                    <span class="mr-2"></span> Revenue
+                </button>
+            </div>
+        </div>
 
 
     </main>
+    <script>
+        $(document).ready(function() {
+            // ===== TAB SWITCHING =====
+            $('.tab-button').on('click', function() {
+                const tabName = $(this).data('tab');
+                
+                // Remove active class from all buttons and contents
+                $('.tab-button').removeClass('active').addClass('text-gray-400');
+                $('.tab-content').removeClass('active');
+                
+                // Add active class to clicked button and corresponding content
+                $(this).addClass('active').removeClass('text-gray-400');
+                $('#' + tabName).addClass('active');
+            });
+        });
+    </script>
 </body>
 </html>
