@@ -37,10 +37,23 @@
                 }
             } else {
                 return null;
-            }
-            
+            }       
         }
+        public function addNewPlan($plan) {
+            $sql = "INSERT INTO `membership_plans`(`plan_name`, `description`, `duration_months`, `price`) VALUES (:plan_name, :description , :duration_months , :price)";
 
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":plan_name", $plan['plan_name']);
+            $query->bindParam(":description", $plan['description']);
+            $query->bindParam(":duration_months", $plan['duration_months']);
+            $query->bindParam(":price", $plan['price']);
+
+            if($query->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
     }
 

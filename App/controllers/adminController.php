@@ -4,9 +4,17 @@
     require_once __DIR__ . "../../models/User.php";
     require_once __DIR__ . "../../models/Plan.php";
     $userObj = new User();
-    $userObj = new Plan();
+    $planObj = new Plan();
 
     class Admin extends Database {
+        private $userModel = "";
+        private $planModel = "";
+
+        public function __construct($userModel, $planModel) {
+            $this->userModel = $userModel;
+            $this->planModel = $planModel;
+        }
+
         public function displayAllUsers() {
             $sql = "select CONCAT(m.first_name, ' ', m.last_name) as name, m.email, m.created_at, p.plan_name, s.end_date, s.status from members m
             join subscriptions s on s.user_id = m.user_id
@@ -21,7 +29,7 @@
             }
         }
         public function getAllPlans() {
-            $sql = "SELECT * FROM membership_plans";
+            $sql = "SELECT * FROM membership_plans order by status";
 
             $query = $this->connect()->prepare($sql);
 
@@ -29,9 +37,12 @@
                 return $query->fetchAll();
             } else {
                 return null;
-            }
-            
+            }  
         }
+        public function addPlan($planData) {
+            $this->planModel->addNewPlan($planData);
+        }
+        
     };
 
 ?>

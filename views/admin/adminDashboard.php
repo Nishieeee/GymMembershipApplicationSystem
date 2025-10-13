@@ -1,7 +1,11 @@
 <?php 
 
     include_once "../../App/controllers/adminController.php";
-    $admin = new Admin();
+    include_once "../../App/models/User.php";
+    include_once "../../App/models/Plan.php";
+    $user = new User();
+    $plan = new Plan();
+    $admin = new Admin($user, $plan);
 
     if(!$_SESSION['role'] == 'admin') {
         header("location: /auth/login.php");
@@ -10,6 +14,86 @@
     $members = $admin->displayAllUsers();
     $plans = $admin->getAllPlans();
     
+    // for form subsmission
+    $planData = [
+        "plan_name" => "",
+        "description" => "",
+        "duration_months" => "",
+        "price" => "",
+    ];
+    
+    $planErrors = [
+        "plan_name" => "",
+        "description" => "",
+        "duration_months" => "",
+        "price" => "",
+    ];
+    
+    $success = false;
+    
+    if($_SERVER['REQUEST_METHOD'] == 'POST') {
+        $planData['plan_name'] = trim(htmlspecialchars($_POST['plan_name'] ?? ''));
+        $planData['description'] = trim(htmlspecialchars($_POST['description'] ?? ''));
+        $planData['duration_months'] = trim(htmlspecialchars($_POST['duration_months'] ?? ''));
+        $planData['price'] = trim(htmlspecialchars($_POST['price'] ?? ''));
+    
+        // Validate plan_name
+        if(empty($planData['plan_name'])) {
+            $planErrors['plan_name'] = "Plan name is required";
+        } elseif(strlen($planData['plan_name']) < 3) {
+            $planErrors['plan_name'] = "Plan name must be at least 3 characters";
+        } elseif(strlen($planData['plan_name']) > 50) {
+            $planErrors['plan_name'] = "Plan name must not exceed 50 characters";
+        }
+    
+        // Validate description
+        if(empty($planData['description'])) {
+            $planErrors['description'] = "Description is required";
+        } elseif(strlen($planData['description']) < 10) {
+            $planErrors['description'] = "Description must be at least 10 characters";
+        } elseif(strlen($planData['description']) > 500) {
+            $planErrors['description'] = "Description must not exceed 500 characters";
+        }
+    
+        // Validate duration_months
+        if(empty($planData['duration_months'])) {
+            $planErrors['duration_months'] = "Duration is required";
+        } elseif(!is_numeric($planData['duration_months'])) {
+            $planErrors['duration_months'] = "Duration must be a number";
+        } elseif($planData['duration_months'] <= 0) {
+            $planErrors['duration_months'] = "Duration must be greater than 0";
+        } elseif($planData['duration_months'] > 60) {
+            $planErrors['duration_months'] = "Duration must not exceed 60 months";
+        }
+    
+        // Validate price
+        if(empty($planData['price'])) {
+            $planErrors['price'] = "Price is required";
+        } elseif(!is_numeric($planData['price'])) {
+            $planErrors['price'] = "Price must be a number";
+        } elseif($planData['price'] < 0) {
+            $planErrors['price'] = "Price cannot be negative";
+        } elseif($planData['price'] > 9999.99) {
+            $planErrors['price'] = "Price exceeds maximum allowed";
+        }
+    
+        if(empty(array_filter($planErrors))) {
+            $admin->addPlan($planData);
+
+            //clear data form
+            $planData = [
+                "plan_name" => "",
+                "description" => "",
+                "duration_months" => "",
+                "price" => "",
+            ];
+        }
+    }
+
+
+    function activeMembers($plan_id) {
+        //NOTE: do this ahahha
+    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -289,11 +373,12 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <?php foreach($members as $member) {?>
+                                <?php  foreach($members as $member) { $user_name = $member['name'];
+                                $user_initial = substr($user_name, 0, 1); ?>
                                     <tr class="table-row border-b border-gray-700">
                                         <td class="px-6 py-4">
                                             <div class="flex items-center">
-                                                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3">JD</div>
+                                                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3"><?= $user_initial ?></div>
                                                     <span><?= $member['name'] ?></span>
                                             </div>
                                         </td>
@@ -367,8 +452,8 @@
 
 
     </main>
-     <!-- Add/Edit Plan Modal -->
-     <div id="planModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <!-- Add/Edit Plan Modal -->
+    <div id="planModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
             <button class="modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
             
@@ -378,46 +463,41 @@
                 <div>
                     <label class="block text-white font-semibold mb-2">Plan Name</label>
                     <input type="text" name="plan_name" required 
-                           class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="e.g., Platinum">
+                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="e.g., Platinum" value="<?= isset($planData['plan_name']) ? htmlspecialchars($planData['plan_name']) : '' ?>">
+                    <p color="red"><?= $planErrors['plan_name'] ?? '' ?></p>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
                         <label class="block text-white font-semibold mb-2">Price (Monthly)</label>
-                        <input type="number" name="price" required 
-                               class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               placeholder="999">
+                        <input type="number" name="price" step="0.01" required 
+                        class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="999" value="<?= isset($planData['price']) ? htmlspecialchars($planData['price']) : '' ?>">
+                        <p color="red"><?= $planErrors['price'] ?? '' ?></p>
                     </div>
 
                     <div>
-                        <label class="block text-white font-semibold mb-2">Duration (Days)</label>
-                        <input type="number" name="duration" required 
-                               class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                               placeholder="30">
+                        <label class="block text-white font-semibold mb-2">Duration (Months)</label>
+                        <input type="number" name="duration_months" required 
+                        class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="1" value="<?= isset($planData['duration_months']) ? htmlspecialchars($planData['duration_months']) : '' ?>">
+                        <p color="red"><?= $planErrors['duration_months'] ?? '' ?></p>
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-white font-semibold mb-2">Description</label>
                     <textarea name="description" rows="3" required 
-                              class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                              placeholder="Describe this plan"></textarea>
-                </div>
-
-                <div>
-                    <label class="block text-white font-semibold mb-2">Features (comma separated)</label>
-                    <input type="text" name="features" required 
-                           class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                           placeholder="Unlimited access, Personal trainer, Classes">
+                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                    placeholder="Describe this plan"><?= isset($planData['description']) ? htmlspecialchars($planData['description']) : '' ?></textarea>
+                    <p color="red"><?= $planErrors['description'] ?? '' ?></p>
                 </div>
 
                 <div class="flex items-center">
                     <input type="checkbox" id="isFeatured" name="is_featured" class="mr-3">
                     <label for="isFeatured" class="text-white font-semibold">Mark as featured plan</label>
                 </div>
-
-                <div id="planFormMessage" class="hidden"></div>
 
                 <div class="flex space-x-4 mt-6">
                     <button type="button" class="modal-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
@@ -488,6 +568,26 @@
                     $('body').css('overflow', 'auto');
                 }
             });
+        });
+
+        // ===== PLAN ACTIONS =====
+        $(document).on('click', '.btn-edit-plan', function() {
+                showAlert('Edit plan functionality - Add your implementation', 'info');
+            });
+
+        $(document).on('click', '.btn-delete-plan', function() {
+            const planCard = $(this).closest('.plan-card');
+            if (confirm('Are you sure you want to delete this plan?')) {
+                planCard.fadeOut(300, function() {
+                    $(this).remove();
+                    showAlert('Plan deleted successfully', 'success');
+                });
+            }
+        });
+         // Close member modal
+        $('.member-modal-close').on('click', function() {
+            $('#memberModal').removeClass('show');
+            $('body').css('overflow', 'auto');
         });
     </script>
 </body>
