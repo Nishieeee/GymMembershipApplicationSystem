@@ -17,8 +17,8 @@ $user_initial = substr($user_name, 0, 1);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../../public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="../../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
         .header-blur {
             backdrop-filter: blur(10px);
@@ -140,13 +140,13 @@ $user_initial = substr($user_name, 0, 1);
                     </button>
 
                     <!-- Desktop Dropdown Menu -->
-                    <div class="relative group hidden md:block">
+                    <div id="account" class="relative group hidden md:block">
                         <button class="text-gray-400 hover:text-white transition-colors p-2">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                             </svg>
                         </button>
-                        <div class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-700">
+                        <div id="accountMenu" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl opacity-0 transition-all duration-200 border border-gray-700">
                             <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-t-lg transition-colors">
                                 <span class="inline-block mr-2"></span> Edit Profile
                             </a>
@@ -213,6 +213,17 @@ $user_initial = substr($user_name, 0, 1);
             $('#mobileMoreBtn').click(function() {
                 $('#mobileMoreToggle').toggleClass('active');
                 $('#mobileMoreMenu').toggleClass('active');
+            });
+
+            // Account menu toggle
+            $('#account').click(function(e) {
+                e.stopPropagation();
+                $('#accountMenu').toggleClass('hidden opacity-0 opacity-100');
+            });
+
+            // Close when clicking outside
+            $(document).click(function() {
+                $('#accountMenu').addClass('hidden opacity-0').removeClass('opacity-100');
             });
 
             // Close mobile menu when clicking a link

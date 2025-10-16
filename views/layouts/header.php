@@ -16,8 +16,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gymazing!</title>
-    <script src="../../public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="../../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
         /* Smooth scroll behavior */
         html {
@@ -119,13 +119,13 @@
                     <?php if(isset($_SESSION['user_id'])) { ?>
                         <!-- Logged in user menu -->
                         <div class="relative group">
-                            <button class="flex items-center space-x-2 px-4 py-2 text-white font-medium hover:text-blue-400 transition-colors">
+                            <button id="account" class="flex items-center space-x-2 px-4 py-2 text-white font-medium hover:text-blue-400 transition-colors">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                                 </svg>
                                 <span>Account</span>
                             </button>
-                            <div class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200">
+                            <div id="accountMenu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl opacity-0 transition-all duration-200">
                                 <?php $_SESSION['role'] == ""?>
                                 <?php if($_SESSION['role'] == 'member') { ?>
                                     <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
@@ -219,6 +219,17 @@
             $('#mobileMenu a').click(function() {
                 $('#mobileMenuBtn').removeClass('active');
                 $('#mobileMenu').removeClass('active');
+            });
+
+            //toggle account menu
+            $('#account').click(function(e) {
+                e.stopPropagation();
+                $('#accountMenu').toggleClass('hidden opacity-0 opacity-100');
+            });
+            
+            // Close when clicking outside
+            $(document).click(function() {
+                $('#accountMenu').addClass('hidden opacity-0').removeClass('opacity-100');
             });
 
             // Add shadow on scroll
