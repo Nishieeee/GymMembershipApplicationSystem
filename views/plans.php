@@ -1,9 +1,9 @@
 <?php 
     session_start();
-    include_once "../App/models/Plan.php";
+    include_once "../App/controllers/PlanController.php";
     
-    $planObj = new Plan();
-    $plans = $planObj->getAllPlans();
+    $planObj = new PlanController();
+    $plans = $planObj->getAllPlan();
 
     // Sample plan features - customize based on your database
     $plan_features = [
@@ -34,6 +34,25 @@
     ];
 
     $current_plan = isset($_SESSION['current_plan']) ? $_SESSION['current_plan'] : null;
+     
+    if($_SERVER["REQUEST_METHOD"] == "POST") {
+        
+        $subscribeData = [
+            "user_id" => "",
+            "plan_id" => "",
+            "start_date" => "",
+            "end_date" => "",
+            "status" => "active"
+        ];
+        $subscribeData['user_id'] = $_SESSION['user_id'];
+        $subscribeData['plan_id'] = trim(htmlspecialchars($_POST['plan_id']));
+        $subscribeData['start_date'] = date("Y-m-d");
+        $subscribeData['end_date'] = date("Y-m-d", strtotime('+1', strtotime($subscribeData['start_date'])));
+
+        $planObj->AddNewSubscription($subscribeData);
+
+    }
+    
 ?>
 
 <!DOCTYPE html>
@@ -460,25 +479,23 @@
             </div>
 
             <!-- Subscription Form -->
-            <form id="subscriptionForm" class="space-y-4">
+            <form method="POST" id="subscriptionForm" class="space-y-4">
                 <input type="hidden" id="modal_plan_id" name="plan_id">
-
+                
                 <div class="flex items-start">
                     <input type="checkbox" id="modal_terms" name="terms" required class="mt-1">
                     <label for="modal_terms" class="text-gray-300 text-sm ml-2">
                         I agree to the terms and conditions and understand the subscription will begin after the trial period.
                     </label>
                 </div>
-
+                
                 <div id="formMessage" class="hidden"></div>
 
                 <div class="flex space-x-4 mt-6">
                     <button type="button" class="modal-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
                         Cancel
                     </button>
-                    <button type="submit" id="submitBtn" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
-                        Confirm Subscription
-                    </button>
+                    <input type="submit" value="Confirm Subscription" id="submitBtn" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors"/>
                 </div>
             </form>
         </div>

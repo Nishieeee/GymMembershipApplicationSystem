@@ -155,7 +155,7 @@ $user_initial = substr($user_name, 0, 1);
                                 <span class="inline-block mr-2"></span> Settings
                             </a>
                             <hr class="border-gray-600">
-                            <a href="../views/auth/logout.php" class="block px-4 py-3 text-red-400 hover:bg-gray-700 rounded-b-lg transition-colors">
+                            <a href="../auth/logout.php" class="block px-4 py-3 text-red-400 hover:bg-gray-700 rounded-b-lg transition-colors">
                                 <span class="inline-block mr-2"></span> Logout
                             </a>
                         </div>
@@ -189,7 +189,7 @@ $user_initial = substr($user_name, 0, 1);
                         <div class="submenu" id="mobileMoreMenu">
                             <a href="settings.php" class="block px-4 py-2 ml-2 text-gray-400 hover:text-blue-400 rounded transition-colors text-sm">Settings</a>
                             <a href="billing.php" class="block px-4 py-2 ml-2 text-gray-400 hover:text-blue-400 rounded transition-colors text-sm">Billing</a>
-                            <a href="../auth/logout.php" class="block px-4 py-2 ml-2 text-red-400 hover:text-red-300 rounded transition-colors text-sm">Logout</a>
+                            <a href="./auth/logout.php" class="block px-4 py-2 ml-2 text-red-400 hover:text-red-300 rounded transition-colors text-sm">Logout</a>
                         </div>
                     </div>
                 </nav>

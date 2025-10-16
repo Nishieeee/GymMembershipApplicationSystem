@@ -244,8 +244,8 @@
 
                             </div>
                         </div>
-                        <button class="mt-6 w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300">
-                            <a href="plans.php"><?=  isset($userPlan) ? "Upgrade Plan" : "Subscribe" ?></a>
+                        <button id="toPlan" class="mt-6 w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300">
+                            <?=  isset($userPlan) ? "Upgrade Plan" : "Subscribe" ?>
                         </button>
                     </div>
 

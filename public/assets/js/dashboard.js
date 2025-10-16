@@ -11,6 +11,9 @@ $(document).ready(function() {
         $('#mobileMenu').removeClass('active');
     });
 
+    $('#toPlan').click(function() {
+        window.location.href = "plans.php";
+    });
     // Smooth scroll
     $('a[href^="#"]').click(function(e) {
         var target = $(this.hash);

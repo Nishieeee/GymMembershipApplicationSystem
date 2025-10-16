@@ -37,26 +37,6 @@ $(document).ready(function() {
     // FORM SUBMISSION 
     $('#subscriptionForm').on('submit', function(e) {
         e.preventDefault();
-        
-        const fullName = $('#modal_full_name').val().trim();
-        const email = $('#modal_email').val().trim();
-        const phone = $('#modal_phone').val().trim();
-        const planId = $('#modal_plan_id').val();
-        const terms = $('#modal_terms').is(':checked');
-
-        // Validation
-        if (!fullName || !email || !phone) {
-            showFormMessage('Please fill in all fields', 'error');
-            return;
-        }
-
-        if (!terms) {
-            showFormMessage('Please agree to the terms and conditions', 'error');
-            return;
-        }
-
-        // Submit
-        submitSubscription(fullName, email, phone, planId);
     });
 
     //  FAQ TOGGLE 

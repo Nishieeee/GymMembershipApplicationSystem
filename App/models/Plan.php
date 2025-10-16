@@ -54,6 +54,24 @@
                 return false;
             }
         }
+        public function addSubscription($formData) {
+            $sql = "INSERT INTO `subscriptions`(`user_id`, `plan_id`, `start_date`, `end_date`, `status`) VALUES (:user_id ,:plan_id, :start_date , :end_date , :status)";
+
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":user_id", $formData['user_id']);
+            $query->bindParam(":plan_id", $formData['plan_id']);
+            $query->bindParam(":start_date", $formData['start_date']);
+            $query->bindParam(":end_date", $formData['end_date']);
+            $query->bindParam(":status", $formData['status']);
+
+            if($query->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+
+
+        }
 
     }
 
