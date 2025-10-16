@@ -411,6 +411,7 @@
                     </div>
                 </div>
             </div>
+            <!-- Plans tab -->
             <div id="plans" class="tab-content bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
                 <div class="p-6">
                     <!-- Add Plan Button -->
@@ -445,6 +446,59 @@
                                 </div>
                             </div>    
                         <?php }?>
+                    </div>
+                    <!-- Revenue tab -->
+                    
+                </div>
+            </div>
+            <div id="revenue" class="tab-content bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <h2 class="text-2xl font-bold text-white mb-6">Revenue Analytics</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-lg font-bold text-white mb-4">Monthly Revenue</h3>
+                            <div class="h-64 bg-gray-700 rounded-lg flex items-center justify-center text-gray-400">
+                                
+                            </div>
+                        </div>
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-lg font-bold text-white mb-4">Revenue by Plan</h3>
+                            <div class="space-y-4">
+                                <div class="flex items-center justify-between">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 bg-blue-500 rounded-full"></div>
+                                        <span class="text-gray-300">Basic</span>
+                                    </div>
+                                    <span class="text-white font-semibold">₱88.9K (7%)</span>
+                                </div>
+                                <div class="w-full bg-gray-700 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 7%"></div>
+                                </div>
+
+                                <div class="flex items-center justify-between mt-4">
+                                    <div class="flex items-center space-x-2">
+                                        <div class="w-3 h-3 bg-green-500 rounded-full"></div>
+                                            <span class="text-gray-300">Standard</span>
+                                        </div>
+                                        <span class="text-white font-semibold">₱351.1K (28%)</span>
+                                    </div>
+                                    <div class="w-full bg-gray-700 rounded-full h-2">
+                                        <div class="bg-green-500 h-2 rounded-full" style="width: 28%"></div>
+                                    </div>
+
+                                    <div class="flex items-center justify-between mt-4">
+                                        <div class="flex items-center space-x-2">
+                                            <div class="w-3 h-3 bg-purple-500 rounded-full"></div>
+                                            <span class="text-gray-300">Premium</span>
+                                        </div>
+                                        <span class="text-white font-semibold">₱1.7M (65%)</span>
+                                    </div>
+                                    <div class="w-full bg-gray-700 rounded-full h-2">
+                                        <div class="bg-purple-500 h-2 rounded-full" style="width: 65%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
