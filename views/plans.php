@@ -253,6 +253,7 @@
                         foreach($plans as $index => $plan) {
                             $is_featured = isset($plan['is_featured']) && $plan['is_featured'] == 1;
                             $features = $plan_features[$index + 1] ?? [];
+                            if($plan['status'] == "active") {
                     ?>
                         <div class="plan-card <?= $is_featured ? 'featured' : '' ?> bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col" data-plan-id="<?= $plan['plan_id'] ?>" data-plan-name="<?= $plan['plan_name'] ?>" data-plan-price="<?= $plan['price'] ?>">
                             
@@ -301,7 +302,9 @@
                                 </ul>
                             </div>
                         </div>
-                    <?php }
+                    <?php
+                            } 
+                        }
                     } else {
                     ?>
                         <div class="col-span-full text-center py-12">
