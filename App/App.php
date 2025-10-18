@@ -1,44 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gymazing!</title>
-    <!-- <link rel="stylesheet" href="../public/assets/css/bs/bootstrap.min.css"> -->
-     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#0D6EFD',
-                        accent: "#20C997",
-                        background: "#F8F9FA",
-                        text: "#212529",
-                    },
-                },
-            },
+<?php 
+
+    class App {
+        public function run() {
+            $controllerName = $_GET['controller'] ?? "Dashbaord";
+            $actionName = $_GET['action'] ?? 'index';
+
+            $controllerClass = ucfirst($controllerName) . 'Controller';
+            $controllerFile = __DIR__ . "/controllers/{$controllerClass}.php";
+
+            if(file_exists($controllerFile)) {
+                require_once $controllerFile;
+
+                $controller = new $controllerClass();
+
+                if(method_exists($controller, $actionName)) {
+                    $controller->$actionName();
+                } else {
+                    echo "Method '$actionName' not Found in controller '$controllerClass'.";
+                } 
+            } else {
+                echo "Controller '$controllerClass' not Found.";
+            }
         }
-    </script>
-    <script src="../public/assets/js/tailwindcss/tailwindcss.js">
-    </script>
-    
-</head>
-<body class="bg-linear-to-r from-neutral-950 via-neutral-800 to-neutral-600">
-    
-    <!-- header -->
-    <?php include '../views/layouts/header.php'?>
+    }
 
-    <!-- main content -->
-    <main class="bg-primary text-text font-sans">
-        <?php include '../public/index.php' ?>
-    </main>
-
-    <!-- footer -->
-    <?php include '../views/layouts/footer.php' ?>
-    <!-- bootstrap -->
-    <!-- <script src="../assets/public/js/bs/bootstrap.bundle.min.js"></script> -->
-    <!-- JQUERY -->
-    <script src="../assets/public/js/jquery/juery-3.7.1.min.js"></script>
-    <!-- custom js -->
-</body>
-</html>
+?>
