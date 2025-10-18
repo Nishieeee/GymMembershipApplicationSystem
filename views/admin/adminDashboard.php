@@ -89,11 +89,6 @@
             ];
         }
     }
-
-
-    function activeMembers($plan_id) {
-        //NOTE: do this ahahha
-    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -383,10 +378,10 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 text-gray-300"><?= $member['email'] ?></td>
-                                        <td class="px-6 py-4"><?= $member['plan_name'] ?></td>
+                                        <td class="px-6 py-4"><?= isset($member['plan_name']) ? $member['plan_name'] : "No Active Plan" ?></td>
                                         <td class="px-6 py-4 text-gray-300"><?= $member['created_at'] ?></td>
                                         <td class="px-6 py-4">
-                                            <span class="status-badge status-active"><?= $member['status'] ?></span>
+                                            <span class="status-badge <?= isset($member['status']) ? "status-active" : "status-inactive" ?>"><?= isset($member['status']) ? $member['status'] : "Inactive" ?></span>
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             <button class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
