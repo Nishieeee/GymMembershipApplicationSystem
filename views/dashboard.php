@@ -1,22 +1,4 @@
 <?php 
-    session_start();
-    require_once "../App/models/User.php";
-    require_once "../App/models/Plan.php";
-    require_once "../../../controllers/UserController.php";
-    $userObj = new User();
-    $planObj = new Plan();
-
-    $UserController = new UserController($userObj, $planObj);
-
-    if(isset($_SESSION['user_id'])) {
-        $user_id = $_SESSION['user_id'];
-        $userInfo = $userObj->getMember($user_id);
-        $userPlan = $planObj->getUserPlan($user_id);
-    } else {
-        header("location: ./auth/login.php");
-    }
-
-    //user data (needs work)
      
     $user = [
         "name" => "",
@@ -58,7 +40,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><?= htmlspecialchars($title) ?></title>
+    <title>GYMAZING! | Dashboard</title>
     <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
     <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
@@ -162,7 +144,7 @@
 </head>
 <body class="gradient-bg min-h-screen">
     
-    <?php include_once __DIR__ . "/layouts/navbar.php" ?>
+    <?php include __DIR__ . "/layouts/navbar.php" ?>
 
     <!-- Main Content -->
     <main class="pt-24 pb-12">
