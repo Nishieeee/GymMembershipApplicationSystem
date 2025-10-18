@@ -1,18 +1,9 @@
 <?php 
 
-    include_once "../../App/controllers/adminController.php";
-    include_once "../../App/models/User.php";
-    include_once "../../App/models/Plan.php";
-    $user = new User();
-    $plan = new Plan();
-    $admin = new Admin($user, $plan);
-
     if(!$_SESSION['role'] == 'admin') {
         header("location: /auth/login.php");
     }
-    // fetch all members from db
-    $members = $admin->displayAllUsers();
-    $plans = $admin->getAllPlans();
+
     
     // for form subsmission
     $planData = [
@@ -101,8 +92,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Gymazing</title>
-    <script src="../../public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="../../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <script src= "/GymMembershipSystem/public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="/GymMembershipSystem/public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
@@ -275,7 +266,7 @@
 <body class="gradient-bg min-h-screen">
     
     <!-- Admin Navbar -->
-    <?php include_once "./../layouts/adminnavbar.php" ?>
+    <?php include __DIR__ . "/layouts/adminnavbar.php" ?>
 
     <!--  Alerts Container -->
     <div id="alertContainer" class="fixed top-24 right-4 z-40 space-y-4"></div>
@@ -383,10 +374,10 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 text-gray-300"><?= $member['email'] ?></td>
-                                        <td class="px-6 py-4"><?= $member['plan_name'] ?></td>
+                                        <td class="px-6 py-4"><?= isset($member['plan_name']) ? $member['plan_name'] : 'No Active Plan' ?></td>
                                         <td class="px-6 py-4 text-gray-300"><?= $member['created_at'] ?></td>
                                         <td class="px-6 py-4">
-                                            <span class="status-badge status-active"><?= $member['status'] ?></span>
+                                            <span class="status-badge <?= isset($member['status']) ? 'status-active' : 'status-inactive'?>"><?=isset($member['status']) ?  $member['status'] : 'inactive' ?></span>
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             <button class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
@@ -452,8 +443,6 @@
 
 
     </main>
-    <!-- Admin Navbar -->
-    <?php include_once "./../layouts/footer.php" ?>
     <!-- Add/Edit Plan Modal -->
     <div id="planModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">

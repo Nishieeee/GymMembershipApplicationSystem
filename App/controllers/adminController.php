@@ -1,45 +1,29 @@
 <?php 
-    session_start();
-    require_once __DIR__ . "../../config/Database.php";
 
+    require_once __DIR__ . "/../Controller.php";
+    require_once __DIR__ . "/../models/Plan.php";
+    require_once __DIR__ . "/../config/Database.php";
+    require_once __DIR__ . "/../models/User.php";
+    require_once __DIR__ . "/../models/Plan.php";
 
-    class Admin extends Database {
-        private $userModel = "";
-        private $planModel = "";
+    class AdminController extends Controller {
 
-        public function __construct($userModel, $planModel) {
-            $this->userModel = $userModel;
-            $this->planModel = $planModel;
-        }
+        public function dashboard() {
+            session_start();
+            $user_id = $_SESSION['user_id'];
 
-        public function displayAllUsers() {
-            $sql = "select CONCAT(m.first_name, ' ', m.last_name) as name, m.email, m.created_at, p.plan_name, s.end_date, s.status from members m
-            join subscriptions s on s.user_id = m.user_id
-            join membership_plans p on p.plan_id = s.plan_id";
-            
-            $query = $this->connect()->prepare($sql);
+            $user = new User();
+            $plan = new Plan();
 
-            if($query->execute()) {
-                return $query->fetchAll();
-            } else {
-                return null;
-            }
-        }
-        public function getAllPlans() {
-            $sql = "SELECT * FROM membership_plans order by status";
+            $members = $user->displayAllUsers();
+            $plans = $plan->getAllPlans();
 
-            $query = $this->connect()->prepare($sql);
+            $this->adminView('dashboard', [
+                'members' => $members,
+                'plans' => $plans,
+            ]);
+        } 
+    }
 
-            if($query->execute()) {
-                return $query->fetchAll();
-            } else {
-                return null;
-            }  
-        }
-        public function addPlan($planData) {
-            $this->planModel->addNewPlan($planData);
-        }
-        
-    };
 
 ?>
