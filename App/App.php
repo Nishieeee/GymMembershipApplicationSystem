@@ -2,7 +2,7 @@
 
     class App {
         public function run() {
-            $controllerName = $_GET['controller'] ?? "Dashbaord";
+            $controllerName = $_GET['controller'] ?? "Home";
             $actionName = $_GET['action'] ?? 'index';
 
             $controllerClass = ucfirst($controllerName) . 'Controller';

@@ -1,9 +1,4 @@
 <?php
-    session_start();
-    include_once "../App/models/Plan.php";
-    $planObj = new Plan();
-    $plans = $planObj->getAllPlans();
-
     $testimonies = [
         ["name"=>"John Doe","rating"=>"4","comment"=>"Amazing place to shape your body!"],
         ["name"=>"Jane Smith","rating"=>"5","comment"=>"Gymazing is the best place to go if you're looking for high quality gym!"],
