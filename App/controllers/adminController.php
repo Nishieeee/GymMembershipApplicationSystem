@@ -17,8 +17,8 @@
 
         public function displayAllUsers() {
             $sql = "select CONCAT(m.first_name, ' ', m.last_name) as name, m.email, m.created_at, p.plan_name, s.end_date, s.status from members m
-            join subscriptions s on s.user_id = m.user_id
-            join membership_plans p on p.plan_id = s.plan_id";
+            left join subscriptions s on s.user_id = m.user_id
+            left join membership_plans p on p.plan_id = s.plan_id";
             
             $query = $this->connect()->prepare($sql);
 
