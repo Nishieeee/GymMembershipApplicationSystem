@@ -19,6 +19,16 @@
                 return null;
             }
         }
+        public function getAllActivePlans() {
+            $sql = "SELECT * FROM membership_plans WHERE status = 'active' ORDER BY price ASC";
+            $query = $this->connect()->prepare($sql);
+
+            if($query->execute()) {
+                return $query->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                return null;
+            }
+        }
         public function getUserPlan($user_id) {
             $sql = "SELECT p.plan_name, s.end_date, s.status FROM membership_plans p
             join subscriptions s on s.plan_id = p.plan_id
