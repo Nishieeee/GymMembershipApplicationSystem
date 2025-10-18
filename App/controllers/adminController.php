@@ -1,10 +1,7 @@
 <?php 
     session_start();
     require_once __DIR__ . "../../config/Database.php";
-    require_once __DIR__ . "../../models/User.php";
-    require_once __DIR__ . "../../models/Plan.php";
-    $userObj = new User();
-    $planObj = new Plan();
+
 
     class Admin extends Database {
         private $userModel = "";

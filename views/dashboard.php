@@ -1,9 +1,12 @@
 <?php 
     session_start();
-    include_once "../App/models/User.php";
-    include_once "../App/models/Plan.php";
+    require_once "../App/models/User.php";
+    require_once "../App/models/Plan.php";
+    require_once "../../../controllers/UserController.php";
     $userObj = new User();
     $planObj = new Plan();
+
+    $UserController = new UserController($userObj, $planObj);
 
     if(isset($_SESSION['user_id'])) {
         $user_id = $_SESSION['user_id'];
@@ -300,13 +303,14 @@
                             <span>Achievements</span>
                         </h2>
                         <div class="grid grid-cols-2 gap-4">
-                            <?php foreach ($achievements as $achievement) { ?>
+                            <?php if(isset($userPlan)) { foreach ($achievements as $achievement) { ?>
                                 <div class="achievement-badge bg-gray-800 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-700">
                                     <div class="text-3xl mb-2"><?= $achievement['icon'] ?></div>
                                     <p class="text-white text-sm font-semibold"><?= $achievement['name'] ?></p>
                                     <p class="text-gray-400 text-xs mt-1"><?= date('M d', strtotime($achievement['date'])) ?></p>
                                 </div>
-                            <?php } ?>
+                            <?php   }
+                                }?>
                         </div>
                     </div>
 
