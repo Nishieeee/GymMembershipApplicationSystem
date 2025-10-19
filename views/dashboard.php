@@ -1,16 +1,19 @@
 <?php 
-    session_start();
-    include_once "../App/models/User.php";
-    $userObj = new User();
-    if(isset($_SESSION['user_id'])) {
-        $user_id = $_SESSION['user_id'];
-    } else {
-        header("location: /auth/login.php");
-    }
+     
+    $user = [
+        "name" => "",
+        "created_at" => "",
+        "plan_name" => "",
+        "end_date" => "",
+        "status" => "",
+    ];
+    
 
-    //user data (needs work)
-    $user = $userObj->getMemberSubcription($user_id); 
-
+    $user['name'] = $userInfo['name'];
+    $user['created_at'] = $userInfo['created_at'];
+    $user['plan_name'] = isset($userPlan['plan_name']) ? $userPlan['plan_name'] : "";
+    $user['end_date'] = isset($userPlan['end_date']) ? $userPlan['end_date'] : "";
+    $user['status'] = isset($userPlan['status']) ? $userPlan['status'] : "";
     $stats = [
         ["label" => "Classes Attended", "value" => 24, "icon" => "📚"],
         ["label" => "Workouts This Month", "value" => 12, "icon" => "💪"],
@@ -37,7 +40,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Gymazing</title>
+    <title>GYMAZING! | Dashboard</title>
     <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
     <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
@@ -141,21 +144,23 @@
 </head>
 <body class="gradient-bg min-h-screen">
     
-    <?php include_once __DIR__ . "/layouts/navbar.php" ?>
+    <?php include __DIR__ . "/layouts/navbar.php" ?>
 
     <!-- Main Content -->
     <main class="pt-24 pb-12">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-    
             <!-- hero Section -->
             <div id="dashboard" class="dashboard-section mb-12">
                 <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 lg:p-12 text-white shadow-xl">
                     <h1 class="text-3xl lg:text-4xl font-bold mb-2">Welcome back, <?= $user['name'] ?>! 👋</h1>
                     <p class="text-blue-100 text-lg">
                         <span class="font-semibold">Status:</span> 
-                        <span class="inline-block px-3 py-1 bg-green-500 rounded-full text-sm font-bold ml-2"><?= $user['status'] ?></span>
+                        <span class="inline-block px-3 py-1 <?=  isset($userPlan) ? "bg-green-500" : "bg-gray-800" ?>  rounded-full text-sm font-bold ml-2">
+                            <?= isset($userPlan) ? $user['status'] : "No Active Plan"; ?></span> 
                     </p>
-                    <p class="text-blue-100 text-lg mt-2">Your <?= $user['plan_name'] ?> expires in <span class="font-bold">30 days</span></p>
+                    <?php if(isset($userPlan)) {?>
+                        <p class="text-blue-100 text-lg mt-2">Your <?= $user['plan_name'] ?> expires in <span class="font-bold">30 days</span></p>
+                    <?php }?>
                 </div>
             </div>
 
@@ -186,14 +191,26 @@
                         </h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                             <div class="bg-gray-800 rounded-lg p-6">
-                                <p class="text-gray-400 text-sm mb-1">Plan Type</p>
-                                <p class="text-2xl font-bold text-white"><?= $user['plan_name'] ?></p>
-                                <p class="text-green-400 text-sm mt-2">✓ Active</p>
+                                <?php
+                                    if(isset($userPlan)) {
+
+                                ?>
+                                    <p class="text-gray-400 text-sm mb-1">Plan Type</p>
+                                    <p class="text-2xl font-bold text-white"><?= $user['plan_name'] ?></p>
+                                    <p class="text-green-400 text-sm mt-2">✓ Active</p>
+                                <?php } else {?>
+                                    <p class="text-gray-400 text-sm mb-1">No Active Plan</p>   
+                                <?php }?>
+
                             </div>
-                            <div class="bg-gray-800 rounded-lg p-6">
-                                <p class="text-gray-400 text-sm mb-1">Expiry Date</p>
-                                <p class="text-2xl font-bold text-white"><?= date('M d, Y', strtotime($user['end_date'])) ?></p>
-                                <p class="text-blue-400 text-sm mt-2">Renew before expiry</p>
+                            <div class="bg-gray-800 rounded-lg p-6">                             
+                                <?php if(isset($userPlan)) { ?>
+                                    <p class="text-gray-400 text-sm mb-1">Expiry Date</p>
+                                    <p class="text-2xl font-bold text-white"><?= date('M d, Y', strtotime($user['end_date'])) ?></p>
+                                    <p class="text-blue-400 text-sm mt-2">Renew before expiry</p>
+                                <?php } else {?>
+                                    <p class="text-gray-400 text-sm mb-1">No Active Plan</p>   
+                                <?php }?>
                             </div>
                             <div class="bg-gray-800 rounded-lg p-6">
                                 <p class="text-gray-400 text-sm mb-1">Member Since</p>
@@ -201,13 +218,19 @@
                                 <p class="text-yellow-400 text-sm mt-2">Great job staying with us!</p>
                             </div>
                             <div class="bg-gray-800 rounded-lg p-6">
-                                <p class="text-gray-400 text-sm mb-1">Next Billing</p>
-                                <p class="text-2xl font-bold text-white"><?= date('M d, Y', strtotime('+30 days')) ?></p>
-                                <a href="#" class="text-blue-400 text-sm mt-2 hover:text-blue-300">Manage Billing</a>
+                                
+                                <?php if(isset($userPlan)) { ?>
+                                    <p class="text-gray-400 text-sm mb-1">Next Billing</p>
+                                    <p class="text-2xl font-bold text-white"><?= date('M d, Y', strtotime('+30 days')) ?></p>
+                                    <a href="#" class="text-blue-400 text-sm mt-2 hover:text-blue-300">Manage Billing</a>
+                                <?php } else {?>
+                                    <p class="text-gray-400 text-sm mb-1">No Active Plan</p>   
+                                <?php }?>
+
                             </div>
                         </div>
                         <button class="mt-6 w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300">
-                            Upgrade Plan
+                            <a href="plans.php"><?=  isset($userPlan) ? "Upgrade Plan" : "Subscribe" ?></a>
                         </button>
                     </div>
 
@@ -220,7 +243,7 @@
                             <span>Upcoming Classes Today</span>
                         </h2>
                         <div class="space-y-4">
-                            <?php foreach ($upcoming_classes as $class) { ?>
+                            <?php if(isset($userPlan)) { foreach ($upcoming_classes as $class) { ?>
                                 <div class="class-card rounded-lg p-6">
                                     <div class="flex items-start justify-between">
                                         <div class="flex-1">
@@ -236,9 +259,19 @@
                                         </button>
                                     </div>
                                 </div>
-                            <?php } ?>
+                            <?php } } else {?>
+                                <div class="p-3">
+                                    <h2 class="text-lg text-gray-500">No Upcoming Classes</h2>
+                                    <p class="text-lg text-gray-500">Subscribe to a plan first</p>
+                                    <a href="" class="inline-block mt-6 text-lg text-blue-400 hover:text-blue-300 font-semibold">Plans →</a>
+                                </div>
+                            <?php }?>
                         </div>
+                        <?php 
+                            if(isset($userPlan)) {
+                        ?>
                         <a href="#" class="inline-block mt-6 text-blue-400 hover:text-blue-300 font-semibold">View All Classes →</a>
+                        <?php } ?>
                     </div>
                 </div>
 
@@ -252,13 +285,14 @@
                             <span>Achievements</span>
                         </h2>
                         <div class="grid grid-cols-2 gap-4">
-                            <?php foreach ($achievements as $achievement) { ?>
+                            <?php if(isset($userPlan)) { foreach ($achievements as $achievement) { ?>
                                 <div class="achievement-badge bg-gray-800 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-700">
                                     <div class="text-3xl mb-2"><?= $achievement['icon'] ?></div>
                                     <p class="text-white text-sm font-semibold"><?= $achievement['name'] ?></p>
                                     <p class="text-gray-400 text-xs mt-1"><?= date('M d', strtotime($achievement['date'])) ?></p>
                                 </div>
-                            <?php } ?>
+                            <?php   }
+                                }?>
                         </div>
                     </div>
 
@@ -301,31 +335,6 @@
         </div>
     </main>
     <?php include_once __DIR__ . "/layouts/footer.php" ?>                            
-    <script>
-        $(document).ready(function() {
-            // Mobile menu toggle
-            $('#mobileMenuBtn').click(function() {
-                $(this).toggleClass('active');
-                $('#mobileMenu').toggleClass('active');
-            });
-
-            // Close mobile menu when clicking a link
-            $('#mobileMenu a').click(function() {
-                $('#mobileMenuBtn').removeClass('active');
-                $('#mobileMenu').removeClass('active');
-            });
-
-            // Smooth scroll
-            $('a[href^="#"]').click(function(e) {
-                var target = $(this.hash);
-                if (target.length) {
-                    e.preventDefault();
-                    $('html, body').animate({
-                        scrollTop: target.offset().top - 100
-                    }, 800);
-                }
-            });
-        });
-    </script>
+    <script src="../public/assets/js/dashboard.js"></script>
 </body>
 </html>

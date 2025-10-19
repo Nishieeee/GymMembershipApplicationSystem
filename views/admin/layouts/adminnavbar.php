@@ -1,15 +1,4 @@
-<?php
-include_once "./../App/models/User.php";
-if(session_status() == PHP_SESSION_NONE) {
-    session_set_cookie_params(['path' => "/"]);
-    session_start();
-}
-$userobj = new User();
 
-$me = $userobj->getMember($_SESSION['user_id']);
-$user_name = $me['first_name'];
-$user_initial = substr($user_name, 0, 1);
-?>
 
 
 <!DOCTYPE html>
@@ -116,19 +105,20 @@ $user_initial = substr($user_name, 0, 1);
 
                 <!-- Desktop Menu -->
                 <nav class="hidden lg:flex items-center space-x-6">
-                    <a href="../public/index.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Home</a>
-                    <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Classes</a>
-                    <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">My Payments</a>
-                    <a href="profile.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Profile</a>
+                    <a href="../../public/index.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Home</a>
+                    <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Members</a>
+                    <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Payments</a>
+                    <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Plans</a>
+                    <a href="profile.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Reports</a>
                     
                 </nav>
 
                 <!-- User Menu & Mobile Hamburger -->
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex items-center space-x-3">
-                        <span class="text-white font-medium"><?= $user_name ?></span>
+                        <span class="text-white font-medium">admin</span>
                         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                            <?= $user_initial ?>
+                            A
                         </div>
                     </div>
                     
@@ -152,9 +142,6 @@ $user_initial = substr($user_name, 0, 1);
                             </a>
                             <a href="settings.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">
                                 <span class="inline-block mr-2"></span> Settings
-                            </a>
-                            <a href="billing.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">
-                                <span class="inline-block mr-2"></span> Billing
                             </a>
                             <hr class="border-gray-600">
                             <a href="../views/auth/logout.php" class="block px-4 py-3 text-red-400 hover:bg-gray-700 rounded-b-lg transition-colors">

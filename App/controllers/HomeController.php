@@ -3,17 +3,16 @@
     require_once __DIR__ . "/../models/Plan.php";
     require_once __DIR__ . "/../config/Database.php";
 
-    class PlanController extends Controller {
 
-        public function viewPlans() {
+    class HomeController extends Controller {
+
+
+        public function index() {
             $planModel = new Plan();
-            $plans = $planModel->getAllActivePlans();
-            
-            $this->view('plans', [
+            $plans = $planModel->getAllPlans();
+            $this->view('landingpage', [
                 'plans' => $plans,
             ]);
         }
     }
-
-
 ?>

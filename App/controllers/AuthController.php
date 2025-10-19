@@ -10,10 +10,10 @@ session_start();
 
         public function Login($email, $password) {
             $user = $this->userModel->findByEmail($email);
-
             if($user && $password == $user['password']) {              
                 $_SESSION['user_id'] = $user['user_id'];             
                 $_SESSION['role'] = $user['role'];
+
                 return true;
             }
             return false;

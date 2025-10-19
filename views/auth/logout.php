@@ -7,6 +7,6 @@ $user = new User();
 $Auth = new AuthController($user);
 
 $Auth->logout();
-header("location: ../../public/index/php");
+header("location: ../../public/index.php");
 
 ?>
