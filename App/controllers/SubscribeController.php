@@ -13,6 +13,7 @@
 
 
             $subscriptionDetails = [
+                "subscription_id" => "",
                 "user_id" => "",
                 "plan_id" => "",
                 "start_date" => "",
@@ -38,14 +39,31 @@
                     $subscriptionError['plan_id'] = "Please Select a plan.";
                 }
 
-             
-                if(empty(array_filter($subscriptionError))) {
-                    if($subscribe->subscripePlan($subscriptionDetails)) {
-                        header("location: index.php?controller=Dashboard&action=member");
-                        //also success pages
+                //check if user is already subscribe to the plan
+                $userCurrentPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']);
+                $subscriptionDetails['subscription_id'] = $userCurrentPlan['subscription_id'];
+                echo $subscriptionDetails['subscription_id'];
+                if($userCurrentPlan) {
+                    //show modal to user saying that if he agrees his old plan will be overwritten
+                    
+                    if(empty(array_filter($subscriptionError))) {
+                        if($subscribe->subscripePlan($subscriptionDetails)) {
+                            header("location: index.php?controller=Dashboard&action=member");
+                            //also success pages
+                        }
+                    } else {
+                        //create error pages
                     }
+
                 } else {
-                    //create error pages
+                    if(empty(array_filter($subscriptionError))) {
+                        if($subscribe->subscripePlan($subscriptionDetails)) {
+                            header("location: index.php?controller=Dashboard&action=member");
+                            //also success pages
+                        }
+                    } else {
+                        //create error pages
+                    }
                 }
             }
         }

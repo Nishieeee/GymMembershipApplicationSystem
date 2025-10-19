@@ -437,7 +437,7 @@
     </main>
 
     <!-- Subscription Modal -->
-    <div id="subscriptionModal" class="<?= $openModal ?? 'show'?> modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div id="subscriptionModal" class="<?= $openModal ? 'show' : ''?> modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-md w-full border border-gray-700">
             <button class="modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
             
