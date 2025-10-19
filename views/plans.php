@@ -1,5 +1,4 @@
 <?php 
-
     // Sample plan features - customize based on your database
     $plan_features = [
         1 => [
@@ -438,7 +437,7 @@
     </main>
 
     <!-- Subscription Modal -->
-    <div id="subscriptionModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div id="subscriptionModal" class="<?= $openModal ?? 'show'?> modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-md w-full border border-gray-700">
             <button class="modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
             
@@ -452,7 +451,7 @@
             </div>
 
             <!-- Subscription Form -->
-            <form id="subscriptionForm" class="space-y-4">
+            <form id="subscriptionForm" class="space-y-4" action="index.php?controller=Subscribe&action=Subscribe" method="POST">
                 <input type="hidden" id="modal_plan_id" name="plan_id">
 
                 <div class="flex items-start">
@@ -468,9 +467,8 @@
                     <button type="button" class="modal-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
                         Cancel
                     </button>
-                    <button type="submit" id="submitBtn" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
-                        Confirm Subscription
-                    </button>
+                    <input type="submit" value="Confirm Subscription" id="submitBtn" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                        
                 </div>
             </form>
         </div>
