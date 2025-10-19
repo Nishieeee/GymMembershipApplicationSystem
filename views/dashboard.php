@@ -40,7 +40,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GYMAZING! | Dashboard</title>
+    <title>Gymazing! | Dashboard</title>
     <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
     <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
@@ -230,7 +230,7 @@
                             </div>
                         </div>
                         <button class="mt-6 w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300">
-                            <a href="plans.php"><?=  isset($userPlan) ? "Upgrade Plan" : "Subscribe" ?></a>
+                            <a href="index.php?controller=Plan&action=viewPlans"><?=  isset($userPlan) ? "Upgrade Plan" : "Subscribe" ?></a>
                         </button>
                     </div>
 
