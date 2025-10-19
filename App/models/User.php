@@ -26,6 +26,17 @@
                 return null;
             }
         }
+        public function displayAllUsers() {
+            $sql = "SELECT CONCAT(m.first_name, ' ', m.last_name) as name, m.email, m.created_at, p.plan_name, s.end_date, s.status FROM members m LEFT JOIN subscriptions s on s.user_id = m.user_id LEFT JOIN membership_plans p ON p.plan_id = s.plan_id ORDER BY m.created_at ASC";
+
+            $query = $this->connect()->prepare($sql);
+
+            if($query->execute()) {
+                return $query->fetchAll();
+            } else {
+                return null;
+            }
+        }
         public function findByEmail($email) {
             $sql = "SELECT user_id, role, email, password FROM members WHERE email = :email";
 

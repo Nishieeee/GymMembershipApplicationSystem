@@ -1,15 +1,4 @@
-<?php
-include_once "../../App/models/User.php";
-if(session_status() == PHP_SESSION_NONE) {
-    session_set_cookie_params(['path' => "/"]);
-    session_start();
-}
-$userobj = new User();
 
-$me = $userobj->getMember($_SESSION['user_id']);
-$user_name = $me['first_name'];
-$user_initial = substr($user_name, 0, 1);
-?>
 
 
 <!DOCTYPE html>
@@ -127,9 +116,9 @@ $user_initial = substr($user_name, 0, 1);
                 <!-- User Menu & Mobile Hamburger -->
                 <div class="flex items-center space-x-4">
                     <div class="hidden md:flex items-center space-x-3">
-                        <span class="text-white font-medium"><?= $user_name ?></span>
+                        <span class="text-white font-medium">admin</span>
                         <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white font-bold shadow-lg">
-                            <?= $user_initial ?>
+                            A
                         </div>
                     </div>
                     

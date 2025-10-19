@@ -133,7 +133,7 @@
                                     <a href="../views/auth/logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>    
                                 <?php } else if($_SESSION['role'] == 'admin') { ?>
                                     <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
-                                    <a href="../views/dashboard.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
+                                    <a href="../views/admin/adminDashboard.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
                                     <a href="../views/auth/logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>
                                 <?php } ?>
                             </div>

@@ -1,9 +1,4 @@
 <?php 
-    session_start();
-    include_once "../App/models/Plan.php";
-    
-    $planObj = new Plan();
-    $plans = $planObj->getAllPlans();
 
     // Sample plan features - customize based on your database
     $plan_features = [
@@ -213,7 +208,7 @@
 </head>
 <body class="gradient-bg min-h-screen">
     
-    <?php include_once __DIR__ . "/layouts/navbar.php" ?>
+    
 
     <!-- Alerts Container -->
     <div id="alertContainer" class="fixed top-24 right-4 z-40 space-y-4"></div>

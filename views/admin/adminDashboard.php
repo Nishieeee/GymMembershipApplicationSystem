@@ -1,99 +1,7 @@
-<?php 
+<?php
+$user_name = $members['first_name'];
+$user_initial = substr($user_name, 0, 1);
 
-    include_once "../../App/controllers/adminController.php";
-    include_once "../../App/models/User.php";
-    include_once "../../App/models/Plan.php";
-    $user = new User();
-    $plan = new Plan();
-    $admin = new Admin($user, $plan);
-
-    if(!$_SESSION['role'] == 'admin') {
-        header("location: /auth/login.php");
-    }
-    // fetch all members from db
-    $members = $admin->displayAllUsers();
-    $plans = $admin->getAllPlans();
-    
-    // for form subsmission
-    $planData = [
-        "plan_name" => "",
-        "description" => "",
-        "duration_months" => "",
-        "price" => "",
-    ];
-    
-    $planErrors = [
-        "plan_name" => "",
-        "description" => "",
-        "duration_months" => "",
-        "price" => "",
-    ];
-    
-    $success = false;
-    
-    if($_SERVER['REQUEST_METHOD'] == 'POST') {
-        $planData['plan_name'] = trim(htmlspecialchars($_POST['plan_name'] ?? ''));
-        $planData['description'] = trim(htmlspecialchars($_POST['description'] ?? ''));
-        $planData['duration_months'] = trim(htmlspecialchars($_POST['duration_months'] ?? ''));
-        $planData['price'] = trim(htmlspecialchars($_POST['price'] ?? ''));
-    
-        // Validate plan_name
-        if(empty($planData['plan_name'])) {
-            $planErrors['plan_name'] = "Plan name is required";
-        } elseif(strlen($planData['plan_name']) < 3) {
-            $planErrors['plan_name'] = "Plan name must be at least 3 characters";
-        } elseif(strlen($planData['plan_name']) > 50) {
-            $planErrors['plan_name'] = "Plan name must not exceed 50 characters";
-        }
-    
-        // Validate description
-        if(empty($planData['description'])) {
-            $planErrors['description'] = "Description is required";
-        } elseif(strlen($planData['description']) < 10) {
-            $planErrors['description'] = "Description must be at least 10 characters";
-        } elseif(strlen($planData['description']) > 500) {
-            $planErrors['description'] = "Description must not exceed 500 characters";
-        }
-    
-        // Validate duration_months
-        if(empty($planData['duration_months'])) {
-            $planErrors['duration_months'] = "Duration is required";
-        } elseif(!is_numeric($planData['duration_months'])) {
-            $planErrors['duration_months'] = "Duration must be a number";
-        } elseif($planData['duration_months'] <= 0) {
-            $planErrors['duration_months'] = "Duration must be greater than 0";
-        } elseif($planData['duration_months'] > 60) {
-            $planErrors['duration_months'] = "Duration must not exceed 60 months";
-        }
-    
-        // Validate price
-        if(empty($planData['price'])) {
-            $planErrors['price'] = "Price is required";
-        } elseif(!is_numeric($planData['price'])) {
-            $planErrors['price'] = "Price must be a number";
-        } elseif($planData['price'] < 0) {
-            $planErrors['price'] = "Price cannot be negative";
-        } elseif($planData['price'] > 9999.99) {
-            $planErrors['price'] = "Price exceeds maximum allowed";
-        }
-    
-        if(empty(array_filter($planErrors))) {
-            $admin->addPlan($planData);
-
-            //clear data form
-            $planData = [
-                "plan_name" => "",
-                "description" => "",
-                "duration_months" => "",
-                "price" => "",
-            ];
-        }
-    }
-
-
-    function activeMembers($plan_id) {
-        //NOTE: do this ahahha
-    }
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -101,8 +9,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Gymazing</title>
-    <script src="../../public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="../../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <script src= "/GymMembershipSystem/public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="/GymMembershipSystem/public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
@@ -275,7 +183,7 @@
 <body class="gradient-bg min-h-screen">
     
     <!-- Admin Navbar -->
-    <?php include_once "./../layouts/adminnavbar.php" ?>
+    <?php include __DIR__ . "/layouts/adminnavbar.php" ?>
 
     <!--  Alerts Container -->
     <div id="alertContainer" class="fixed top-24 right-4 z-40 space-y-4"></div>
@@ -383,10 +291,10 @@
                                             </div>
                                         </td>
                                         <td class="px-6 py-4 text-gray-300"><?= $member['email'] ?></td>
-                                        <td class="px-6 py-4"><?= $member['plan_name'] ?></td>
+                                        <td class="px-6 py-4"><?= isset($member['plan_name']) ? $member['plan_name'] : 'No Active Plan' ?></td>
                                         <td class="px-6 py-4 text-gray-300"><?= $member['created_at'] ?></td>
                                         <td class="px-6 py-4">
-                                            <span class="status-badge status-active"><?= $member['status'] ?></span>
+                                            <span class="status-badge <?= isset($member['status']) ? 'status-active' : 'status-inactive'?>"><?=isset($member['status']) ?  $member['status'] : 'inactive' ?></span>
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             <button class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
@@ -452,19 +360,17 @@
 
 
     </main>
-    <!-- Admin Navbar -->
-    <?php include_once "./../layouts/footer.php" ?>
     <!-- Add/Edit Plan Modal -->
-    <div id="planModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+    <div id="planModal" class="<?= $openModal ? "show" : ""?> modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
             <button class="modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
             
             <h3 class="text-2xl font-bold text-white mb-6">Add New Plan</h3>
             
-            <form id="planForm" class="space-y-4" method="post">
+            <form id="planForm" class="space-y-4" action="index.php?controller=Admin&action=addPlan" method="POST">
                 <div>
                     <label class="block text-white font-semibold mb-2">Plan Name</label>
-                    <input type="text" name="plan_name" required 
+                    <input type="text" name="plan_name" 
                     class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="e.g., Platinum" value="<?= isset($planData['plan_name']) ? htmlspecialchars($planData['plan_name']) : '' ?>">
                     <p color="red"><?= $planErrors['plan_name'] ?? '' ?></p>
@@ -575,7 +481,7 @@
         // ===== PLAN ACTIONS =====
         $(document).on('click', '.btn-edit-plan', function() {
                 showAlert('Edit plan functionality - Add your implementation', 'info');
-            });
+        });
 
         $(document).on('click', '.btn-delete-plan', function() {
             const planCard = $(this).closest('.plan-card');

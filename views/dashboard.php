@@ -1,19 +1,4 @@
 <?php 
-    session_start();
-    include_once "../App/models/User.php";
-    include_once "../App/models/Plan.php";
-    $userObj = new User();
-    $planObj = new Plan();
-
-    if(isset($_SESSION['user_id'])) {
-        $user_id = $_SESSION['user_id'];
-        $userInfo = $userObj->getMember($user_id);
-        $userPlan = $planObj->getUserPlan($user_id);
-    } else {
-        header("location: ./auth/login.php");
-    }
-
-    //user data (needs work)
      
     $user = [
         "name" => "",
@@ -55,7 +40,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Gymazing</title>
+    <title>GYMAZING! | Dashboard</title>
     <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
     <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
@@ -159,7 +144,7 @@
 </head>
 <body class="gradient-bg min-h-screen">
     
-    <?php include_once __DIR__ . "/layouts/navbar.php" ?>
+    <?php include __DIR__ . "/layouts/navbar.php" ?>
 
     <!-- Main Content -->
     <main class="pt-24 pb-12">
@@ -300,13 +285,14 @@
                             <span>Achievements</span>
                         </h2>
                         <div class="grid grid-cols-2 gap-4">
-                            <?php foreach ($achievements as $achievement) { ?>
+                            <?php if(isset($userPlan)) { foreach ($achievements as $achievement) { ?>
                                 <div class="achievement-badge bg-gray-800 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-700">
                                     <div class="text-3xl mb-2"><?= $achievement['icon'] ?></div>
                                     <p class="text-white text-sm font-semibold"><?= $achievement['name'] ?></p>
                                     <p class="text-gray-400 text-xs mt-1"><?= date('M d', strtotime($achievement['date'])) ?></p>
                                 </div>
-                            <?php } ?>
+                            <?php   }
+                                }?>
                         </div>
                     </div>
 
