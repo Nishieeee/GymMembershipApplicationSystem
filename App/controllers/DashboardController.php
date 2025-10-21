@@ -22,10 +22,34 @@
 
             $user = $userModel->getMember($user_id);
             $userPlan = $planModel->getUserPlan($user_id);
-            $this->view('dashboard', [
-                'userInfo' => $user,
-                'userPlan' => $userPlan,
-            ]);
+            if(isset($userPlan['status'])) {
+                if($userPlan['status'] == "active") {
+                    $this->view('dashboard', [
+                        'userInfo' => $user,
+                        'userPlan' => $userPlan,
+                    ]);
+                } else {
+                    if($userPlan['status'] == "cancelled") {
+                        $userPlan["status"] = "cancelled";
+                        $this->view('dashboard', [
+                            'userInfo' => $user,
+                            'userPlan' => $userPlan,
+                        ]);
+                    } else if($userPlan['status'] == "expire") {
+                        $userPlan["status"]  = "expired";
+                        $this->view('dashboard', [
+                            'userInfo' => $user,
+                            'userPlan' => $userPlan,
+                        ]);
+
+                    }
+                }
+            } else {
+                $this->view('dashboard', [
+                    'userInfo' => $user,
+                    'userPlan' => $userPlan,
+                ]);
+            }
         }
 
         public function cancelSubscription() {

@@ -10,7 +10,6 @@
             $subscribe = new Subscription();
             $planModel = new Plan();
             $paymentModel = new Payment();
-            $plans = $planModel->getAllActivePlans();
             $user_id = $_SESSION['user_id'];
 
             //subscription details
@@ -50,18 +49,43 @@
                     $subscriptionError['plan_id'] = "Please Select a plan.";
                 }
 
-                //check if user is already subscribe to the plan
-                $userCurrentPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']);
-                $subscriptionDetails['subscription_id'] = $userCurrentPlan['subscription_id'];
-                echo $subscriptionDetails['subscription_id'];
+                //check if user is already subscribe to a plan
+                $userCurrentPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']) ?? "";
+                
                 if($userCurrentPlan) {
                     //show modal to user saying that if he agrees his old plan will be overwritten                
                     if(empty(array_filter($subscriptionError))) {
                         if($subscribe->subscripePlan($subscriptionDetails)) {
 
+                            //cancell old plan
+                            if($subscribe->cancelPlan($subscriptionDetails['subscription_id'])) {
+                                $userCurrentPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']);
+                                $userPlan = $planModel->getUserPlan($subscriptionDetails['user_id']);
+
+                                //fill up payment details
+                                $paymentDetails['subscription_id'] = $userCurrentPlan['subscription_id'];
+                                $paymentDetails['amount'] = $userPlan['price'];
+                                $paymentDetails['payment_date'] = $userPlan['end_date'];
+                                $paymentDetails['status'] = "pending";
+                                if($paymentModel->openPayment($paymentDetails)) {
+                                    header("location: index.php?controller=Dashboard&action=member");
+                                    //also success pages
+                                } else {
+                                    echo "Error With Payment";
+                                    //create error pages
+                                }
+                            }
+                            // handle case if cancelling of old plan doesn't work       
+                        }
+                    } else {
+                        //create error pages
+                    }
+                } else {
+                    if(empty(array_filter($subscriptionError))) {
+                        if($subscribe->subscripePlan($subscriptionDetails)) {
                             $userCurrentPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']);
                             $userPlan = $planModel->getUserPlan($subscriptionDetails['user_id']);
-
+                            
                             //fill up payment details
                             $paymentDetails['subscription_id'] = $userCurrentPlan['subscription_id'];
                             $paymentDetails['amount'] = $userPlan['price'];
@@ -74,17 +98,8 @@
                                 echo "Error With Payment";
                                 //create error pages
                             }
-                        }
-                    } else {
-                        //create error pages
-                    }
 
-                } else {
-                    if(empty(array_filter($subscriptionError))) {
-                        if($subscribe->subscripePlan($subscriptionDetails)) {
-                            header("location: index.php?controller=Dashboard&action=member");
-                            //also success pages
-                        }
+                        }   
                     } else {
                         //create error pages
                     }
@@ -93,7 +108,17 @@
         }
 
         public function CancelSubscription() {
+            session_start();
 
+            $subscriptionModel = new Subscription();
+            $userPlan = $subscriptionModel->checkUserCurrentPlan($_SESSION['user_id']);
+            $subscription_id = $userPlan['subscription_id'];
+            echo $subscription_id;
+            if($subscriptionModel->cancelPlan($subscription_id)) {
+                header("location: index.php?controller=Dashboard&action=member");
+            } else {
+                //show error
+            }
         }
     }
 
