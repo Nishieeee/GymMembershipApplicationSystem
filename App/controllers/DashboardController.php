@@ -27,6 +27,10 @@
                 'userPlan' => $userPlan,
             ]);
         }
+
+        public function cancelSubscription() {
+            $this->view('cancelSubscription',[]);
+        } 
         
     }
 ?>

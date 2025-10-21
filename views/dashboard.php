@@ -232,6 +232,10 @@
                         <button class="mt-6 w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300">
                             <a href="index.php?controller=Plan&action=viewPlans"><?=  isset($userPlan) ? "Upgrade Plan" : "Subscribe" ?></a>
                         </button>
+                        <button class="mt-2 w-full px-6 py-3 bg-gray-500/50 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all duration-300">
+                            <a href="index.php?controller=Plan&action=viewPlans">Cancel Plan</a>
+                        </button>
+                        
                     </div>
 
                     <!-- Upcoming Classes -->

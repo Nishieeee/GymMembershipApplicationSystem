@@ -30,7 +30,18 @@
                 return false;
             }
         }
+        public function cancelPlan($subscription_id) {
+            $sql = "UPDATE subscriptions SET plan_id=:plan_id, start_date= :start_date, end_date= :end_date WHERE subscription_id = :subscription_id";
 
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":subscription_id", $subscription_id);
+
+            if($query->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
 
         public function checkUserCurrentPlan($user_id) {
             $sql = "SELECT subscription_id FROM subscriptions WHERE user_id = :user_id";
