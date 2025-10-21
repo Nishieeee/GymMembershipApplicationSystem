@@ -11,7 +11,7 @@
 </head>
 <body>
     <main class="min-h-screen">
-
+        <?= $paymentDetails['subscription_id']?>
     </main>
 </body>
 </html>

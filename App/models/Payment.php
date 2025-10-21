@@ -20,6 +20,19 @@
             }
 
         }
+
+        public function getPaymentDetails($user_id) {
+            $sql = "SELECT * FROM payments WHERE payment_id = 1";
+
+            $query = $this->connect()->prepare($sql);
+
+
+            if($query->execute()) {
+                return $query->fetch();
+            } else {
+                return null;
+            }
+        }
     }
     
 
