@@ -1,6 +1,7 @@
 <?php 
     require_once __DIR__ . "/../Controller.php";
     require_once __DIR__ . "/../models/Subscription.php";
+    require_once __DIR__ . "/../models/User.php";
     require_once __DIR__ . "/../models/Plan.php";
     require_once __DIR__ . "/../models/Payment.php";
 
@@ -71,7 +72,7 @@
                                     header("location: index.php?controller=Dashboard&action=member");
                                     //also success pages
                                 } else {
-                                    echo "Error With Payment";
+                                    $paymentError = "Error with setting up payment";
                                     //create error pages
                                 }
                             }
@@ -111,6 +112,7 @@
             session_start();
 
             $subscriptionModel = new Subscription();
+            
             $userPlan = $subscriptionModel->checkUserCurrentPlan($_SESSION['user_id']);
             $subscription_id = $userPlan['subscription_id'];
             echo $subscription_id;
@@ -118,6 +120,27 @@
                 header("location: index.php?controller=Dashboard&action=member");
             } else {
                 //show error
+            }
+        }
+
+        public function expirePlan() {
+            session_start();
+            $user_id = $_SESSION['user_id'];
+
+            $userModel = new User();
+            $planModel = new Plan();
+
+            $user = $userModel->getMember($user_id);
+            $userPlan = $planModel->getUserPlan($user_id);
+            $subscriptionModel = new Subscription();
+            $userCurrentPlan = $subscriptionModel->checkUserCurrentPlan($_SESSION['user_id']);
+            $subscription_id = $userCurrentPlan['subscription_id'];
+            if($subscriptionModel->expirePlan($subscription_id)) {
+                $userPlan['status'] = 'expired';
+                $this->view('dashboard', [
+                    'userInfo' => $user,
+                    'userPlan' => $userPlan,
+                ]);
             }
         }
     }

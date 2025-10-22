@@ -5,6 +5,7 @@
     require_once __DIR__ . "/../config/Database.php";
     require_once __DIR__ . "/../models/User.php";
     require_once __DIR__ . "/../models/Plan.php";
+    require_once __DIR__ . "/../models/Subscription.php";
 
     class DashboardController extends Controller {
         protected $db;
@@ -22,6 +23,10 @@
 
             $user = $userModel->getMember($user_id);
             $userPlan = $planModel->getUserPlan($user_id);
+            //expire user plan
+            if($userPlan['end_date'] >= date("Y-m-d")) {
+                header("location: index.php?controller=Subscribe&action=expirePlan");
+            }
             if(isset($userPlan['status'])) {
                 if($userPlan['status'] == "active") {
                     $this->view('dashboard', [

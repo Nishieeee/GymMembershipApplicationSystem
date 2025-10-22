@@ -33,6 +33,19 @@
             }
         }
 
+        public function expirePlan($subscription_id) {
+            $sql = "UPDATE subscriptions SET status = 'expired' WHERE subscription_id = :subscription_id";
+
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":subscription_id", $subscription_id);
+
+            if($query->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+
         public function checkUserCurrentPlan($user_id) {
             $sql = "SELECT subscription_id FROM subscriptions WHERE user_id = :user_id AND status = 'active'";
 
