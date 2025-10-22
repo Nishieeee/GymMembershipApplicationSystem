@@ -1,6 +1,5 @@
 <?php 
 
-
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +10,17 @@
 </head>
 <body>
     <main class="min-h-screen">
-        <?= $paymentDetails['subscription_id']?>
+        <section id="current_payment">
+            <?php foreach($paymentDetails as $p) {?>
+                <?= $p['plan_name']?>
+                <?= $p['amount']?>       
+                <?= $p['end_date']?>
+                <?= $p['status']?>
+            <?php }?>
+        </section>
+        <section id="transaction_history">
+
+        </section>
     </main>
 </body>
 </html>

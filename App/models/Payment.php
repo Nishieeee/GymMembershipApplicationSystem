@@ -22,13 +22,15 @@
         }
 
         public function getPaymentDetails($user_id) {
-            $sql = "SELECT * FROM payments WHERE payment_id = 1";
+            $sql = "SELECT s.subscription_id, mp.plan_name, s.start_date, s.end_date, p.amount, p.payment_date, p.status FROM subscriptions s JOIN membership_plans mp ON mp.plan_id = s.plan_id
+            JOIN payments p ON p.subscription_id = s.subscription_id
+            WHERE s.user_id = :user_id ORDER BY status DESC";
 
             $query = $this->connect()->prepare($sql);
-
+            $query->bindParam(":user_id", $user_id);
 
             if($query->execute()) {
-                return $query->fetch();
+                return $query->fetchAll();
             } else {
                 return null;
             }
