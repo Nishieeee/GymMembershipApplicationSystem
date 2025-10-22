@@ -1,5 +1,4 @@
 <?php 
-    // Sample plan features - customize based on your database
     $plan_features = [
         1 => [
             "Unlimited gym access",

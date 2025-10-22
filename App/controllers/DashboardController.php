@@ -24,7 +24,8 @@
             $user = $userModel->getMember($user_id);
             $userPlan = $planModel->getUserPlan($user_id);
             //expire user plan
-            if($userPlan['end_date'] >= date("Y-m-d")) {
+            if(isset($userPlan) && $userPlan['end_date'] <= date("Y-m-d")) {
+                echo $userPlan['end_date'];
                 header("location: index.php?controller=Subscribe&action=expirePlan");
             }
             if(isset($userPlan['status'])) {

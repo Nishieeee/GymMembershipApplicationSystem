@@ -141,6 +141,11 @@
                     'userInfo' => $user,
                     'userPlan' => $userPlan,
                 ]);
+            } else {
+                $this->view('dashboard', [
+                    'userInfo' => $user,
+                    'userPlan' => $userPlan,
+                ]);
             }
         }
     }
