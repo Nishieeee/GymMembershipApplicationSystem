@@ -16,8 +16,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gymazing!</title>
-    <script src="../../public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="../../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
         /* Smooth scroll behavior */
         html {
@@ -129,11 +129,11 @@
                                 <?php $_SESSION['role'] == ""?>
                                 <?php if($_SESSION['role'] == 'member') { ?>
                                     <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
-                                    <a href="../views/dashboard.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
+                                    <a href="index.php?controller=Dashboard&action=member" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
                                     <a href="../views/auth/logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>    
                                 <?php } else if($_SESSION['role'] == 'admin') { ?>
                                     <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
-                                    <a href="../views/admin/adminDashboard.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
+                                    <a href="index.php?controller=Admin&action=dashboard" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
                                     <a href="../views/auth/logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>
                                 <?php } ?>
                             </div>

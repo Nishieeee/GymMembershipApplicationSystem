@@ -40,7 +40,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GYMAZING! | Dashboard</title>
+    <title>Gymazing! | Dashboard</title>
     <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
     <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
@@ -155,7 +155,7 @@
                     <h1 class="text-3xl lg:text-4xl font-bold mb-2">Welcome back, <?= $user['name'] ?>! 👋</h1>
                     <p class="text-blue-100 text-lg">
                         <span class="font-semibold">Status:</span> 
-                        <span class="inline-block px-3 py-1 <?=  isset($userPlan) ? "bg-green-500" : "bg-gray-800" ?>  rounded-full text-sm font-bold ml-2">
+                        <span class="inline-block px-3 py-1 <?=  $userPlan['status'] == 'active' ? 'bg-green-500' : 'bg-red-500' ?>  rounded-full text-sm font-bold ml-2">
                             <?= isset($userPlan) ? $user['status'] : "No Active Plan"; ?></span> 
                     </p>
                     <?php if(isset($userPlan)) {?>
@@ -197,7 +197,7 @@
                                 ?>
                                     <p class="text-gray-400 text-sm mb-1">Plan Type</p>
                                     <p class="text-2xl font-bold text-white"><?= $user['plan_name'] ?></p>
-                                    <p class="text-green-400 text-sm mt-2">✓ Active</p>
+                                    <p class="<?= $userPlan['status'] == 'active' ? 'text-green-500' : 'text-red-500' ?> text-lg mt-2"><?= $userPlan['status'] ?></p>
                                 <?php } else {?>
                                     <p class="text-gray-400 text-sm mb-1">No Active Plan</p>   
                                 <?php }?>
@@ -230,8 +230,12 @@
                             </div>
                         </div>
                         <button class="mt-6 w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300">
-                            <a href="plans.php"><?=  isset($userPlan) ? "Upgrade Plan" : "Subscribe" ?></a>
+                            <a href="index.php?controller=Plan&action=viewPlans"><?= isset($userPlan['status']) ? "Upgrade Plan" : "Subscribe" ?></a>
                         </button>
+                        <button class="mt-2 w-full px-6 py-3 bg-gray-500/50 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all duration-300">
+                            <a href="index.php?controller=Subscribe&action=CancelSubscription">Cancel Plan</a>
+                        </button>
+                        
                     </div>
 
                     <!-- Upcoming Classes -->

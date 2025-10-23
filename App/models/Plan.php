@@ -30,9 +30,9 @@
             }
         }
         public function getUserPlan($user_id) {
-            $sql = "SELECT p.plan_name, s.end_date, s.status FROM membership_plans p
+            $sql = "SELECT p.plan_name, p.price, s.end_date, s.status FROM membership_plans p
             join subscriptions s on s.plan_id = p.plan_id
-            where s.user_id = :user_id";
+            where s.user_id = :user_id AND s.status = 'active'";
 
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":user_id", $user_id);
