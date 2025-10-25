@@ -186,13 +186,11 @@
         </div>
     </header>
 
-
-
     <script>
         $(document).ready(function() {
             $('#account').click((e) => {
                 e.stopPropagation();
-                $('#account_menu').toggleClass('hidden');
+                $('#account_menu').toggleClass('hidden opacity-100');
             });
             // Mobile menu toggle
             $('#mobileMenuBtn').click(function() {

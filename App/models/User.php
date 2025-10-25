@@ -27,7 +27,7 @@
             }
         }
         public function displayAllUsers() {
-            $sql = "SELECT CONCAT(m.first_name, ' ', m.last_name) as name, m.email, m.created_at, p.plan_name, s.end_date, s.status FROM members m LEFT JOIN subscriptions s on s.user_id = m.user_id LEFT JOIN membership_plans p ON p.plan_id = s.plan_id ORDER BY m.created_at ASC";
+            $sql = "SELECT CONCAT(m.first_name, ' ', m.last_name) as name, m.email, m.created_at, p.plan_name, s.end_date, m.status FROM members m LEFT JOIN subscriptions s on s.user_id = m.user_id LEFT JOIN membership_plans p ON p.plan_id = s.plan_id WHERE role != 'admin' GROUP BY m.user_id  ORDER BY m.created_at DESC";
 
             $query = $this->connect()->prepare($sql);
 

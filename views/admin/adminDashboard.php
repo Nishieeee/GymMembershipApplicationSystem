@@ -242,6 +242,14 @@ $user_initial = substr($user_name, 0, 1);
             <!-- members tab -->
             <div id="members" class="tab-content active bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
                 <div class="p-6">
+                    <div class="mb-6 flex flex-col sm:flex-row gap-4">
+                        <button id="btnAddMember" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                            +   Add Member
+                        </button>
+                        <button id="btnAddWalkIn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                            +   Add Walk-in Member
+                        </button>
+                    </div>
                     <!-- search container -->
                     <div class="mb-6 flex flex-col sm:flex-row gap-4">
                         <div class="flex-1 relative">
@@ -294,7 +302,7 @@ $user_initial = substr($user_name, 0, 1);
                                         <td class="px-6 py-4"><?= isset($member['plan_name']) ? $member['plan_name'] : 'No Active Plan' ?></td>
                                         <td class="px-6 py-4 text-gray-300"><?= $member['created_at'] ?></td>
                                         <td class="px-6 py-4">
-                                            <span class="status-badge <?= isset($member['status']) ? 'status-active' : 'status-inactive'?>"><?=isset($member['status']) ?  $member['status'] : 'inactive' ?></span>
+                                            <span class="status-badge <?= $member['status'] == 'active' ? 'status-active' : 'status-inactive'?>"><?=isset($member['status']) ?  $member['status'] : 'inactive' ?></span>
                                         </td>
                                         <td class="px-6 py-4 text-center">
                                             <button class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
@@ -439,6 +447,213 @@ $user_initial = substr($user_name, 0, 1);
             </div>
         </div>
     </div>
+    <!-- Add Member Modal -->
+    <div id="addMemberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-2xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <button class="add-member-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">Add New Member</h3>
+            
+            <form id="addMemberForm" method="POST" action="add_member.php" class="space-y-4">
+                <!-- Personal Information -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Personal Information</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">First Name *</label>
+                            <input type="text" name="first_name" required 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="John">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Last Name *</label>
+                            <input type="text" name="last_name" required 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="Doe">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Email *</label>
+                        <input type="email" name="email" required 
+                               class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="john.doe@example.com">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Phone Number *</label>
+                            <input type="tel" name="phone" required 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="+63 9XX XXX XXXX">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Date of Birth</label>
+                            <input type="date" name="date_of_birth" 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Address</label>
+                        <textarea name="address" rows="2" 
+                                  class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                  placeholder="Enter full address"></textarea>
+                    </div>
+                </div>
+
+                <!-- Membership Details -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Membership Details</h4>
+                    
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Select Plan *</label>
+                        <select name="plan_id" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Choose a plan</option>
+                            <!-- Plans will be populated from database -->
+                        </select>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Start Date *</label>
+                        <input type="date" name="start_date" required 
+                               class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="mt-4 flex items-center">
+                        <input type="checkbox" id="startTrial" name="start_trial" class="mr-3">
+                        <label for="startTrial" class="text-white">Start with 3-day free trial</label>
+                    </div>
+                </div>
+
+                <!-- Account Security -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Account Security</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Password *</label>
+                            <input type="password" name="password" required 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="Min. 8 characters">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Confirm Password *</label>
+                            <input type="password" name="confirm_password" required 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="Re-enter password">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="addMemberMessage" class="hidden"></div>
+
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" class="add-member-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnSubmitMember" class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
+                        Add Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Add Walk-in Member Modal -->
+    <div id="addWalkInModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-3xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <button class="walkin-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">🚶 Add Walk-in Member</h3>
+            
+            <div class="bg-purple-900 bg-opacity-30 border border-purple-600 rounded-lg p-4 mb-6">
+                <p class="text-purple-200 text-sm">
+                    <strong>Note:</strong> Walk-in members pay per session and don't require a subscription plan. They have limited access to facilities.
+                </p>
+            </div>
+            
+            <form id="addWalkInForm" method="POST" action="add_walkin.php" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Column -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Full Name *</label>
+                            <input type="text" name="full_name" required 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="John Doe">
+                        </div>
+        
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Contact Number *</label>
+                            <input type="tel" name="contact" required 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="+63 9XX XXX XXXX">
+                        </div>
+        
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Email (Optional)</label>
+                            <input type="email" name="email" 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="john@example.com">
+                        </div>
+        
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Session Type *</label>
+                            <select name="session_type" required 
+                                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">Select session type</option>
+                                <option value="single">Single Session - ₱200</option>
+                                <option value="day_pass">Day Pass - ₱500</option>
+                                <option value="weekend">Weekend Pass - ₱800</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Visit Date *</label>
+                            <input type="date" name="visit_date" required 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+        
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Payment Method *</label>
+                            <select name="payment_method" required 
+                                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">Select payment method</option>
+                                <option value="cash">Cash</option>
+                                <option value="card">Credit/Debit Card</option>
+                                <option value="gcash">GCash</option>
+                                <option value="paymaya">PayMaya</option>
+                            </select>
+                        </div>
+        
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Notes (Optional)</label>
+                            <textarea name="notes" rows="6" 
+                                      class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                                      placeholder="Any special notes or requirements"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="walkInMessage" class="hidden"></div>
+
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" class="walkin-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnSubmitWalkIn" class="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
+                        Register Walk-in
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
         $(document).ready(function() {
             // ===== TAB SWITCHING =====
@@ -497,6 +712,98 @@ $user_initial = substr($user_name, 0, 1);
             $('#memberModal').removeClass('show');
             $('body').css('overflow', 'auto');
         });
+        // ===== ADD MEMBER MODAL =====
+        $('#btnAddMember').on('click', function() {
+            $('#addMemberForm')[0].reset();
+            $('#addMemberMessage').addClass('hidden');
+            $('#addMemberModal').addClass('show');
+            $('body').css('overflow', 'hidden');
+        });
+
+        // Close add member modal
+        $('.add-member-close, .add-member-cancel').on('click', function() {
+            $('#addMemberModal').removeClass('show');
+            $('body').css('overflow', 'auto');
+        });
+
+        // ===== ADD WALK-IN MODAL =====
+        $('#btnAddWalkIn').on('click', function() {
+            $('#addWalkInForm')[0].reset();
+            $('#walkInMessage').addClass('hidden');
+            // Set today's date as default
+            $('input[name="visit_date"]').val(new Date().toISOString().split('T')[0]);
+            $('#addWalkInModal').addClass('show');
+            $('body').css('overflow', 'hidden');
+        });
+
+        // Close walk-in modal
+        $('.walkin-close, .walkin-cancel').on('click', function() {
+            $('#addWalkInModal').removeClass('show');
+            $('body').css('overflow', 'auto');
+        });
+
+        // Close modals when clicking backdrop
+        $('#addMemberModal, #addWalkInModal').on('click', function(e) {
+            if ($(e.target).is(this)) {
+                $(this).removeClass('show');
+                $('body').css('overflow', 'auto');
+            }
+        });
+
+        // ===== ADD MEMBER FORM VALIDATION =====
+        $('#addMemberForm').on('submit', function(e) {
+            const password = $('input[name="password"]').val();
+            const confirmPassword = $('input[name="confirm_password"]').val();
+
+            if(password.length < 8) {
+                e.preventDefault();
+                showAddMemberMessage('Password must be at least 8 characters', 'error');
+                return false;
+            }
+
+            if (password !== confirmPassword) {
+                e.preventDefault();
+                showAddMemberMessage('Passwords do not match', 'error');
+                return false;
+            }
+
+         // If validation passes, form will submit normally
+        });
+
+        // ===== HELPER FUNCTIONS =====
+        function showAddMemberMessage(message, type) {
+            const messageDiv = $('#addMemberMessage');
+            const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+                
+            messageDiv.html(`
+                <div class="p-3 rounded-lg ${bgColor} text-white text-sm">
+                    ${message}
+                </div>
+            `).removeClass('hidden');
+
+            if (type !== 'error') {
+                setTimeout(() => {
+                    messageDiv.addClass('hidden');
+                }, 3000);
+            }
+        }
+
+        function showWalkInMessage(message, type) {
+            const messageDiv = $('#walkInMessage');
+            const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+                
+            messageDiv.html(`
+                <div class="p-3 rounded-lg ${bgColor} text-white text-sm">
+                  ${message}
+                </div>
+            `).removeClass('hidden');
+
+            if(type !== 'error') {
+                setTimeout(() => {
+                    messageDiv.addClass('hidden');
+                }, 3000);
+            }
+        }
     </script>
 </body>
 </html>
