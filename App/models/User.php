@@ -37,6 +37,21 @@
                 return null;
             }
         }
+
+        public function displayAllWalkInMembers() {
+            $sql = "SELECT CONCAT(first_name, ' ', last_name) as name, email, contact_no, session_type, payment_amount, visit_time, end_date FROM walk_ins";
+
+            $query = $this->connect()->prepare($sql);
+
+            if($query->execute()) {
+                return $query->fetchAll();
+            } else {
+                return null;
+            }
+
+
+        }
+
         public function findByEmail($email) {
             $sql = "SELECT user_id, role, email, password FROM members WHERE email = :email";
 
@@ -62,6 +77,7 @@
                 return null;
             }
         }
+
         public function getMemberSubcription($user_id) {
             $sql = "select CONCAT(m.first_name, ' ', m.last_name) as name, m.phone_no, m.created_at, p.plan_name, s.end_date, s.status from members m
             join subscriptions s on s.user_id = m.user_id

@@ -146,7 +146,7 @@ $user_initial = substr($user_name, 0, 1);
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                             </svg>
                         </button>
-                        <div id="acount_menu" class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl transition-all duration-200 border border-gray-700">
+                        <div id="acount_menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl transition-all duration-200 border border-gray-700">
                             <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-t-lg transition-colors">
                                 <span class="inline-block mr-2"></span> Edit Profile
                             </a>

@@ -16,9 +16,11 @@
             $plan = new Plan();
 
             $members = $user->displayAllUsers();
+            $walk_ins = $user->displayAllWalkInMembers();
             $plans = $plan->getAllPlans();
 
             $this->adminView('dashboard', [
+                'walk_ins' => $walk_ins,
                 'members' => $members,
                 'plans' => $plans,
             ]);
