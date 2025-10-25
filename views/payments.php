@@ -1,33 +1,5 @@
 <?php 
-    // $paymentDetails = [
-    //     [
-    //         'subscription_id' => 'SUB-001',
-    //         'plan_name' => 'Premium',
-    //         'start_date' => '2024-10-01',
-    //         'end_date' => '2024-11-01',
-    //         'amount' => 2999,
-    //         'payment_date' => '2024-10-23',
-    //         'status' => 'pending'
-    //     ],
-    //     [
-    //         'subscription_id' => 'SUB-002',
-    //         'plan_name' => 'Premium',
-    //         'start_date' => '2024-09-01',
-    //         'end_date' => '2024-10-01',
-    //         'amount' => 2999,
-    //         'payment_date' => '2024-09-15',
-    //         'status' => 'paid'
-    //     ],
-    //     [
-    //         'subscription_id' => 'SUB-003',
-    //         'plan_name' => 'Standard',
-    //         'start_date' => '2024-08-01',
-    //         'end_date' => '2024-09-01',
-    //         'amount' => 1499,
-    //         'payment_date' => '2024-08-20',
-    //         'status' => 'paid'
-    //     ]
-    // ];
+   
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -75,7 +47,7 @@
             display: inline-block;
             padding: 0.25rem 0.75rem;
             border-radius: 9999px;
-            
+            font-size: 0.75rem;
             font-weight: 600;
         }
 
@@ -172,38 +144,44 @@
 
             <!-- Current Plan Section -->
             <section id="current_payment" class="mb-12 fadeIn">
-                            
-                <?php if ($paymentDetails[0]): ?>
+                <?php
+                    $currentPlan = array_filter($paymentDetails, function($value) {
+                        return $value['status'] == 'pending';
+                    });
+                    $currentPlan = reset($currentPlan); // Get first element
+                ?>
+                
+                <?php if ($currentPlan): ?>
                     <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-8 lg:p-10 shadow-2xl border border-blue-500">
                         <div class="flex items-start justify-between mb-6">
                             <div>
-                                <span class="status-badge text-lg <?= $paymentDetails[0]['status'] == 'paid' ? 'status-paid' : 'status-pending' ?> pulse-animation mb-3 inline-block"><?= $paymentDetails[0]['status'] ?></span>
-                                <h2 class="text-3xl font-bold text-white mb-2">Current Plan: <?= $paymentDetails[0]['plan_name'] ?></h2>
-                                <p class="text-blue-100">Subscription ID: <?= $paymentDetails[0]['subscription_id'] ?></p>
+                                <span class="status-badge status-pending pulse-animation mb-3 inline-block">Payment Due</span>
+                                <h2 class="text-3xl font-bold text-white mb-2">Current Plan: <?= $currentPlan['plan_name'] ?></h2>
+                                <p class="text-blue-100">Subscription ID: <?= $currentPlan['subscription_id'] ?></p>
                             </div>
                             <div class="text-right">
                                 <p class="text-blue-100 text-sm mb-1">Amount Due</p>
-                                <p class="text-5xl font-bold text-white">₱<?= number_format($paymentDetails[0]['amount']) ?></p>
+                                <p class="text-5xl font-bold text-white">₱<?= number_format($currentPlan['amount']) ?></p>
                             </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
-                                <p class="text-blue-500 text-sm mb-1">Start Date</p>
-                                <p class="text-blue-500 font-semibold"><?= date('M d, Y', strtotime($paymentDetails[0]['start_date'])) ?></p>
+                                <p class="text-blue-600 text-sm mb-1">Start Date</p>
+                                <p class="text-blue-600 font-semibold"><?= date('M d, Y', strtotime($currentPlan['start_date'])) ?></p>
                             </div>
                             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
-                                <p class="text-blue-500 text-sm mb-1">End Date</p>
-                                <p class="text-blue-500 font-semibold"><?= date('M d, Y', strtotime($paymentDetails[0]['end_date'])) ?></p>
+                                <p class="text-blue-600 text-sm mb-1">End Date</p>
+                                <p class="text-blue-600 font-semibold"><?= date('M d, Y', strtotime($currentPlan['end_date'])) ?></p>
                             </div>
                             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
-                                <p class="text-blue-500 text-sm mb-1">Due Date</p>
-                                <p class="text-blue-500 font-semibold"><?= date('M d, Y', strtotime($paymentDetails[0]['payment_date'])) ?></p>
+                                <p class="text-blue-600 text-sm mb-1">Due Date</p>
+                                <p class="text-blue-600 font-semibold"><?= date('M d, Y', strtotime($currentPlan['payment_date'])) ?></p>
                             </div>
                         </div>
 
                         <div class="flex flex-col sm:flex-row gap-4">
-                            <button id="btnPayNow" data-subscription-id="<?= $paymentDetails[0]['subscription_id'] ?>" data-amount="<?= $paymentDetails[0]['amount'] ?>" data-plan="<?= $paymentDetails[0]['plan_name'] ?>"
+                            <button id="btnPayNow" data-subscription-id="<?= $currentPlan['subscription_id'] ?>" data-amount="<?= $currentPlan['amount'] ?>" data-plan="<?= $currentPlan['plan_name'] ?>"
                                     class="flex-1 px-8 py-4 bg-white hover:bg-gray-100 text-blue-600 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
                                 💳 Pay Now
                             </button>
@@ -384,17 +362,21 @@
             <div class="mb-6">
                 <label class="block text-white font-semibold mb-3">Select Payment Method</label>
                 <div class="space-y-3">
-                    <label class="flex items-center p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors border border-gray-600">
+                    <label class="flex items-center p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors border border-gray-600 payment-method-option">
                         <input type="radio" name="payment_method" value="card" class="mr-3" checked>
-                        <span class="text-white">Credit/Debit Card (Visa •••• 4242)</span>
+                        <span class="text-white">Credit/Debit Card</span>
                     </label>
-                    <label class="flex items-center p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors border border-gray-600">
+                    <label class="flex items-center p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors border border-gray-600 payment-method-option">
                         <input type="radio" name="payment_method" value="gcash" class="mr-3">
                         <span class="text-white">GCash</span>
                     </label>
-                    <label class="flex items-center p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors border border-gray-600">
+                    <label class="flex items-center p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors border border-gray-600 payment-method-option">
                         <input type="radio" name="payment_method" value="paymaya" class="mr-3">
                         <span class="text-white">PayMaya</span>
+                    </label>
+                    <label class="flex items-center p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors border border-gray-600 payment-method-option">
+                        <input type="radio" name="payment_method" value="bank" class="mr-3">
+                        <span class="text-white">Bank Transfer</span>
                     </label>
                 </div>
             </div>
@@ -405,201 +387,133 @@
                 <button class="modal-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
                     Cancel
                 </button>
-                <button id="btnConfirmPayment" class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
-                    Confirm Payment
-                </button>
-            </div>
-        </div>
-    </div> <!-- Payment Modal -->
-    <div id="paymentModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-md w-full border border-gray-700">
-            <button class="modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
-            
-            <h3 class="text-2xl font-bold text-white mb-6">Complete Payment</h3>
-            
-            <!-- Payment Details -->
-            <div class="bg-gray-800 rounded-lg p-6 mb-6 border border-gray-700">
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-gray-400">Plan</span>
-                    <span class="text-white font-semibold" id="modalPlanName"></span>
-                </div>
-                <div class="flex justify-between items-center mb-4">
-                    <span class="text-gray-400">Subscription ID</span>
-                    <span class="text-white font-semibold" id="modalSubscriptionId"></span>
-                </div>
-                <div class="flex justify-between items-center pt-4 border-t border-gray-700">
-                    <span class="text-white font-semibold">Total Amount</span>
-                    <span class="text-3xl font-bold text-white" id="modalAmount"></span>
-                </div>
-            </div>
-
-            <!-- Payment Method Selection -->
-            <div class="mb-6">
-                <label class="block text-white font-semibold mb-3">Select Payment Method</label>
-                <div class="space-y-3">
-                    <label class="flex items-center p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors border border-gray-600">
-                        <input type="radio" name="payment_method" value="card" class="mr-3" checked>
-                        <span class="text-white">Credit/Debit Card (Visa •••• 4242)</span>
-                    </label>
-                    <label class="flex items-center p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors border border-gray-600">
-                        <input type="radio" name="payment_method" value="gcash" class="mr-3">
-                        <span class="text-white">GCash</span>
-                    </label>
-                    <label class="flex items-center p-4 bg-gray-800 rounded-lg cursor-pointer hover:bg-gray-700 transition-colors border border-gray-600">
-                        <input type="radio" name="payment_method" value="paymaya" class="mr-3">
-                        <span class="text-white">PayMaya</span>
-                    </label>
-                </div>
-            </div>
-
-            <div id="paymentMessage" class="hidden mb-4"></div>
-
-            <div class="flex space-x-4">
-                <button class="modal-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
-                    Cancel
-                </button>
-                <button id="btnConfirmPayment" class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
-                    Confirm Payment
+                <button id="btnProceedPayment" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                    Proceed to Payment
                 </button>
             </div>
         </div>
     </div>
 
-    <script>
-        $(document).ready(function() {
+    <!-- Payment Details Modal (Step 2) -->
+    <div id="paymentDetailsModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <button class="payment-details-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">Payment Information</h3>
 
-            // ===== OPEN PAYMENT MODAL =====
-            $('#btnPayNow').on('click', function() {
-                const subscriptionId = $(this).data('subscription-id');
-                const amount = $(this).data('amount');
-                const plan = $(this).data('plan');
+            <!-- Payment Summary -->
+            <div class="bg-gray-800 rounded-lg p-4 mb-6 border border-gray-700">
+                <div class="flex justify-between items-center">
+                    <span class="text-gray-400">Amount to Pay:</span>
+                    <span class="text-2xl font-bold text-white" id="detailsAmount"></span>
+                </div>
+                <div class="flex justify-between items-center mt-2">
+                    <span class="text-gray-400">Payment Method:</span>
+                    <span class="text-white font-semibold" id="detailsMethod"></span>
+                </div>
+            </div>
 
-                $('#modalSubscriptionId').text(subscriptionId);
-                $('#modalPlanName').text(plan);
-                $('#modalAmount').text('₱' + amount.toLocaleString());
-                
-                $('#paymentModal').addClass('show');
-                $('body').css('overflow', 'hidden');
-            });
+            <!-- Dynamic Payment Form -->
+            <form id="paymentDetailsForm" class="space-y-4">
+                 <input type="hidden" id="form_subscription_id" name="subscription_id">
 
-            // ===== CLOSE MODAL =====
-            $('.modal-close, .modal-cancel').on('click', function() {
-                $(this).closest('.modal-backdrop').removeClass('show');
-                $('body').css('overflow', 'auto');
-                $('#paymentMessage').addClass('hidden');
-            });
+                <input type="hidden" id="form_amount" name="amount">
 
-            $('#paymentModal').on('click', function(e) {
-                if ($(e.target).is(this)) {
-                    $(this).removeClass('show');
-                    $('body').css('overflow', 'auto');
-                }
-            });
+                <input type="hidden" id="form_payment_method" name="payment_method">
 
-            // ===== CONFIRM PAYMENT =====
-            $('#btnConfirmPayment').on('click', function() {
-                const subscriptionId = $('#modalSubscriptionId').text();
-                const paymentMethod = $('input[name="payment_method"]:checked').val();
-                const amount = $('#modalAmount').text().replace('₱', '').replace(',', '');
-
-                processPayment(subscriptionId, paymentMethod, amount);
-            });
-
-            // ===== VIEW RECEIPT =====
-            $(document).on('click', '.btn-view-receipt', function() {
-                const receiptId = $(this).data('id');
-                showAlert('Opening receipt for: ' + receiptId, 'info');
-                // Implement receipt viewing logic
-            });
-
-            // ===== ADD PAYMENT METHOD =====
-            $('#btnAddPaymentMethod').on('click', function() {
-                showAlert('Add payment method functionality - Implement your payment gateway', 'info');
-            });
-
-            // ===== HELPER FUNCTIONS =====
-            function processPayment(subscriptionId, paymentMethod, amount) {
-                const submitBtn = $('#btnConfirmPayment');
-                const originalText = submitBtn.text();
-                
-                submitBtn.html('<span class="loading inline-block w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>').prop('disabled', true);
-
-                $.ajax({
-                    type: 'POST',
-                    url: 'process_payment.php',
-                    data: {
-                        subscription_id: subscriptionId,
-                        payment_method: paymentMethod,
-                        amount: amount
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        if (response.success) {
-                            showPaymentMessage('✓ Payment successful! Redirecting...', 'success');
-                            setTimeout(() => {
-                                location.reload();
-                            }, 2000);
-                        } else {
-                            showPaymentMessage(response.message || 'Payment failed', 'error');
-                            submitBtn.html(originalText).prop('disabled', false);
-                        }
-                    },
-                    error: function() {
-                        showPaymentMessage('An error occurred. Please try again.', 'error');
-                        submitBtn.html(originalText).prop('disabled', false);
-                    }
-                });
-            }
-
-            function showPaymentMessage(message, type) {
-                const messageDiv = $('#paymentMessage');
-                const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
-                
-                messageDiv.html(`
-                    <div class="p-3 rounded-lg ${bgColor} text-white text-sm">
-                        ${message}
+                <!-- Credit/Debit Card Form -->
+                <div id="cardForm" class="payment-form-section">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Cardholder Name</label>
+                        <input type="text" name="cardholder_name" class="w-full px-4 py-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="John Doe">
                     </div>
-                `).removeClass('hidden');
-
-                if (type !== 'error') {
-                    setTimeout(() => {
-                        messageDiv.addClass('hidden');
-                    }, 3000);
-                }
-            }
-
-            function showAlert(message, type = 'info') {
-                const alertClass = {
-                    'success': 'bg-green-500',
-                    'error': 'bg-red-500',
-                    'warning': 'bg-yellow-500',
-                    'info': 'bg-blue-500'
-                }[type] || 'bg-blue-500';
-
-                const alert = $(`
-                    <div class="alert ${alertClass} text-white px-6 py-4 rounded-lg shadow-lg flex items-center justify-between">
-                        <span>${message}</span>
-                        <button class="text-white hover:text-gray-200 ml-4">&times;</button>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Card Number</label>
+                        <input type="text" name="card_number" maxlength="19" class="w-full px-4 py-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="1234 5678 9012 3456">
                     </div>
-                `);
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Expiry Date</label>
+                            <input type="text" name="expiry_date" maxlength="5" class="w-full px-4 py-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="MM/YY">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">CVV</label>
+                            <input type="text" name="cvv" maxlength="4" class="w-full px-4 py-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="123">
+                        </div>
+                    </div>
+                </div>
 
-                alert.find('button').on('click', function() {
-                    alert.slideUp(300, function() {
-                        $(this).remove();
-                    });
-                });
+                <!-- GCash Form -->
+                <div id="gcashForm" class="payment-form-section hidden">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">GCash Mobile Number</label>
+                        <input type="tel" name="gcash_number" class="w-full px-4 py-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="+63 9XX XXX XXXX">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Account Name</label>
+                        <input type="text" name="gcash_name" class="w-full px-4 py-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Juan Dela Cruz">
+                    </div>
+                    <div class="bg-blue-900 bg-opacity-30 border border-blue-600 rounded-lg p-4 mt-4">
+                        <p class="text-blue-200 text-sm">
+                            <strong>Note:</strong> You will be redirected to GCash app/website to complete the payment.
+                        </p>
+                    </div>
+                </div>
 
-                $('#alertContainer').append(alert);
+                <!-- PayMaya Form -->
+                <div id="paymayaForm" class="payment-form-section hidden">
+                    <div>
+                        <label class="block text-white font-semibold mb-2">PayMaya Mobile Number</label>
+                        <input type="tel" name="paymaya_number" class="w-full px-4 py-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="+63 9XX XXX XXXX">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Account Name</label>
+                        <input type="text" name="paymaya_name" class="w-full px-4 py-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Juan Dela Cruz">
+                    </div>
+                    <div class="bg-green-900 bg-opacity-30 border border-green-600 rounded-lg mt-4 p-4">
+                        <p class="text-green-200 text-sm">
+                            <strong>Note:</strong> You will be redirected to PayMaya app/website to complete the payment.
+                        </p>
+                    </div>
+                </div>
 
-                if (type !== 'error') {
-                    setTimeout(() => {
-                        alert.slideUp(300, function() {
-                            $(this).remove();
-                        });
-                    }, 4000);
-                }
-            }
-        });
-    </script>
+                <!-- Bank Transfer Form -->
+                <div id="bankForm" class="payment-form-section hidden">
+                    <div class="bg-yellow-900 bg-opacity-30 border border-yellow-600 rounded-lg p-4 mb-4">
+                        <p class="text-yellow-200 text-sm font-semibold mb-2">Bank Transfer Instructions:</p>
+                        <p class="text-yellow-200 text-sm">1. Transfer to: Gymazing Fitness Center</p>
+                        <p class="text-yellow-200 text-sm">2. Account: 1234-5678-9012</p>
+                        <p class="text-yellow-200 text-sm">3. Bank: BDO/BPI/Metrobank</p>
+                        <p class="text-yellow-200 text-sm">4. Upload proof of payment below</p>
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Account Holder Name</label>
+                        <input type="text" name="bank_account_name" class="w-full px-4 py-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Your name">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Reference Number</label>
+                        <input type="text" name="bank_reference" class="w-full px-4 py-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Transaction reference">
+                    </div>
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Upload Proof of Payment</label>
+                        <input type="file" name="payment_proof" accept="image/*" class="w-full px-4 py-3 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                </div>
+
+                <div id="detailsMessage" class="hidden"></div>
+
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" class="payment-details-back flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        ← Back
+                    </button>
+                    <button type="submit" id="btnConfirmPayment" class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
+                        Confirm Payment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../public/assets/js/payments.js"></script>
 </body>
 </html>
