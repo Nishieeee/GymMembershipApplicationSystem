@@ -17,10 +17,13 @@
             $user = new User();
             $plan = new Plan();
             $payment = new Payment();
+            $subscription = new Subscription();
 
             $members = $user->displayAllUsers();
             $memberCount = $user->countActiveMembers();
             $totalEarned = $payment->totalEarned();
+            $paymentDetails = $subscription->getUserPayments();
+            $totalPayments = $subscription->countTotalPayments();
             $walk_ins = $user->displayAllWalkInMembers();
             $plans = $plan->getAllPlans();
             $activePlans = $plan->getAllActivePlans();
@@ -28,6 +31,8 @@
             $this->adminView('dashboard', [
                 'memberCount' => $memberCount,
                 'totalEarned' => $totalEarned,
+                'paymentDetails' => $paymentDetails,
+                'totalPayments' =>  $totalPayments,
                 'walk_ins' => $walk_ins,
                 'members' => $members,
                 'plans' => $plans,

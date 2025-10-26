@@ -70,18 +70,20 @@
                         'transaction_id' => $this->last_transaction_id
 
                     ]);
-                } else {
-                    echo json_encode([
-                        'success'=> true,
-                        'messsage' => "transaction failed",         
-                    ]);
-                }              
-            } else {
-                echo json_encode([
-                    'success'=> true,
-                    'messsage' => "transaction failed",         
-                ]);
+                }
+                //  else {
+                //     echo json_encode([
+                //         'success'=> true,
+                //         'messsage' => "transaction failed",         
+                //     ]);
+                // }              
             }
+            //  else {
+            //     echo json_encode([
+            //         'success'=> true,
+            //         'messsage' => "transaction failed",         
+            //     ]);
+            // }
         }
 
         public function markPaid($payment_id) {

@@ -238,8 +238,8 @@
                 <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="plans">
                     <span class="mr-2"></span> Plans
                 </button>
-                <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="revenue">
-                    <span class="mr-2"></span> Revenue
+                <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="payments">
+                    <span class="mr-2"></span> Payments
                 </button>
             </div>
             <!-- members tab -->
@@ -387,13 +387,13 @@
                                         </td>
                                         <td class="px-6 py-4 text-gray-300"><?= $walkin['email'] ?></td>
                                         <td class="px-6 py-4 text-gray-300"><?= $walkin['contact_no'] ?></td>
-                                        <td class="px-6 py-4"><?= isset($walkin['session_type']) ? $walkin['session_type'] : 'No Active Plan' ?></td>
+                                        <td class="px-6 py-4"><?= isset($walkin['session_type']) ? $walkin['session_type'] . " - ₱" . $walkin['payment_amount'] : 'No Active Plan' ?></td>
                                         <td class="px-6 py-4 text-gray-300"><?= $walkin['visit_time'] ?></td>
                                         <td class="px-6 py-4 text-gray-300"><?= $walkin['end_date'] ?></td>
                                         <td class="px-6 py-4 text-center">
-                                            <button class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
-                                            <button class="btn-edit-member text-green-400 hover:text-green-300 mr-3">Edit</button>
-                                            <button class="btn-delete-member text-red-400 hover:text-red-300">Delete</button>
+                                            <button class="btn-view-walkin text-blue-400 hover:text-blue-300 mr-3">View</button>
+                                            <button class="btn-edit-walkin text-green-400 hover:text-green-300 mr-3">Edit</button>
+                                            <button class="btn-delete-walkin text-red-400 hover:text-red-300">Delete</button>
                                         </td>
                                     </tr>
                                 <?php }?>
@@ -452,9 +452,93 @@
                     </div>
                 </div>
             </div>
+            <!-- Payments -->
+            <div id="payments" class="tab-content bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="mb-6 flex justify-between items-center">
+                        <h2 class="text-2xl font-bold text-white">Payments</h2>
+                        <!-- <button id="btnAddPlan" class="px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors flex items-center">
+                            <span class="mr-2">+</span> Add New Plan
+                        </button> -->
+                    </div>
+                    <!-- search container -->
+                    <div class="mb-6 flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1 relative">
+                            <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <input type="text" id="searchPayments" placeholder="Search by name, email, or ID..." class="search-input w-full pl-10 pr-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <select id="filterStatus" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Status</option>
+                            <option value="paid">Paid</option>
+                            <option value="pending">Pending</option>
+                            <option value="failed">Failed</option>
+                        </select>
+                        <select id="filterPlan" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Plans</option>
+                            <option value="basic">Basic</option>
+                            <option value="standard">Premium</option>
+                            <option value="premium">Elite</option>
+                        </select>
+                        <button class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                            Search
+                        </button>
+                    </div>
+                    <!-- payments table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-white">
+                            <thead class="border-b border-gray-700 bg-gray-800">
+                                <tr>
+                                    <th class="text-left px-6 py-3 font-semibold">Name</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Transaction ID</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Plan Name</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Amount</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Payment Date</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Status</th>
+                                    <th class="text-center px-6 py-3 font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php  foreach($paymentDetails as $paymentDetail) { $user_name = $paymentDetail['name'];
+                                $user_initial = substr($user_name, 0, 1); ?>
+                                    <tr class="table-row border-b border-gray-700">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3"><?= $user_initial ?></div>
+                                                    <span><?= $paymentDetail['name'] ?></span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $paymentDetail['transaction_id'] ?? "No Payment Yet" ?></td>
+                                        <td class="px-6 py-4"><?= isset($paymentDetail['plan_name']) ? $paymentDetail['plan_name'] : 'No Active Plan' ?></td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $paymentDetail['amount'] ?></td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $paymentDetail['payment_date'] ?></td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $paymentDetail['status'] ?></td>
+                                        <td class="px-6 py-4 text-center">
+                                            <button class="btn-view-walkin text-blue-400 hover:text-blue-300 mr-3">View</button>
+                                            <button class="btn-edit-walkin text-green-400 hover:text-green-300 mr-3">Edit</button>
+                                            <button class="btn-delete-walkin text-red-400 hover:text-red-300">Delete</button>
+                                        </td>
+                                    </tr>
+                                <?php }?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="mt-6 flex items-center justify-between">
+                        <p class="text-gray-400">Showing 1-4 of <?=  $totalPayments['total_number_of_payments'] ?> payments</p>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">← Previous</button>
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg">1</button>
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">2</button>
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">3</button>
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">Next →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-
+        
     </main>
     <!-- Add Member Modal -->
     <div id="addMemberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">

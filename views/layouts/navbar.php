@@ -118,8 +118,8 @@ $user_initial = substr($user_name, 0, 1);
                 <nav class="hidden lg:flex items-center space-x-6">
                     <a href="../public/index.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Home</a>
                     <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Classes</a>
-                    <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">My Payments</a>
-                    <a href="profile.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Profile</a>
+                    <a href="index.php?controller=Payment&action=planPayment" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">My Payments</a>
+                    <!-- <a href="profile.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Profile</a> -->
                     
                 </nav>
 
@@ -146,7 +146,7 @@ $user_initial = substr($user_name, 0, 1);
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                             </svg>
                         </button>
-                        <div id="acount_menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl transition-all duration-200 border border-gray-700">
+                       <div id="account_menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl transition-all duration-200 border border-gray-700">
                             <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-t-lg transition-colors">
                                 <span class="inline-block mr-2"></span> Edit Profile
                             </a>
@@ -171,12 +171,12 @@ $user_initial = substr($user_name, 0, 1);
                     <a href="dashboard.php" class="block px-4 py-3 text-white hover:bg-gray-800 hover:text-blue-400 rounded transition-colors font-medium">
                         <span class="inline-block mr-2"></span> Dashboard
                     </a>
-                    <a href="classes.php" class="block px-4 py-3 text-white hover:bg-gray-800 hover:text-blue-400 rounded transition-colors font-medium">
+                    <!-- <a href="classes.php" class="block px-4 py-3 text-white hover:bg-gray-800 hover:text-blue-400 rounded transition-colors font-medium">
                         <span class="inline-block mr-2"></span> Classes
                     </a>
                     <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-800 hover:text-blue-400 rounded transition-colors font-medium">
                         <span class="inline-block mr-2"></span> Profile
-                    </a>
+                    </a> -->
 
                     <!-- Mobile Submenu: More Options -->
                     <div class="px-4 py-2 mt-2">
