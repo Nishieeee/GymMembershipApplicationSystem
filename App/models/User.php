@@ -94,15 +94,15 @@
             }
         }
         public function addMember(array $UserData) {
-            $sql = "INSERT INTO `members`( `first_name`, `last_name`, `middle_name`, `email`, `age` , `gender` , `password`, `role`, `created_at`) VALUES (:first_name , :last_name, :middle_name, :email, :age, :gender, :password1, 'member' , NOW())";
+            $sql = "INSERT INTO `members`( `first_name`, `last_name`, `middle_name`, `email`, `date_of_birth` , `gender` , `password`, `role`, `created_at`) VALUES (:first_name , :last_name, :middle_name, :email, :date_of_birth, :gender, :password, 'member' , NOW())";
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":first_name", $UserData['first_name']);
             $query->bindParam(":last_name", $UserData['last_name']);
             $query->bindParam(":middle_name", $UserData['middle_name']);
             $query->bindParam(":email", $UserData['email']);
-            $query->bindParam(":age", $UserData['age']);
+            $query->bindParam(":date_of_birth", $UserData['date_of_birth']);
             $query->bindParam(":gender", $UserData['gender']);
-            $query->bindParam(":password1", $UserData['password']);
+            $query->bindParam(":password", $UserData['password']);
             
             if($query->execute()) {
                 return true;
