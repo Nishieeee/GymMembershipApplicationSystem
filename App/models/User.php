@@ -110,7 +110,28 @@
                 return false;
             }
         }
-        
+        public function addWalkinMember($userData) {
+            $sql = "INSERT INTO walk_ins(first_name, last_name, middle_name, email, contact_no, session_type, payment_method, payment_amount, visit_time, end_date) VALUES (:first_name, :last_name, :middle_name, :email, :contact_no, :session_type, :payment_method ,:payment_amount, :visit_time, :end_date)";
+
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":first_name", $userData['first_name']);
+            $query->bindParam(":last_name", $userData['last_name']);
+            $query->bindParam(":middle_name", $userData['middle_name']);
+            $query->bindParam(":email", $userData['email']);
+            $query->bindParam(":contact_no", $userData['contact_no']);
+            $query->bindParam(":session_type", $userData['session_type']);
+            $query->bindParam(":payment_method", $userData['payment_method']);
+            $query->bindParam(":payment_amount", $userData['payment_amount']);
+            $query->bindParam(":visit_time", $userData['visit_time']);
+            $query->bindParam(":end_date", $userData['end_date']);
+
+            if($query->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+
+        }      
     }
 
 ?>

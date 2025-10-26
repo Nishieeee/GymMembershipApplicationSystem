@@ -9,8 +9,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Gymazing</title>
-    <script src= "/GymMembershipSystem/public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="/GymMembershipSystem/public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <script src= "../public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
@@ -183,7 +183,7 @@
 <body class="gradient-bg min-h-screen">
     
     <!-- Admin Navbar -->
-    <?php include __DIR__ . "/layouts/adminnavbar.php" ?>
+    
 
     <!--  Alerts Container -->
     <div id="alertContainer" class="fixed top-24 right-4 z-40 space-y-4"></div>
@@ -648,7 +648,7 @@
             </form>
         </div>
     </div>
-    <!-- Add Walk-in Member Modal -->
+     <!-- Add Walk-in Member Modal -->
     <div id="addWalkInModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-3xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
             <button class="walkin-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
@@ -661,53 +661,81 @@
                 </p>
             </div>
             
-            <form id="addWalkInForm" method="POST" action="add_walkin.php" class="space-y-6">
+            <form id="addWalkInForm" method="POST" action="index.php?controller=Admin&action=validateWalkin" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Left Column -->
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-white font-semibold mb-2">Full Name *</label>
-                            <input type="text" name="full_name" required 
+                            <label class="block text-white font-semibold mb-2">First Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="first_name" required 
                                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                                   placeholder="John Doe">
+                                   placeholder="John">
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Middle Name</label>
+                            <input type="text" name="middle_name" 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="M.">
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Last Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="last_name" required 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="Doe">
                         </div>
         
                         <div>
-                            <label class="block text-white font-semibold mb-2">Contact Number *</label>
-                            <input type="tel" name="contact" required 
+                            <label class="block text-white font-semibold mb-2">Contact Number <span class="text-red-500">*</span></label>
+                            <input type="tel" name="contact_no" required 
                                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                                    placeholder="+63 9XX XXX XXXX">
                         </div>
         
                         <div>
-                            <label class="block text-white font-semibold mb-2">Email (Optional)</label>
+                            <label class="block text-white font-semibold mb-2">Email</label>
                             <input type="email" name="email" 
                                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                                    placeholder="john@example.com">
-                        </div>
-        
-                        <div>
-                            <label class="block text-white font-semibold mb-2">Session Type *</label>
-                            <select name="session_type" required 
-                                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                                <option value="">Select session type</option>
-                                <option value="single">Single Session - ₱200</option>
-                                <option value="day_pass">Day Pass - ₱500</option>
-                                <option value="weekend">Weekend Pass - ₱800</option>
-                            </select>
                         </div>
                     </div>
 
                     <!-- Right Column -->
                     <div class="space-y-4">
                         <div>
-                            <label class="block text-white font-semibold mb-2">Visit Date *</label>
-                            <input type="date" name="visit_date" required 
+                            <label class="block text-white font-semibold mb-2">Session Type <span class="text-red-500">*</span></label>
+                            <select name="session_type" id="sessionType" required 
+                                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">Select session type</option>
+                                <option value="single" data-price="20">Single Session - ₱20</option>
+                                <option value="day_pass" data-price="60">Day Pass - ₱60</option>
+                                <option value="weekend" data-price="200">Weekend Pass - ₱200</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Payment Amount <span class="text-red-500">*</span></label>
+                            <input type="number" name="payment_amount" id="paymentAmount" required readonly
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none"
+                                   placeholder="Auto-calculated">
+                        </div>
+
+                        <!-- <div>
+                            <label class="block text-white font-semibold mb-2">Visit Date <span class="text-red-500">*</span></label>
+                            <input type="datetime-local" name="visit_time" id="visitTime" required 
                                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                         </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">End Date/Time <span class="text-red-500">*</span></label>
+                            <input type="datetime-local" name="end_date" id="endDate" required readonly
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none"
+                                   placeholder="Auto-calculated">
+                        </div> -->
         
                         <div>
-                            <label class="block text-white font-semibold mb-2">Payment Method *</label>
+                            <label class="block text-white font-semibold mb-2">Payment Method <span class="text-red-500">*</span></label>
                             <select name="payment_method" required 
                                     class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                                 <option value="">Select payment method</option>
@@ -716,13 +744,6 @@
                                 <option value="gcash">GCash</option>
                                 <option value="paymaya">PayMaya</option>
                             </select>
-                        </div>
-        
-                        <div>
-                            <label class="block text-white font-semibold mb-2">Notes (Optional)</label>
-                            <textarea name="notes" rows="6" 
-                                      class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
-                                      placeholder="Any special notes or requirements"></textarea>
                         </div>
                     </div>
                 </div>
@@ -799,98 +820,195 @@
             $('#memberModal').removeClass('show');
             $('body').css('overflow', 'auto');
         });
-        // ===== ADD MEMBER MODAL =====
-        $('#btnAddMember').on('click', function() {
-            $('#addMemberForm')[0].reset();
-            $('#addMemberMessage').addClass('hidden');
-            $('#addMemberModal').addClass('show');
-            $('body').css('overflow', 'hidden');
-        });
+        $(document).ready(function() {
 
-        // Close add member modal
-        $('.add-member-close, .add-member-cancel').on('click', function() {
-            $('#addMemberModal').removeClass('show');
-            $('body').css('overflow', 'auto');
-        });
+            // ===== ADD MEMBER MODAL =====
+            $('#btnAddMember').on('click', function() {
+                $('#addMemberForm')[0].reset();
+                $('#addMemberMessage').addClass('hidden');
+                $('#addMemberModal').addClass('show');
+                $('body').css('overflow', 'hidden');
+            });
 
-        // ===== ADD WALK-IN MODAL =====
-        $('#btnAddWalkIn').on('click', function() {
-            $('#addWalkInForm')[0].reset();
-            $('#walkInMessage').addClass('hidden');
-            // Set today's date as default
-            $('input[name="visit_date"]').val(new Date().toISOString().split('T')[0]);
-            $('#addWalkInModal').addClass('show');
-            $('body').css('overflow', 'hidden');
-        });
-
-        // Close walk-in modal
-        $('.walkin-close, .walkin-cancel').on('click', function() {
-            $('#addWalkInModal').removeClass('show');
-            $('body').css('overflow', 'auto');
-        });
-
-        // Close modals when clicking backdrop
-        $('#addMemberModal, #addWalkInModal').on('click', function(e) {
-            if ($(e.target).is(this)) {
-                $(this).removeClass('show');
+            // Close add member modal
+            $('.add-member-close, .add-member-cancel').on('click', function() {
+                $('#addMemberModal').removeClass('show');
                 $('body').css('overflow', 'auto');
+            });
+
+            // ===== ADD WALK-IN MODAL =====
+            $('#btnAddWalkIn').on('click', function() {
+                $('#addWalkInForm')[0].reset();
+                $('#walkInMessage').addClass('hidden');
+                // Set today's date and time as default
+                const now = new Date();
+                const datetime = now.toISOString().slice(0, 16);
+                $('#visitTime').val(datetime);
+                $('#addWalkInModal').addClass('show');
+                $('body').css('overflow', 'hidden');
+            });
+
+            // Calculate payment amount based on session type
+            $('#sessionType').on('change', function() {
+                const selectedOption = $(this).find('option:selected');
+                const price = selectedOption.data('price');
+                const sessionType = selectedOption.val();
+                
+                if (price) {
+                    $('#paymentAmount').val(price);
+                    
+                    // Calculate end date based on session type
+                    const visitTime = $('#visitTime').val();
+                    if (visitTime) {
+                        calculateEndDate(visitTime, sessionType);
+                    }
+                } else {
+                    $('#paymentAmount').val('');
+                    $('#endDate').val('');
+                }
+            });
+
+            // Update end date when visit time changes
+            $('#visitTime').on('change', function() {
+                const visitTime = $(this).val();
+                const sessionType = $('#sessionType').val();
+                
+                if (visitTime && sessionType) {
+                    calculateEndDate(visitTime, sessionType);
+                }
+            });
+
+            function calculateEndDate(visitTime, sessionType) {
+                const startDate = new Date(visitTime);
+                let endDate = new Date(startDate);
+                
+                switch(sessionType) {
+                    case 'single':
+                        // Single session - 3 hours
+                        endDate.setHours(endDate.getHours() + 3);
+                        break;
+                    case 'day_pass':
+                        // Day pass - until end of day (11:59 PM)
+                        endDate.setHours(23, 59, 0, 0);
+                        break;
+                    case 'weekend':
+                        // Weekend pass - 2 days
+                        endDate.setDate(endDate.getDate() + 2);
+                        endDate.setHours(23, 59, 0, 0);
+                        break;
+                }
+                
+                $('#endDate').val(endDate.toISOString().slice(0, 16));
+            }
+
+            // Close walk-in modal
+            $('.walkin-close, .walkin-cancel').on('click', function() {
+                $('#addWalkInModal').removeClass('show');
+                $('body').css('overflow', 'auto');
+            });
+
+            // ===== ADD WALK-IN FORM SUBMISSION WITH AJAX =====
+            $('#addWalkInForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const submitBtn = $('#btnSubmitWalkIn');
+                const originalText = submitBtn.text();
+                
+                // Show loading state
+                submitBtn.html('<span class="loading"></span>').prop('disabled', true);
+
+                $.ajax({
+                    type: 'POST',
+                    url: 'index.php?controller=User&action=validateWalkin',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            showWalkInMessage('✓ ' + response.message, 'success');
+                            setTimeout(() => {
+                                $('#addWalkInModal').removeClass('show');
+                                $('body').css('overflow', 'auto');
+                                location.reload();
+                            }, 2000);
+                        } else {
+                            showWalkInMessage(response.message || 'Failed to register walk-in', 'error');
+                            submitBtn.html(originalText).prop('disabled', false);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Walk-in registration error:', error);
+                        let errorMessage = 'An error occurred. Please try again.';
+                        
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorMessage = xhr.responseJSON.message;
+                        } else if (xhr.responseJSON && xhr.responseJSON.error) {
+                            errorMessage = xhr.responseJSON.error;
+                        }
+                        
+                        showWalkInMessage(errorMessage, 'error');
+                        submitBtn.html(originalText).prop('disabled', false);
+                    }
+                });
+            });
+
+            // ===== ADD MEMBER FORM VALIDATION =====
+            $('#addMemberForm').on('submit', function(e) {
+                const password = $('input[name="password"]').val();
+                const confirmPassword = $('input[name="confirm_password"]').val();
+
+                if (password.length < 8) {
+                    e.preventDefault();
+                    showAddMemberMessage('Password must be at least 8 characters', 'error');
+                    return false;
+                }
+
+                if (password !== confirmPassword) {
+                    e.preventDefault();
+                    showAddMemberMessage('Passwords do not match', 'error');
+                    return false;
+                }
+
+                // If validation passes, form will submit normally
+            });
+
+            // ===== HELPER FUNCTIONS =====
+            function showAddMemberMessage(message, type) {
+                const messageDiv = $('#addMemberMessage');
+                const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+                
+                messageDiv.html(`
+                    <div class="p-3 rounded-lg ${bgColor} text-white text-sm">
+                        ${message}
+                    </div>
+                `).removeClass('hidden');
+
+                if (type !== 'error') {
+                    setTimeout(() => {
+                        messageDiv.addClass('hidden');
+                    }, 3000);
+                }
+            }
+
+            function showWalkInMessage(message, type) {
+                const messageDiv = $('#walkInMessage');
+                const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+                
+                messageDiv.html(`
+                    <div class="p-3 rounded-lg ${bgColor} text-white text-sm">
+                        ${message}
+                    </div>
+                `).removeClass('hidden');
+
+                if (type !== 'error') {
+                    setTimeout(() => {
+                        messageDiv.addClass('hidden');
+                    }, 3000);
+                }
             }
         });
-
-        // ===== ADD MEMBER FORM VALIDATION =====
-        $('#addMemberForm').on('submit', function(e) {
-            const password = $('input[name="password"]').val();
-            const confirmPassword = $('input[name="confirm_password"]').val();
-
-            if(password.length < 8) {
-                e.preventDefault();
-                showAddMemberMessage('Password must be at least 8 characters', 'error');
-                return false;
-            }
-
-            if (password !== confirmPassword) {
-                e.preventDefault();
-                showAddMemberMessage('Passwords do not match', 'error');
-                return false;
-            }
-
-         // If validation passes, form will submit normally
-        });
-
-        // ===== HELPER FUNCTIONS =====
-        function showAddMemberMessage(message, type) {
-            const messageDiv = $('#addMemberMessage');
-            const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
-                
-            messageDiv.html(`
-                <div class="p-3 rounded-lg ${bgColor} text-white text-sm">
-                    ${message}
-                </div>
-            `).removeClass('hidden');
-
-            if (type !== 'error') {
-                setTimeout(() => {
-                    messageDiv.addClass('hidden');
-                }, 3000);
-            }
-        }
-
-        function showWalkInMessage(message, type) {
-            const messageDiv = $('#walkInMessage');
-            const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
-                
-            messageDiv.html(`
-                <div class="p-3 rounded-lg ${bgColor} text-white text-sm">
-                  ${message}
-                </div>
-            `).removeClass('hidden');
-
-            if(type !== 'error') {
-                setTimeout(() => {
-                    messageDiv.addClass('hidden');
-                }, 3000);
-            }
-        }
     </script>
 </body>
 </html>
