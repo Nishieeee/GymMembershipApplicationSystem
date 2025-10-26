@@ -6,6 +6,7 @@
     require_once __DIR__ . "/../models/Payment.php";
 
     class SubscribeController extends Controller {
+        
         public function Subscribe() {
             session_start();
             $subscribe = new Subscription();

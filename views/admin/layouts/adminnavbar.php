@@ -131,12 +131,12 @@
 
                     <!-- Desktop Dropdown Menu -->
                     <div class="relative group hidden md:block">
-                        <button class="text-gray-400 hover:text-white transition-colors p-2">
+                        <button id="account" class="text-gray-400 hover:text-white transition-colors p-2">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"/>
                             </svg>
                         </button>
-                        <div class="absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-700">
+                        <div id="account_menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl transition-all duration-200 border border-gray-700">
                             <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-t-lg transition-colors">
                                 <span class="inline-block mr-2"></span> Edit Profile
                             </a>
@@ -186,10 +186,12 @@
         </div>
     </header>
 
-
-
     <script>
         $(document).ready(function() {
+            $('#account').click((e) => {
+                e.stopPropagation();
+                $('#account_menu').toggleClass('hidden opacity-100');
+            });
             // Mobile menu toggle
             $('#mobileMenuBtn').click(function() {
                 $(this).toggleClass('active');
