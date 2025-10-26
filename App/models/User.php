@@ -181,6 +181,19 @@
                 return false;
             }
         }
+
+        public function deleteMemberViaId($user_id) {
+            $sql = "UPDATE members SET status='inactive' WHERE user_id = :user_id";
+            
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":user_id", $user_id);
+
+            if($query->execute()) {
+                return true;
+            } else {
+                return false;
+            }
+        }
     }
 
 ?>

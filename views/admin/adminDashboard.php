@@ -308,7 +308,7 @@
                                         <td class="px-6 py-4 text-center">
                                             <button id="viewMemberDetailsBtn" class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
                                             <button class="btn-edit-member text-green-400 hover:text-green-300 mr-3">Edit</button>
-                                            <button class="btn-delete-member text-red-400 hover:text-red-300">Delete</button>
+                                            <button class="btn-delete-member text-red-400 hover:text-red-300">Deactivate</button>
                                         </td>
                                     </tr>
                                 <?php }?>
@@ -793,6 +793,28 @@
                     </button>
                     <button type="submit" id="btnUpdateMember" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
                         Update Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Delete Member Modal -->
+    <div id="deleteMemberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
+            <button class="delete-modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            <form id="deleteForm" method="POST" action="index.php?controller=Admin&action=deleteMember">
+                <input type="hidden" name="user_id" id="delete_user_id">
+
+                <h3 class="text-2xl font-bold text-white mb-6">Are you sure you want to Delete Member?</h3>
+                
+                <div id="deleteMemberMessage" class="hidden"></div>
+
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" class="delete-modal-close flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        Close
+                    </button>
+                    <button type="submit" id="deleteBtn" class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors">
+                        Proceed
                     </button>
                 </div>
             </form>

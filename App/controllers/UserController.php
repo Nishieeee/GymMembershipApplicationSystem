@@ -113,7 +113,26 @@
             }
         }
 
-    }
+        public function deleteMember() {
+
+            $user_id = $_POST['user_id'];
+
+            $user = new User();
+            if($user->deleteMemberViaId($user_id)) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'member set to inactive',
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'An error occured, Please try again.',
+                ]);
+            }
+
+        }
+
+     }
 
 
 
