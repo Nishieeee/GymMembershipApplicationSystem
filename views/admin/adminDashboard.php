@@ -1,6 +1,6 @@
 <?php
-$user_name = $members['first_name'];
-$user_initial = substr($user_name, 0, 1);
+// $user_name = $members['first_name'];
+// $user_initial = substr($user_name, 0, 1);
 
 ?>
 <!DOCTYPE html>
@@ -9,8 +9,8 @@ $user_initial = substr($user_name, 0, 1);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Gymazing</title>
-    <script src= "/GymMembershipSystem/public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="/GymMembershipSystem/public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <script src= "../public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
@@ -232,6 +232,9 @@ $user_initial = substr($user_name, 0, 1);
                 <button class="tab-button active px-6 py-4 text-white font-semibold hover:text-blue-400 transition-colors" data-tab="members">
                     <span class="mr-2"></span> Members
                 </button>
+                <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="walkins">
+                    <span class="mr-2"></span> Walk Ins
+                </button>
                 <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="plans">
                     <span class="mr-2"></span> Plans
                 </button>
@@ -242,6 +245,12 @@ $user_initial = substr($user_name, 0, 1);
             <!-- members tab -->
             <div id="members" class="tab-content active bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
                 <div class="p-6">
+                    <div class="mb-6 flex flex-col sm:flex-row gap-4">
+                        <button id="btnAddMember" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                            +   Add Member
+                        </button>
+
+                    </div>
                     <!-- search container -->
                     <div class="mb-6 flex flex-col sm:flex-row gap-4">
                         <div class="flex-1 relative">
@@ -283,7 +292,7 @@ $user_initial = substr($user_name, 0, 1);
                             <tbody>
                                 <?php  foreach($members as $member) { $user_name = $member['name'];
                                 $user_initial = substr($user_name, 0, 1); ?>
-                                    <tr class="table-row border-b border-gray-700">
+                                    <tr class="table-row border-b border-gray-700" data-user-id="<?= $member['user_id'] ?>">
                                         <td class="px-6 py-4">
                                             <div class="flex items-center">
                                                 <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3"><?= $user_initial ?></div>
@@ -294,8 +303,93 @@ $user_initial = substr($user_name, 0, 1);
                                         <td class="px-6 py-4"><?= isset($member['plan_name']) ? $member['plan_name'] : 'No Active Plan' ?></td>
                                         <td class="px-6 py-4 text-gray-300"><?= $member['created_at'] ?></td>
                                         <td class="px-6 py-4">
-                                            <span class="status-badge <?= isset($member['status']) ? 'status-active' : 'status-inactive'?>"><?=isset($member['status']) ?  $member['status'] : 'inactive' ?></span>
+                                            <span class="status-badge <?= $member['status'] == 'active' ? 'status-active' : 'status-inactive'?>"><?=isset($member['status']) ?  $member['status'] : 'inactive' ?></span>
                                         </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <button id="viewMemberDetailsBtn" class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
+                                            <button class="btn-edit-member text-green-400 hover:text-green-300 mr-3">Edit</button>
+                                            <button class="btn-delete-member text-red-400 hover:text-red-300">Deactivate</button>
+                                        </td>
+                                    </tr>
+                                <?php }?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="mt-6 flex items-center justify-between">
+                        <p class="text-gray-400">Showing 1-4 of 1,256 members</p>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">← Previous</button>
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg">1</button>
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">2</button>
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">3</button>
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">Next →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- walk-ins tab -->
+            <div id="walkins" class="tab-content bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="mb-6 flex flex-col sm:flex-row gap-4">
+                        <button id="btnAddWalkIn" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                            +   Add Walk-in Member
+                        </button>
+                    </div>
+                    <!-- search container -->
+                    <div class="mb-6 flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1 relative">
+                            <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <input type="text" id="searchWalkins" placeholder="Search by name, email, or ID..." class="search-input w-full pl-10 pr-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <select id="filterStatus" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="trial">Trial</option>
+                        </select>
+
+                        <select id="filterPlan" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Plans</option>
+                            <option value="basic">Basic</option>
+                            <option value="standard">Premium</option>
+                            <option value="premium">Elite</option>
+                        </select>
+                        <button class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                            Search
+                        </button>
+                    </div>
+                    <!-- walkin table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-white">
+                            <thead class="border-b border-gray-700 bg-gray-800">
+                                <tr>
+                                    <th class="text-left px-6 py-3 font-semibold">Name</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Email</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Contact No.</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Session Type</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Start Time</th>
+                                    <th class="text-left px-6 py-3 font-semibold">End Time</th>
+                                    <th class="text-center px-6 py-3 font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php  foreach($walk_ins as $walkin) { $user_name = $walkin['name'];
+                                $user_initial = substr($user_name, 0, 1); ?>
+                                    <tr class="table-row border-b border-gray-700">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3"><?= $user_initial ?></div>
+                                                    <span><?= $walkin['name'] ?></span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $walkin['email'] ?></td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $walkin['contact_no'] ?></td>
+                                        <td class="px-6 py-4"><?= isset($walkin['session_type']) ? $walkin['session_type'] : 'No Active Plan' ?></td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $walkin['visit_time'] ?></td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $walkin['end_date'] ?></td>
                                         <td class="px-6 py-4 text-center">
                                             <button class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
                                             <button class="btn-edit-member text-green-400 hover:text-green-300 mr-3">Edit</button>
@@ -319,6 +413,8 @@ $user_initial = substr($user_name, 0, 1);
                     </div>
                 </div>
             </div>
+            
+            <!-- plans Tab -->
             <div id="plans" class="tab-content bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
                 <div class="p-6">
                     <!-- Add Plan Button -->
@@ -360,59 +456,229 @@ $user_initial = substr($user_name, 0, 1);
 
 
     </main>
-    <!-- Add/Edit Plan Modal -->
-    <div id="planModal" class="<?= $openModal ? "show" : ""?> modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
-            <button class="modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+    <!-- Add Member Modal -->
+    <div id="addMemberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-2xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <button class="add-member-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
             
-            <h3 class="text-2xl font-bold text-white mb-6">Add New Plan</h3>
+            <h3 class="text-2xl font-bold text-white mb-6">Add New Member</h3>
             
-            <form id="planForm" class="space-y-4" action="index.php?controller=Admin&action=addPlan" method="POST">
-                <div>
-                    <label class="block text-white font-semibold mb-2">Plan Name</label>
-                    <input type="text" name="plan_name" 
-                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., Platinum" value="<?= isset($planData['plan_name']) ? htmlspecialchars($planData['plan_name']) : '' ?>">
-                    <p color="red"><?= $planErrors['plan_name'] ?? '' ?></p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-white font-semibold mb-2">Price (Monthly)</label>
-                        <input type="number" name="price" step="0.01" required 
-                        class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="999" value="<?= isset($planData['price']) ? htmlspecialchars($planData['price']) : '' ?>">
-                        <p color="red"><?= $planErrors['price'] ?? '' ?></p>
+            <form id="addMemberForm" method="POST" action="add_member.php" class="space-y-4">
+                <!-- Personal Information -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Personal Information</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">First Name *</label>
+                            <input type="text" name="first_name" required 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="John">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Last Name *</label>
+                            <input type="text" name="last_name" required 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="Doe">
+                        </div>
                     </div>
 
-                    <div>
-                        <label class="block text-white font-semibold mb-2">Duration (Months)</label>
-                        <input type="number" name="duration_months" required 
-                        class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="1" value="<?= isset($planData['duration_months']) ? htmlspecialchars($planData['duration_months']) : '' ?>">
-                        <p color="red"><?= $planErrors['duration_months'] ?? '' ?></p>
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Email *</label>
+                        <input type="email" name="email" required 
+                               class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                               placeholder="john.doe@example.com">
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Phone Number *</label>
+                            <input type="tel" name="phone" required 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="+63 9XX XXX XXXX">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Date of Birth</label>
+                            <input type="date" name="date_of_birth" 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Address</label>
+                        <textarea name="address" rows="2" 
+                                  class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                  placeholder="Enter full address"></textarea>
                     </div>
                 </div>
 
-                <div>
-                    <label class="block text-white font-semibold mb-2">Description</label>
-                    <textarea name="description" rows="3" required 
-                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                    placeholder="Describe this plan"><?= isset($planData['description']) ? htmlspecialchars($planData['description']) : '' ?></textarea>
-                    <p color="red"><?= $planErrors['description'] ?? '' ?></p>
+                <!-- Membership Details -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Membership Details</h4>
+                    
+                    <div>
+                        <label class="block text-white font-semibold mb-2">Select Plan *</label>
+                        <select name="plan_id" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Choose a plan</option>
+                            <!-- Plans will be populated from database -->
+                        </select>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Start Date *</label>
+                        <input type="date" name="start_date" required 
+                               class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="mt-4 flex items-center">
+                        <input type="checkbox" id="startTrial" name="start_trial" class="mr-3">
+                        <label for="startTrial" class="text-white">Start with 3-day free trial</label>
+                    </div>
                 </div>
 
-                <div class="flex items-center">
-                    <input type="checkbox" id="isFeatured" name="is_featured" class="mr-3">
-                    <label for="isFeatured" class="text-white font-semibold">Mark as featured plan</label>
+                <!-- Account Security -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Account Security</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Password *</label>
+                            <input type="password" name="password" required 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="Min. 8 characters">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Confirm Password *</label>
+                            <input type="password" name="confirm_password" required 
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                   placeholder="Re-enter password">
+                        </div>
+                    </div>
                 </div>
+
+                <div id="addMemberMessage" class="hidden"></div>
 
                 <div class="flex space-x-4 mt-6">
-                    <button type="button" class="modal-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                    <button type="button" class="add-member-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
                         Cancel
                     </button>
-                    <button type="submit" id="submitPlanBtn" class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
-                        Create Plan
+                    <button type="submit" id="btnSubmitMember" class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
+                        Add Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Walk-in Member Modal -->
+    <div id="addWalkInModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-3xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <button class="walkin-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">🚶 Add Walk-in Member</h3>
+            
+            <div class="bg-purple-900 bg-opacity-30 border border-purple-600 rounded-lg p-4 mb-6">
+                <p class="text-purple-200 text-sm">
+                    <strong>Note:</strong> Walk-in members pay per session and don't require a subscription plan. They have limited access to facilities.
+                </p>
+            </div>
+            
+            <form id="addWalkInForm" method="POST" action="index.php?controller=Admin&action=validateWalkin" class="space-y-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Left Column -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">First Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="first_name" required 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="John">
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Middle Name</label>
+                            <input type="text" name="middle_name" 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="M.">
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Last Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="last_name" required 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="Doe">
+                        </div>
+        
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Contact Number <span class="text-red-500">*</span></label>
+                            <input type="tel" name="contact_no" required 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="+63 9XX XXX XXXX">
+                        </div>
+        
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Email</label>
+                            <input type="email" name="email" 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                   placeholder="john@example.com">
+                        </div>
+                    </div>
+
+                    <!-- Right Column -->
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Session Type <span class="text-red-500">*</span></label>
+                            <select name="session_type" id="sessionType" required 
+                                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">Select session type</option>
+                                <option value="single" data-price="20">Single Session - ₱20</option>
+                                <option value="day_pass" data-price="60">Day Pass - ₱60</option>
+                                <option value="weekend" data-price="200">Weekend Pass - ₱200</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Payment Amount <span class="text-red-500">*</span></label>
+                            <input type="number" name="payment_amount" id="paymentAmount" required readonly
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none"
+                                   placeholder="Auto-calculated">
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Visit Date <span class="text-red-500">*</span></label>
+                            <input type="datetime-local" name="visit_time" id="visitTime" required 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">End Date/Time <span class="text-red-500">*</span></label>
+                            <input type="datetime-local" name="end_date" id="endDate" required readonly
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none"
+                                   placeholder="Auto-calculated">
+                        </div>
+        
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Payment Method <span class="text-red-500">*</span></label>
+                            <select name="payment_method" required 
+                                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">Select payment method</option>
+                                <option value="cash">Cash</option>
+                                <option value="card">Credit/Debit Card</option>
+                                <option value="gcash">GCash</option>
+                                <option value="paymaya">PayMaya</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="walkInMessage" class="hidden"></div>
+
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" class="walkin-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnSubmitWalkIn" class="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
+                        Register Walk-in
                     </button>
                 </div>
             </form>
@@ -420,7 +686,7 @@ $user_initial = substr($user_name, 0, 1);
     </div>
     <!-- Member Details Modal -->
     <div id="memberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
             <button class="member-modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
             
             <h3 class="text-2xl font-bold text-white mb-6">Member Details</h3>
@@ -433,70 +699,128 @@ $user_initial = substr($user_name, 0, 1);
                 <button type="button" class="member-modal-close flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
                     Close
                 </button>
-                <button type="button" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                <button type="button" id="btnEditMemberFromView" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
                     Edit Member
                 </button>
             </div>
         </div>
     </div>
-    <script>
-        $(document).ready(function() {
-            // ===== TAB SWITCHING =====
-            $('.tab-button').on('click', function() {
-                const tabName = $(this).data('tab');
+
+    <!-- Edit Member Modal -->
+    <div id="editMemberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-2xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <button class="edit-member-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">Edit Member</h3>
+            
+            <form id="editMemberForm" method="POST" action="index.php?controller=Admin&action=updateMember" class="space-y-4">
+                <input type="hidden" name="user_id" id="edit_user_id">
                 
-                // Remove active class from all buttons and contents
-                $('.tab-button').removeClass('active').addClass('text-gray-400');
-                $('.tab-content').removeClass('active');
+                <!-- Personal Information -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Personal Information</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">First Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="first_name" id="edit_first_name" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Last Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="last_name" id="edit_last_name" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Middle Name</label>
+                        <input type="text" name="middle_name" id="edit_middle_name" 
+                            class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Email <span class="text-red-500">*</span></label>
+                        <input type="email" name="email" id="edit_email" required 
+                            class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Role <span class="text-red-500">*</span></label>
+                        <select name="role" id="edit_role" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="member">Member</option>
+                            <option value="admin">Admin</option>
+                            <option value="trainer">Trainer</option>
+                        </select>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Status <span class="text-red-500">*</span></label>
+                        <select name="status" id="edit_status" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Password Change (Optional) -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Change Password (Optional)</h4>
+                    <p class="text-gray-400 text-sm mb-4">Leave blank to keep current password</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">New Password</label>
+                            <input type="password" name="password" id="edit_password" 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Min. 8 characters">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Confirm Password</label>
+                            <input type="password" name="confirm_password" id="edit_confirm_password" 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Re-enter password">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="editMemberMessage" class="hidden"></div>
+
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" class="edit-member-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnUpdateMember" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                        Update Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Delete Member Modal -->
+    <div id="deleteMemberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
+            <button class="delete-modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            <form id="deleteForm" method="POST" action="index.php?controller=Admin&action=deleteMember">
+                <input type="hidden" name="user_id" id="delete_user_id">
+
+                <h3 class="text-2xl font-bold text-white mb-6">Are you sure you want to Delete Member?</h3>
                 
-                // Add active class to clicked button and corresponding content
-                $(this).addClass('active').removeClass('text-gray-400');
-                $('#' + tabName).addClass('active');
-            });
+                <div id="deleteMemberMessage" class="hidden"></div>
 
-            // ===== PLAN MODAL =====
-            $('#btnAddPlan').on('click', function() {
-                $('#planForm')[0].reset();
-                $('#planForm h3').text('Add New Plan');
-                $('#submitPlanBtn').text('Create Plan');
-                $('#planModal').addClass('show');
-                $('body').css('overflow', 'hidden');
-            });
-
-            // Close plan modal
-            $('.modal-close, .modal-cancel').on('click', function() {
-                $(this).closest('.modal-backdrop').removeClass('show');
-                $('body').css('overflow', 'auto');
-            });
-
-            // Close modal when clicking backdrop
-            $('#planModal, #memberModal').on('click', function(e) {
-                if ($(e.target).is(this)) {
-                    $(this).removeClass('show');
-                    $('body').css('overflow', 'auto');
-                }
-            });
-        });
-
-        // ===== PLAN ACTIONS =====
-        $(document).on('click', '.btn-edit-plan', function() {
-                showAlert('Edit plan functionality - Add your implementation', 'info');
-        });
-
-        $(document).on('click', '.btn-delete-plan', function() {
-            const planCard = $(this).closest('.plan-card');
-            if (confirm('Are you sure you want to delete this plan?')) {
-                planCard.fadeOut(300, function() {
-                    $(this).remove();
-                    showAlert('Plan deleted successfully', 'success');
-                });
-            }
-        });
-         // Close member modal
-        $('.member-modal-close').on('click', function() {
-            $('#memberModal').removeClass('show');
-            $('body').css('overflow', 'auto');
-        });
-    </script>
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" class="delete-modal-close flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        Close
+                    </button>
+                    <button type="submit" id="deleteBtn" class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors">
+                        Proceed
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="../public/assets/js/admin/admin.js"></script>
+        
 </body>
 </html>

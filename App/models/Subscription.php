@@ -8,8 +8,7 @@
             $sql = "INSERT INTO subscriptions(user_id, plan_id, start_date, end_date) VALUES (:user_id, :plan_id,:start_date, :end_date)";
              
             $query = $this->connect()->prepare($sql);
-            $query->bindParam(":user_id", $subData['user_id']);
-            
+            $query->bindParam(":user_id", $subData['user_id']);           
             $query->bindParam(":plan_id", $subData['plan_id']);
             $query->bindParam(":start_date", $subData['start_date']);
             $query->bindParam(":end_date", $subData['end_date']);

@@ -5,15 +5,15 @@
     $user = new User();
     $Auth = new AuthController($user);
     
-    $register = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "age" => "", "gender"=>"" , "password" => "", "cPassword" => ""];
-    $registerError = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "age" => "", "gender"=>"" , "password" => "", "cPassword" => "", "register"=>""];
+    $register = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "date_of_birth" => "", "gender"=>"" , "password" => "", "cPassword" => ""];
+    $registerError = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "date_of_birth" => "", "gender"=>"" , "password" => "", "cPassword" => "", "register"=>""];
     if($_SERVER['REQUEST_METHOD'] == "POST") {
 
         $register["first_name"] =  trim(htmlspecialchars($_POST['first_name']));
         $register["last_name"] = trim(htmlspecialchars($_POST['last_name']));
         $register["middle_name"] = isset($_POST['middle_name']) ? trim(htmlspecialchars($_POST['middle_name'])) : "";
         $register["email"] =  trim(htmlspecialchars($_POST['email']));
-        $register["age"] = trim(htmlspecialchars($_POST['age']));
+        $register["date_of_birth"] = trim(htmlspecialchars($_POST['date_of_birth']));
         $register["gender"] =  trim(htmlspecialchars($_POST['gender']));
         $register["password"] = trim(htmlspecialchars($_POST['password']));
         $register["cPassword"] = trim(htmlspecialchars($_POST['cPassword']));
@@ -30,10 +30,10 @@
             $registerError['email'] = "Please provide a valid email address";
         }
 
-        if(empty($register['age'])) {
-            $registerError['age'] = "Please provide you birthdate";
-        } else if($register['age'] < 12) {
-            $registerError['age'] = "Children are not allowed in the gym";
+        if(empty($register['date_of_birth'])) {
+            $registerError['date_of_birth'] = "Please provide you birthdate";
+        } else if($register['date_of_birth'] < 12) {
+            $registerError['date_of_birth'] = "Children are not allowed in the gym";
         }
         if(!isset($register["gender"] )) {
             $registerError['gender'] = "Please set your preferred gender";
@@ -101,9 +101,9 @@
                 </div>
                 <div class="grid grid-cols-2 gap-3">
                     <div class="w-50 flex flex-col">
-                        <label for="age" class="text-sm text-zinc-700">Age</label>
-                        <input type="number" name="age" id="age" placeholder="18" value="<?= $register['age'] ?>" class="w-25 md:w-full p-1 text-sm border border-gray-500/50 rounded-sm">
-                        <p class="text-red-500 text-sm"><?= $registerError['age'] ?></p>
+                        <label for="age" class="text-sm text-zinc-700">Date Of Birth</label>
+                        <input type="date" name="date_of_birth" id="age" placeholder="18" value="<?= $register['date_of_birth'] ?>" class="w-25 md:w-full p-1 text-sm border border-gray-500/50 rounded-sm">
+                        <p class="text-red-500 text-sm"><?= $registerError['date_of_birth'] ?></p>
                     </div>
                     <div>
                         <label for="gender" class="text-sm text-zinc-700">Gender</label>

@@ -24,7 +24,7 @@ session_start();
             header("location: ../../public/index.php");
         }
 
-        public function Register(array $userData) {
+        public function Register($userData) {
             if($this->userModel->addMember($userData)) {
                 return true;
             } else {

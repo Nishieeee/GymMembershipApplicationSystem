@@ -5,6 +5,8 @@
     require_once __DIR__ . "/../config/Database.php";
     require_once __DIR__ . "/../models/User.php";
     require_once __DIR__ . "/../models/Plan.php";
+    require_once __DIR__ . "/../models/Subscription.php";
+    require_once __DIR__ . "/../models/Payment.php";
 
     class AdminController extends Controller {
 
@@ -16,11 +18,15 @@
             $plan = new Plan();
 
             $members = $user->displayAllUsers();
+            $walk_ins = $user->displayAllWalkInMembers();
             $plans = $plan->getAllPlans();
+            $activePlans = $plan->getAllActivePlans();
 
             $this->adminView('dashboard', [
+                'walk_ins' => $walk_ins,
                 'members' => $members,
                 'plans' => $plans,
+                'activePlans' => $activePlans,
             ]);
         } 
 
@@ -44,16 +50,13 @@
                 "duration_months" => "",
                 "price" => "",
             ];
-            
-        
-            
+                       
             if($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $planData['plan_name'] = trim(htmlspecialchars($_POST['plan_name'] ?? ''));
                 $planData['description'] = trim(htmlspecialchars($_POST['description'] ?? ''));
                 $planData['duration_months'] = trim(htmlspecialchars($_POST['duration_months'] ?? ''));
                 $planData['price'] = trim(htmlspecialchars($_POST['price'] ?? ''));
                 
-                var_dump($planData);
                 // Validate plan_name
                 if(empty($planData['plan_name'])) {
                     $planErrors['plan_name'] = "Plan name is required";
@@ -121,6 +124,126 @@
                         'openModal' => $state,
                     ]);
                 }
+            }
+        }
+
+        public function registerMember() {
+            $user = new User();
+
+            header('Content-Type: application/json');
+
+            if($_SERVER['REQUEST_METHOD'] == 'POST') {
+
+                $register = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "date_of_birth" => "", "gender"=>"" , "password" => "", "cPassword" => ""];
+                $registerError = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "date_of_birth" => "", "gender"=>"" , "password" => "", "cPassword" => "", "register"=>""];
+                
+                $register["first_name"] =  trim(htmlspecialchars($_POST['first_name']));
+                $register["last_name"] = trim(htmlspecialchars($_POST['last_name']));
+                $register["middle_name"] = isset($_POST['middle_name']) ? trim(htmlspecialchars($_POST['middle_name'])) : "";
+                $register["email"] =  trim(htmlspecialchars($_POST['email']));
+                $register["date_of_birth"] = trim(htmlspecialchars($_POST['date_of_birth']));
+                $register["gender"] =  trim(htmlspecialchars($_POST['gender']));
+                $register["password"] = trim(htmlspecialchars($_POST['password']));
+                $register["cPassword"] = trim(htmlspecialchars($_POST['cPassword']));
+
+                if(empty($register['first_name'])) {
+                    $registerError['first_name'] = "Please provide your first name";
+                }
+                if(empty($register['last_name'])) {
+                    $registerError['last_name'] = "Please provide your last name";
+                }
+                if(empty($register['email'])) {
+                    $registerError['email'] = "Please  provide a valid email";
+                } else if(!filter_var($register['email'], FILTER_VALIDATE_EMAIL)) {
+                    $registerError['email'] = "Please provide a valid email address";
+                }
+
+                if(empty($register['date_of_birth'])) {
+                    $registerError['date_of_birth'] = "Please provide you birthdate";
+                } else if($register['date_of_birth'] < 12) {
+                    $registerError['date_of_birth'] = "Children are not allowed in the gym";
+                }
+                if(!isset($register["gender"] )) {
+                    $registerError['gender'] = "Please set your preferred gender";
+                }
+                if(empty($register['password'])) {
+                    $registerError['password'] = "Password should not be empty.";
+                } else if(strlen($register['password']) < 8) {
+                    $registerError['password'] = "Password should not be less than 8 characters";
+                } else if($register['password'] != $register['cPassword']) {
+                    $registerError['password'] = "Passwords do not match";
+                    $registerError['cPassword'] = "Passwords do not match";
+                }
+
+                if(empty($register['cPassword'])) {
+                    $registerError['cPassword'] = "Please enter you password again.";
+                }
+
+                if(empty(array_filter($registerError))) {
+                    if(!$user->findByEmail($register['email'])) {
+                        $user_id = $user->addMember($register);
+                        if($user_id) {
+                            $subscriptionDetails = [
+                                "subscription_id" => "",
+                                "user_id" => "",
+                                "plan_id" => "",
+                                "start_date" => "",
+                                "end_date" => "",
+                            ];
+                            $subscriptionDetails['user_id'] = $user_id['user_id'];
+                            $subscriptionDetails['plan_id'] = trim(htmlspecialchars($_POST['plan_id']) ?? "");
+                            $subscriptionDetails['start_date'] = date("Y-m-d");
+                            $subscriptionDetails['end_date'] =  date('y-m-d', strtotime('+30 days'));
+
+                            $subscribe = new Subscription();
+                            $paymentModel = new Payment();
+                            $planModel = new Plan();
+
+                            if($subscribe->subscripePlan($subscriptionDetails)) {
+                                $userCurrentPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']);
+                                $userPlan = $planModel->getUserPlan($subscriptionDetails['user_id']);
+                                
+                                //fill up payment details
+                                $paymentDetails['subscription_id'] = $userCurrentPlan['subscription_id'];
+                                $paymentDetails['amount'] = $userPlan['price'];
+                                $paymentDetails['payment_date'] = $userPlan['end_date'];
+                                $paymentDetails['status'] = "pending";
+                                if($paymentModel->openPayment($paymentDetails)) {
+                                    echo json_encode([
+                                        'success' => true,
+                                        'message' => 'User added Successfully',
+                                    ]);
+                                    
+                                } else {
+                                    echo json_encode([
+                                        'success' => false,
+                                        'message' => 'Error setting up user payment',
+                                    ]);
+                                }
+
+                            }   
+                                                
+                        } else {
+                            echo json_encode([
+                                'success' => false,
+                                'message' => 'Error registering user, please try again',
+                            ]);
+                            
+                        }
+                    } else {
+                        http_response_code(401);
+                        echo json_encode([
+                            'success' => false,
+                            'message' => 'Error registering user: Account already exist.',
+                        ]);
+                    }             
+                }
+            } else {
+                http_response_code(403);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'invalid request method',
+                ]);
             }
         }
     }

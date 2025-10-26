@@ -42,26 +42,28 @@
             $sql = "INSERT INTO payment_transaction( subscription_id, payment_id, payment_method, transaction_type, payment_status, remarks) VALUES (:subscription_id, :payment_id, :payment_method, :transaction_type, :payment_status, :remarks)";
             
             $query = $this->connect()->prepare($sql);
-
             $query->bindParam(":subscription_id", $paymentDetails['subscription_id']);
             $query->bindParam(":payment_id", $paymentDetails['payment_id']);
             $query->bindParam(":payment_method", $paymentDetails['payment_method']);
             $query->bindParam(":transaction_type", $paymentDetails['transaction_type']);
-            $query->bindParam(":payment_status", $paymentDetails['payment-status']);
+            $query->bindParam(":payment_status", $paymentDetails['payment_status']);
             $query->bindParam(":remarks", $paymentDetails['remarks']);
-
-
             if($query->execute()) {
                 $this->last_transaction_id = $this->connect()->lastInsertId();
 
-                $this->markPaid($paymentDetails['payment_id']);
+                if($this->markPaid($paymentDetails['payment_id'])) {
+                    echo json_encode([
+                        'success'=> true,
+                        'messsage' => "transaction success",
+                        'transaction_id' => $this->last_transaction_id
 
-                echo json_encode([
-                    'success'=> true,
-                    'messsage' => "transaction success",
-                    'transaction_id' => $this->last_transaction_id
-
-                ]);
+                    ]);
+                } else {
+                    echo json_encode([
+                        'success'=> true,
+                        'messsage' => "transaction failed",         
+                    ]);
+                }              
             } else {
                 echo json_encode([
                     'success'=> true,
