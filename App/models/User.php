@@ -27,7 +27,7 @@
             }
         }
         public function displayAllUsers() {
-            $sql = "SELECT CONCAT(m.first_name, ' ', m.last_name) as name, m.email, m.created_at, p.plan_name, s.end_date, m.status FROM members m LEFT JOIN subscriptions s on s.user_id = m.user_id LEFT JOIN membership_plans p ON p.plan_id = s.plan_id WHERE role != 'admin' GROUP BY m.user_id  ORDER BY m.created_at DESC";
+            $sql = "SELECT m.user_id, CONCAT(m.first_name, ' ', m.last_name) as name, m.email, m.created_at, p.plan_name, s.end_date, m.status FROM members m LEFT JOIN subscriptions s on s.user_id = m.user_id LEFT JOIN membership_plans p ON p.plan_id = s.plan_id WHERE role != 'admin' GROUP BY m.user_id  ORDER BY m.created_at DESC";
 
             $query = $this->connect()->prepare($sql);
 
@@ -140,7 +140,32 @@
                 return false;
             }
 
-        }      
+        } 
+        
+        public function getMemberData() {
+            $user_id = $_GET['user_id'];
+
+            $sql = "SELECT m.*, mp.plan_name FROM members m LEFT JOIN subscriptions s ON s.user_id = m.user_id LEFT JOIN membership_plans mp ON mp.plan_id = s.plan_id WHERE m.user_id = :user_id";
+
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":user_id", $user_id);
+
+            if($query->execute()) {
+                echo json_encode([
+                    'success' => true,
+                    'data' => $query->fetch(),
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'Data' => NULL,
+                ]);
+            }
+        }
+
+        public function updatMember() {
+            $sql = "";
+        }
     }
 
 ?>

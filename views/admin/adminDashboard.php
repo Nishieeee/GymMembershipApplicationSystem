@@ -292,7 +292,7 @@
                             <tbody>
                                 <?php  foreach($members as $member) { $user_name = $member['name'];
                                 $user_initial = substr($user_name, 0, 1); ?>
-                                    <tr class="table-row border-b border-gray-700">
+                                    <tr class="table-row border-b border-gray-700" data-user-id="<?= $member['user_id'] ?>">
                                         <td class="px-6 py-4">
                                             <div class="flex items-center">
                                                 <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3"><?= $user_initial ?></div>
@@ -306,7 +306,7 @@
                                             <span class="status-badge <?= $member['status'] == 'active' ? 'status-active' : 'status-inactive'?>"><?=isset($member['status']) ?  $member['status'] : 'inactive' ?></span>
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            <button class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
+                                            <button id="viewMemberDetailsBtn" class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
                                             <button class="btn-edit-member text-green-400 hover:text-green-300 mr-3">Edit</button>
                                             <button class="btn-delete-member text-red-400 hover:text-red-300">Delete</button>
                                         </td>
@@ -361,7 +361,7 @@
                             Search
                         </button>
                     </div>
-                    <!-- members table -->
+                    <!-- walkin table -->
                     <div class="overflow-x-auto">
                         <table class="w-full text-white">
                             <thead class="border-b border-gray-700 bg-gray-800">
@@ -456,85 +456,6 @@
 
 
     </main>
-    <!-- Add/Edit Plan Modal -->
-    <div id="planModal" class="<?= $openModal ? "show" : ""?> modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
-            <button class="modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
-            
-            <h3 class="text-2xl font-bold text-white mb-6">Add New Plan</h3>
-            
-            <form id="planForm" class="space-y-4" action="index.php?controller=Admin&action=addPlan" method="POST">
-                <div>
-                    <label class="block text-white font-semibold mb-2">Plan Name</label>
-                    <input type="text" name="plan_name" 
-                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    placeholder="e.g., Platinum" value="<?= isset($planData['plan_name']) ? htmlspecialchars($planData['plan_name']) : '' ?>">
-                    <p color="red"><?= $planErrors['plan_name'] ?? '' ?></p>
-                </div>
-
-                <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-white font-semibold mb-2">Price (Monthly)</label>
-                        <input type="number" name="price" step="0.01" required 
-                        class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="999" value="<?= isset($planData['price']) ? htmlspecialchars($planData['price']) : '' ?>">
-                        <p color="red"><?= $planErrors['price'] ?? '' ?></p>
-                    </div>
-
-                    <div>
-                        <label class="block text-white font-semibold mb-2">Duration (Months)</label>
-                        <input type="number" name="duration_months" required 
-                        class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        placeholder="1" value="<?= isset($planData['duration_months']) ? htmlspecialchars($planData['duration_months']) : '' ?>">
-                        <p color="red"><?= $planErrors['duration_months'] ?? '' ?></p>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-white font-semibold mb-2">Description</label>
-                    <textarea name="description" rows="3" required 
-                    class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                    placeholder="Describe this plan"><?= isset($planData['description']) ? htmlspecialchars($planData['description']) : '' ?></textarea>
-                    <p color="red"><?= $planErrors['description'] ?? '' ?></p>
-                </div>
-
-                <div class="flex items-center">
-                    <input type="checkbox" id="isFeatured" name="is_featured" class="mr-3">
-                    <label for="isFeatured" class="text-white font-semibold">Mark as featured plan</label>
-                </div>
-
-                <div class="flex space-x-4 mt-6">
-                    <button type="button" class="modal-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
-                        Cancel
-                    </button>
-                    <button type="submit" id="submitPlanBtn" class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
-                        Create Plan
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-    <!-- Member Details Modal -->
-    <div id="memberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
-            <button class="member-modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
-            
-            <h3 class="text-2xl font-bold text-white mb-6">Member Details</h3>
-            
-            <div id="memberDetails" class="space-y-4">
-                <!-- Details will be populated via jQuery -->
-            </div>
-
-            <div class="flex space-x-4 mt-6">
-                <button type="button" class="member-modal-close flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
-                    Close
-                </button>
-                <button type="button" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
-                    Edit Member
-                </button>
-            </div>
-        </div>
-    </div>
     <!-- Add Member Modal -->
     <div id="addMemberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-2xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
@@ -542,20 +463,20 @@
             
             <h3 class="text-2xl font-bold text-white mb-6">Add New Member</h3>
             
-            <form id="addMemberForm" method="POST" action="index.php?controller=Admin&action=registerMember" class="space-y-4">
+            <form id="addMemberForm" method="POST" action="add_member.php" class="space-y-4">
                 <!-- Personal Information -->
                 <div class="bg-gray-800 rounded-lg p-4 mb-4">
                     <h4 class="text-lg font-semibold text-white mb-4">Personal Information</h4>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-white font-semibold mb-2">First Name <span class="text-red-500">*</span></label>
+                            <label class="block text-white font-semibold mb-2">First Name *</label>
                             <input type="text" name="first_name" required 
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    placeholder="John">
                         </div>
                         <div>
-                            <label class="block text-white font-semibold mb-2">Last Name <span class="text-red-500">*</span></label>
+                            <label class="block text-white font-semibold mb-2">Last Name *</label>
                             <input type="text" name="last_name" required 
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    placeholder="Doe">
@@ -563,7 +484,7 @@
                     </div>
 
                     <div class="mt-4">
-                        <label class="block text-white font-semibold mb-2">Email <span class="text-red-500">*</span></label>
+                        <label class="block text-white font-semibold mb-2">Email *</label>
                         <input type="email" name="email" required 
                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                placeholder="john.doe@example.com">
@@ -571,7 +492,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div>
-                            <label class="block text-white font-semibold mb-2">Phone Number <span class="text-red-500">*</span></label>
+                            <label class="block text-white font-semibold mb-2">Phone Number *</label>
                             <input type="tel" name="phone" required 
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    placeholder="+63 9XX XXX XXXX">
@@ -583,22 +504,11 @@
                         </div>
                     </div>
 
-                    <div class="my-4">
-                        <label class="block text-white font-semibold mb-3">Gender</label>
-                        <div class="w-90 grid grid-cols-3 gap-1">
-                            <div class="text-white">
-                                <input type="radio" name="gender" id="Male" value="male">
-                                <label for="male">Male</label>
-                            </div>
-                            <div class="text-white">
-                                <input type="radio" name="gender" id="Female" value="female">
-                                <label for="female">Female</label>
-                            </div>
-                            <div class="text-white">
-                                <input type="radio" name="gender" id="Others" value="others">
-                                <label for="others">Others</label>
-                            </div>
-                        </div>                     
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Address</label>
+                        <textarea name="address" rows="2" 
+                                  class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                                  placeholder="Enter full address"></textarea>
                     </div>
                 </div>
 
@@ -607,21 +517,19 @@
                     <h4 class="text-lg font-semibold text-white mb-4">Membership Details</h4>
                     
                     <div>
-                        <label class="block text-white font-semibold mb-2">Select Plan <span class="text-red-500">*</span></label>
+                        <label class="block text-white font-semibold mb-2">Select Plan *</label>
                         <select name="plan_id" required 
                                 class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Choose a plan</option>
-                            <?php foreach($activePlans as $aPlan) { ?>
-                                <option class="" value="<?= $aPlan['plan_id']?>"><?= $aPlan['plan_name']?></option>    
-                            <?php }?>
+                            <!-- Plans will be populated from database -->
                         </select>
                     </div>
 
-                    <!-- <div class="mt-4">
-                        <label class="block text-white font-semibold mb-2">Start Date <span class="text-red-500">*</span></label>
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Start Date *</label>
                         <input type="date" name="start_date" required 
                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div> -->
+                    </div>
 
                     <div class="mt-4 flex items-center">
                         <input type="checkbox" id="startTrial" name="start_trial" class="mr-3">
@@ -635,14 +543,14 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-white font-semibold mb-2">Password <span class="text-red-500">*</span></label>
+                            <label class="block text-white font-semibold mb-2">Password *</label>
                             <input type="password" name="password" required 
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    placeholder="Min. 8 characters">
                         </div>
                         <div>
-                            <label class="block text-white font-semibold mb-2">Confirm Password <span class="text-red-500">*</span></label>
-                            <input type="password" name="cPassword" required 
+                            <label class="block text-white font-semibold mb-2">Confirm Password *</label>
+                            <input type="password" name="confirm_password" required 
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    placeholder="Re-enter password">
                         </div>
@@ -662,7 +570,8 @@
             </form>
         </div>
     </div>
-     <!-- Add Walk-in Member Modal -->
+
+    <!-- Add Walk-in Member Modal -->
     <div id="addWalkInModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
         <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-3xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
             <button class="walkin-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
@@ -734,6 +643,19 @@
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none"
                                    placeholder="Auto-calculated">
                         </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Visit Date <span class="text-red-500">*</span></label>
+                            <input type="datetime-local" name="visit_time" id="visitTime" required 
+                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-white font-semibold mb-2">End Date/Time <span class="text-red-500">*</span></label>
+                            <input type="datetime-local" name="end_date" id="endDate" required readonly
+                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none"
+                                   placeholder="Auto-calculated">
+                        </div>
         
                         <div>
                             <label class="block text-white font-semibold mb-2">Payment Method <span class="text-red-500">*</span></label>
@@ -762,7 +684,112 @@
             </form>
         </div>
     </div>
+    <!-- Member Details Modal -->
+    <div id="memberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <button class="member-modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">Member Details</h3>
+            
+            <div id="memberDetails" class="space-y-4">
+                <!-- Details will be populated via jQuery -->
+            </div>
 
+            <div class="flex space-x-4 mt-6">
+                <button type="button" class="member-modal-close flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                    Close
+                </button>
+                <button type="button" id="btnEditMemberFromView" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                    Edit Member
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Member Modal -->
+    <div id="editMemberModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-2xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <button class="edit-member-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">Edit Member</h3>
+            
+            <form id="editMemberForm" method="POST" action="index.php?controller=Admin&action=updateMember" class="space-y-4">
+                <input type="hidden" name="user_id" id="edit_user_id">
+                
+                <!-- Personal Information -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Personal Information</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">First Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="first_name" id="edit_first_name" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Last Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="last_name" id="edit_last_name" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Middle Name</label>
+                        <input type="text" name="middle_name" id="edit_middle_name" 
+                            class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Email <span class="text-red-500">*</span></label>
+                        <input type="email" name="email" id="edit_email" required 
+                            class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Role <span class="text-red-500">*</span></label>
+                        <select name="role" id="edit_role" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="user">User</option>
+                            <option value="admin">Admin</option>
+                            <option value="trainer">Trainer</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Password Change (Optional) -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Change Password (Optional)</h4>
+                    <p class="text-gray-400 text-sm mb-4">Leave blank to keep current password</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">New Password</label>
+                            <input type="password" name="password" id="edit_password" 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Min. 8 characters">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Confirm Password</label>
+                            <input type="password" name="confirm_password" id="edit_confirm_password" 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Re-enter password">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="editMemberMessage" class="hidden"></div>
+
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" class="edit-member-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnUpdateMember" class="flex-1 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                        Update Member
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
     <script src="../public/assets/js/admin/admin.js"></script>
         
 </body>
