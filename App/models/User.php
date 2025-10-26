@@ -105,9 +105,18 @@
             $query->bindParam(":password", $UserData['password']);
             
             if($query->execute()) {
-                return true;
+                $sql = "SELECT user_id FROM members WHERE email = :email";
+
+                $query = $this->connect()->prepare($sql);
+                $query->bindParam(":email", $UserData['email']);
+
+                if($query->execute()) {
+                    return $query->fetch();
+                } else {
+                    return null;
+                }
             } else {
-                return false;
+                return null;
             }
         }
         public function addWalkinMember($userData) {

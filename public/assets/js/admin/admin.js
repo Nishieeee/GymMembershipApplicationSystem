@@ -193,22 +193,79 @@ $(document).ready(function () {
 
   // ===== ADD MEMBER FORM VALIDATION =====
   $("#addMemberForm").on("submit", function (e) {
+    e.preventDefault();
+
     const password = $('input[name="password"]').val();
-    const confirmPassword = $('input[name="confirm_password"]').val();
+    const confirmPassword = $('input[name="cPassword"]').val();
 
     if (password.length < 8) {
-      e.preventDefault();
       showAddMemberMessage("Password must be at least 8 characters", "error");
       return false;
     }
 
     if (password !== confirmPassword) {
-      e.preventDefault();
       showAddMemberMessage("Passwords do not match", "error");
       return false;
     }
 
-    // If validation passes, form will submit normally
+    // If validation passes, submit via AJAX
+    const formData = new FormData(this);
+    const submitBtn = $("#btnSubmitMember");
+    const originalText = submitBtn.text();
+
+    // Show loading state
+    submitBtn.html('<span class="loading"></span>').prop("disabled", true);
+
+    $.ajax({
+      type: "POST",
+      url: "index.php?controller=Admin&action=registerMember",
+      data: formData,
+      processData: false,
+      contentType: false,
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showAddMemberMessage("✓ " + response.message, "success");
+          setTimeout(() => {
+            $("#addMemberModal").removeClass("show");
+            $("body").css("overflow", "auto");
+            location.reload();
+          }, 2000);
+        } else {
+          // Handle validation errors
+          if (response.errors) {
+            let errorMessages = "";
+            for (let field in response.errors) {
+              errorMessages += response.errors[field] + "<br>";
+            }
+            showAddMemberMessage(errorMessages, "error");
+          } else {
+            showAddMemberMessage(
+              response.message || "Failed to add member",
+              "error"
+            );
+          }
+          submitBtn.html(originalText).prop("disabled", false);
+        }
+      },
+      error: function (xhr, status, error) {
+        console.error("Add member error:", error);
+        let errorMessage = "An error occurred. Please try again.";
+
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          errorMessage = xhr.responseJSON.message;
+        } else if (xhr.responseJSON && xhr.responseJSON.errors) {
+          let errorMessages = "";
+          for (let field in xhr.responseJSON.errors) {
+            errorMessages += xhr.responseJSON.errors[field] + "<br>";
+          }
+          errorMessage = errorMessages;
+        }
+
+        showAddMemberMessage(errorMessage, "error");
+        submitBtn.html(originalText).prop("disabled", false);
+      },
+    });
   });
 
   // ===== HELPER FUNCTIONS =====

@@ -183,7 +183,7 @@
 <body class="gradient-bg min-h-screen">
     
     <!-- Admin Navbar -->
-    
+    <?php include __DIR__ . "/layouts/adminnavbar.php" ?>
 
     <!--  Alerts Container -->
     <div id="alertContainer" class="fixed top-24 right-4 z-40 space-y-4"></div>
@@ -542,20 +542,20 @@
             
             <h3 class="text-2xl font-bold text-white mb-6">Add New Member</h3>
             
-            <form id="addMemberForm" method="POST" action="add_member.php" class="space-y-4">
+            <form id="addMemberForm" method="POST" action="index.php?controller=Admin&action=registerMember" class="space-y-4">
                 <!-- Personal Information -->
                 <div class="bg-gray-800 rounded-lg p-4 mb-4">
                     <h4 class="text-lg font-semibold text-white mb-4">Personal Information</h4>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-white font-semibold mb-2">First Name *</label>
+                            <label class="block text-white font-semibold mb-2">First Name <span class="text-red-500">*</span></label>
                             <input type="text" name="first_name" required 
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    placeholder="John">
                         </div>
                         <div>
-                            <label class="block text-white font-semibold mb-2">Last Name *</label>
+                            <label class="block text-white font-semibold mb-2">Last Name <span class="text-red-500">*</span></label>
                             <input type="text" name="last_name" required 
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    placeholder="Doe">
@@ -563,7 +563,7 @@
                     </div>
 
                     <div class="mt-4">
-                        <label class="block text-white font-semibold mb-2">Email *</label>
+                        <label class="block text-white font-semibold mb-2">Email <span class="text-red-500">*</span></label>
                         <input type="email" name="email" required 
                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                placeholder="john.doe@example.com">
@@ -571,7 +571,7 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                         <div>
-                            <label class="block text-white font-semibold mb-2">Phone Number *</label>
+                            <label class="block text-white font-semibold mb-2">Phone Number <span class="text-red-500">*</span></label>
                             <input type="tel" name="phone" required 
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    placeholder="+63 9XX XXX XXXX">
@@ -583,11 +583,22 @@
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        <label class="block text-white font-semibold mb-2">Address</label>
-                        <textarea name="address" rows="2" 
-                                  class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
-                                  placeholder="Enter full address"></textarea>
+                    <div class="my-4">
+                        <label class="block text-white font-semibold mb-3">Gender</label>
+                        <div class="w-90 grid grid-cols-3 gap-1">
+                            <div class="text-white">
+                                <input type="radio" name="gender" id="Male" value="male">
+                                <label for="male">Male</label>
+                            </div>
+                            <div class="text-white">
+                                <input type="radio" name="gender" id="Female" value="female">
+                                <label for="female">Female</label>
+                            </div>
+                            <div class="text-white">
+                                <input type="radio" name="gender" id="Others" value="others">
+                                <label for="others">Others</label>
+                            </div>
+                        </div>                     
                     </div>
                 </div>
 
@@ -596,19 +607,21 @@
                     <h4 class="text-lg font-semibold text-white mb-4">Membership Details</h4>
                     
                     <div>
-                        <label class="block text-white font-semibold mb-2">Select Plan *</label>
+                        <label class="block text-white font-semibold mb-2">Select Plan <span class="text-red-500">*</span></label>
                         <select name="plan_id" required 
                                 class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="">Choose a plan</option>
-                            <!-- Plans will be populated from database -->
+                            <?php foreach($activePlans as $aPlan) { ?>
+                                <option class="" value="<?= $aPlan['plan_id']?>"><?= $aPlan['plan_name']?></option>    
+                            <?php }?>
                         </select>
                     </div>
 
-                    <div class="mt-4">
-                        <label class="block text-white font-semibold mb-2">Start Date *</label>
+                    <!-- <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Start Date <span class="text-red-500">*</span></label>
                         <input type="date" name="start_date" required 
                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    </div>
+                    </div> -->
 
                     <div class="mt-4 flex items-center">
                         <input type="checkbox" id="startTrial" name="start_trial" class="mr-3">
@@ -622,14 +635,14 @@
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label class="block text-white font-semibold mb-2">Password *</label>
+                            <label class="block text-white font-semibold mb-2">Password <span class="text-red-500">*</span></label>
                             <input type="password" name="password" required 
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    placeholder="Min. 8 characters">
                         </div>
                         <div>
-                            <label class="block text-white font-semibold mb-2">Confirm Password *</label>
-                            <input type="password" name="confirm_password" required 
+                            <label class="block text-white font-semibold mb-2">Confirm Password <span class="text-red-500">*</span></label>
+                            <input type="password" name="cPassword" required 
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                    placeholder="Re-enter password">
                         </div>
@@ -721,19 +734,6 @@
                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none"
                                    placeholder="Auto-calculated">
                         </div>
-
-                        <!-- <div>
-                            <label class="block text-white font-semibold mb-2">Visit Date <span class="text-red-500">*</span></label>
-                            <input type="datetime-local" name="visit_time" id="visitTime" required 
-                                   class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
-                        </div>
-
-                        <div>
-                            <label class="block text-white font-semibold mb-2">End Date/Time <span class="text-red-500">*</span></label>
-                            <input type="datetime-local" name="end_date" id="endDate" required readonly
-                                   class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none"
-                                   placeholder="Auto-calculated">
-                        </div> -->
         
                         <div>
                             <label class="block text-white font-semibold mb-2">Payment Method <span class="text-red-500">*</span></label>
