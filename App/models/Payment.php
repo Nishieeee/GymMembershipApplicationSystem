@@ -23,6 +23,18 @@
 
         }
 
+        public function totalEarned() {
+            $sql = "SELECT SUM(amount) as total_earned FROM payments WHERE status='paid'";
+
+            $query = $this->connect()->prepare($sql);
+
+            if($query->execute()) {
+                return $query->fetch();
+            } else {
+                return 0;
+            }
+        }
+
         public function getPaymentDetails($user_id) {
             $sql = "SELECT s.subscription_id, mp.plan_name, s.start_date, s.end_date, p.amount, p.payment_id, p.payment_date, p.status FROM subscriptions s JOIN membership_plans mp ON mp.plan_id = s.plan_id
             JOIN payments p ON p.subscription_id = s.subscription_id

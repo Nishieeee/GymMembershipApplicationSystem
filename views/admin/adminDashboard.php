@@ -200,14 +200,14 @@
                 <div class="stat-card rounded-xl p-6 text-center cursor-pointer">
                     <div class="text-4xl mb-3"></div>
                     <p class="text-gray-400 text-sm font-medium mb-1">Total Members</p>
-                    <p class="text-3xl font-bold text-white">1,256</p>
+                    <p class="text-3xl font-bold text-white"><?= $memberCount['active_member_count'] ?></p>
                     <p class="text-green-400 text-xs mt-2">↑ 12% from last month</p>
                 </div>
 
                 <div class="stat-card rounded-xl p-6 text-center cursor-pointer">
                     <div class="text-4xl mb-3"></div>
-                    <p class="text-gray-400 text-sm font-medium mb-1">Monthly Revenue</p>
-                    <p class="text-3xl font-bold text-white">₱125.5K</p>
+                    <p class="text-gray-400 text-sm font-medium mb-1">Total Revenue</p>
+                    <p class="text-3xl font-bold text-white">₱ <?= $totalEarned['total_earned'] ?></p>
                     <p class="text-green-400 text-xs mt-2">↑ 8% from last month</p>
                 </div>
 
@@ -317,7 +317,7 @@
                     </div>
                     <!-- Pagination -->
                     <div class="mt-6 flex items-center justify-between">
-                        <p class="text-gray-400">Showing 1-4 of 1,256 members</p>
+                        <p class="text-gray-400">Showing 1-4 of <?= $memberCount['active_member_count'] ?> members</p>
                         <div class="flex space-x-2">
                             <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">← Previous</button>
                             <button class="px-4 py-2 bg-blue-600 text-white rounded-lg">1</button>
@@ -402,7 +402,7 @@
                     </div>
                     <!-- Pagination -->
                     <div class="mt-6 flex items-center justify-between">
-                        <p class="text-gray-400">Showing 1-4 of 1,256 members</p>
+                        <p class="text-gray-400">Showing 1-4 of <?= $memberCount['active_member_count'] ?> members</p>
                         <div class="flex space-x-2">
                             <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">← Previous</button>
                             <button class="px-4 py-2 bg-blue-600 text-white rounded-lg">1</button>

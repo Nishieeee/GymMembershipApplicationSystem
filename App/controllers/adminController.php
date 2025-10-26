@@ -16,13 +16,18 @@
 
             $user = new User();
             $plan = new Plan();
+            $payment = new Payment();
 
             $members = $user->displayAllUsers();
+            $memberCount = $user->countActiveMembers();
+            $totalEarned = $payment->totalEarned();
             $walk_ins = $user->displayAllWalkInMembers();
             $plans = $plan->getAllPlans();
             $activePlans = $plan->getAllActivePlans();
 
             $this->adminView('dashboard', [
+                'memberCount' => $memberCount,
+                'totalEarned' => $totalEarned,
                 'walk_ins' => $walk_ins,
                 'members' => $members,
                 'plans' => $plans,

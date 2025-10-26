@@ -194,6 +194,18 @@
                 return false;
             }
         }
+
+        public function countActiveMembers() {
+            $sql = "SELECT COUNT(*) as active_member_count FROM members";
+
+            $query = $this->connect()->prepare($sql);
+
+            if($query->execute()) {
+                return $query->fetch();
+            } else {
+                return 0;
+            }
+        }
     }
 
 ?>
