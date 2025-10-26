@@ -76,6 +76,43 @@
             }
         }
 
+        public function updateMember() {
+            $user_id = $_GET['user_id'];
+
+            $user = new User();
+
+            $userData = [
+                'first_name' => "",
+                'last_name' => "",
+                'middle_name' => "",
+                'email' => "",
+                'password' => "",
+                'password' => "",
+                'role' => "",
+                'status' => ""
+            ];
+
+            $userData['first_name'] = trim(htmlspecialchars($_POST['first_name']));
+            $userData['last_name'] = trim(htmlspecialchars($_POST['last_name']));
+            $userData['middle_name'] = trim(htmlspecialchars($_POST['middle_name']));
+            $userData['email'] = trim(htmlspecialchars($_POST['email']));
+            $userData['password'] = trim(htmlspecialchars($_POST['password']));
+            $userData['role'] = trim(htmlspecialchars($_POST['role']));
+            $userData['status'] = trim(htmlspecialchars($_POST['status']));
+
+            if($user->updateMemberViaUserId($userData, $user_id)) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Update Complete!',
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Error failed to update user details, Please try again.',
+                ]);
+            }
+        }
+
     }
 
 

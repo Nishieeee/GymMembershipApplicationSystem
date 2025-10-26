@@ -749,9 +749,17 @@
                         <label class="block text-white font-semibold mb-2">Role <span class="text-red-500">*</span></label>
                         <select name="role" id="edit_role" required 
                                 class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="user">User</option>
+                            <option value="member">Member</option>
                             <option value="admin">Admin</option>
                             <option value="trainer">Trainer</option>
+                        </select>
+                    </div>
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Status <span class="text-red-500">*</span></label>
+                        <select name="status" id="edit_status" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
                         </select>
                     </div>
                 </div>

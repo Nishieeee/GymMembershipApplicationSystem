@@ -163,8 +163,23 @@
             }
         }
 
-        public function updatMember() {
-            $sql = "";
+        public function updateMemberViaUserId($userData, $user_id) {
+            $sql = "UPDATE members SET first_name=:first_name, last_name=:last_name, middle_name=:middle_name, email=:email, password=:password, role=:role , status=:status WHERE user_id = :user_id";
+
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":first_name", $userData['first_name']);
+            $query->bindParam(":last_name", $userData['last_name']);
+            $query->bindParam(":middle_name", $userData['middle_name']);
+            $query->bindParam(":email", $userData['email']);
+            $query->bindParam(":password", $userData['password']);
+            $query->bindParam(":role", $userData['role']);
+            $query->bindParam(":status", $userData['status']);
+            $query->bindParam(":user_id", $user_id);
+            if($query->execute()) {
+                return true;
+            } else {
+                return false;
+            }
         }
     }
 

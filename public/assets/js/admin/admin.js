@@ -452,7 +452,7 @@ $(document).ready(function() {
         
         const password = $('#edit_password').val();
         const confirmPassword = $('#edit_confirm_password').val();
-        
+        const userId = $('#edit_user_id').val();
         if (password || confirmPassword) {
             if (password.length < 8) {
                 showMessage('Password must be at least 8 characters', 'error');
@@ -472,7 +472,7 @@ $(document).ready(function() {
 
         $.ajax({
             type: 'POST',
-            url: 'index.php?controller=User&action=updateMember',
+            url: 'index.php?controller=User&action=updateMember&user_id=' + userId,
             data: formData,
             processData: false,
             contentType: false,
