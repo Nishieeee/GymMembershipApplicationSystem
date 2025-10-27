@@ -21,54 +21,51 @@
         }
 
     public function processPayment() {
-        $paymentModel = new Payment();
-        $paymentDetails = [
-            "subscription_id" => "",
-            "payment_id" => "",
-            "payment_method" => "",
-            "payment_status" => "",
-            "transaction_type" => "new",
-            "remarks" => "",
-        ];
         header('Content-Type: application/json');
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
             http_response_code(405);
-            echo json_encode(['success' => false, 'message' => 'Method Not Allowed.']);
-            exit;
-        }
-        // 1. Get and Validate Data
-        $paymentDetails['subscription_id'] = $_POST['subscription_id'] ?? "";
-        $amount = $_POST['amount'] ?? "";
-        $paymentDetails['payment_method'] = $_POST['payment_method'];
-        $paymentDetails['payment_id'] = 14;
-        $paymentDetails['payment_status'] = "complete";
-            
-        if (!$paymentDetails) {
-            http_response_code(400); // Send 400 status for bad data
-            echo json_encode(['success' => false, 'message' => 'Missing required payment data from the form.']);
+            echo json_encode(['success' => false, 'message' => 'Method Not Allowed']);
             exit;
         }
 
-        // --- 2. Call Model / Simulate Payment Logic 
+        // Initialize model
+        $paymentModel = new Payment();
+        $payment_id = $paymentModel->getPaymentId($_POST['subscription_id']);
+        // Validate and gather inputs
+        $paymentDetails = [
+            "subscription_id" => $_POST['subscription_id'] ?? null,
+            "payment_id" => $payment_id['payment_id'] ?? $_POST['payment_id'],
+            "payment_method" => $_POST['payment_method'] ?? null,
+            "payment_status" => "completed",
+            "transaction_type" => "new",
+            "remarks" => $_POST['remarks'] ?? ""
+        ];
+
+        // Ensure required data
+        if (empty($paymentDetails['subscription_id']) || empty($paymentDetails['payment_method'])) {
+            http_response_code(400);
+            echo json_encode(['success' => false, 'message' => 'Missing required payment fields']);
+            exit;
+        }
+
+        // Process payment
         $result = $paymentModel->completePayment($paymentDetails);
 
-            
+        // Respond accordingly
         if ($result) {
             http_response_code(200);
             echo json_encode([
                 'success' => true,
-                'message' => $result['message'],
-                'transaction_id' => $result['transaction_id']
+                'message' => 'Transaction completed successfully'
+            ]);
+        } else {
+             http_response_code(400);
+            echo json_encode([
+                'success' => false,
+                'message' => 'Transaction failed'
             ]);
         }
-        //  else if(!$result) {
-        //     http_response_code(400); // Send 400 status for business logic failure
-        //     echo json_encode([
-        //         'success' => false,
-        //         'message' => "Transaction failed",
-        //     ]);
-        // }
-        exit;
     }
+
 }

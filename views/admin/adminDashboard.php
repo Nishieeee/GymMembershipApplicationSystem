@@ -715,9 +715,9 @@
                             <select name="session_type" id="sessionType" required 
                                     class="w-full px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
                                 <option value="">Select session type</option>
-                                <option value="single" data-price="20">Single Session - ₱20</option>
-                                <option value="day_pass" data-price="60">Day Pass - ₱60</option>
-                                <option value="weekend" data-price="200">Weekend Pass - ₱200</option>
+                                <option value="single" data-price="20">Session Day Pass - ₱20</option>
+                                <option value="day_pass" data-price="60">Basic Pass - ₱60</option>
+                                <option value="weekend" data-price="200">Premium Day Pass - ₱200</option>
                             </select>
                         </div>
 
