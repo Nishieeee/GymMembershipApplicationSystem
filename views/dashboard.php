@@ -247,20 +247,20 @@
                             <span>Upcoming Classes Today</span>
                         </h2>
                         <div class="space-y-4">
-                            <?php if(isset($userPlan)) { foreach ($upcoming_classes as $class) { ?>
+                            <?php if(isset($userPlan)) { foreach ($mySessions as $session) { ?>
                                 <div class="class-card rounded-lg p-6">
                                     <div class="flex items-start justify-between">
                                         <div class="flex-1">
-                                            <h3 class="text-lg font-bold text-white mb-2"><?= $class['name'] ?></h3>
+                                            <h3 class="text-lg font-bold text-white mb-2"><?= $user['name'] ?></h3>
                                             <div class="space-y-1 text-sm text-gray-400">
-                                                <p>⏰ <?= $class['time'] ?></p>
-                                                <p>👨‍🏫 Trainer: <?= $class['trainer'] ?></p>
-                                                <p>👥 Capacity: <?= $class['capacity'] ?></p>
+                                                <p>⏰ <?= $session['session_date'] ?></p>
+                                                <p>👨‍🏫 Trainer: <?= $session['trainer_name'] ?></p>
+                                              
                                             </div>
                                         </div>
-                                        <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300">
+                                        <!-- <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300">
                                             Book
-                                        </button>
+                                        </button> -->
                                     </div>
                                 </div>
                             <?php } } else {?>

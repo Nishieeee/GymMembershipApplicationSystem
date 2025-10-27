@@ -58,6 +58,36 @@
             }
 
         }
+
+        public function getUserPayments() {
+            $sql = "SELECT 
+            CONCAT(m.first_name, ' ', m.last_name) as name, pt.transaction_id, mp.plan_name, p.amount, p.payment_date, p.status
+            FROM members m
+            LEFT JOIN subscriptions s ON s.user_id = m.user_id
+            LEFT JOIN membership_plans mp ON mp.plan_id = s.plan_id
+            LEFT JOIN payments p ON p.subscription_id = s.subscription_id
+            LEFT JOIN payment_transaction pt ON pt.payment_id = p.payment_id
+            WHERE m.role = 'member'
+            ORDER BY p.payment_date DESC";
+            // WHERE p.status = 'pending'
+
+            $query = $this->connect()->prepare($sql);
+            if($query->execute()) {
+                return $query->fetchAll();
+            } else {
+                return null;
+            }
+        }
+
+        public function countTotalPayments() {
+            $sql = "SELECT COUNT(*) as total_number_of_payments FROM payments";
+            $query = $this->connect()->prepare($sql);
+            if($query->execute()) {
+                return $query->fetch();
+            } else {
+                return null;
+            }
+        }
     }
 ?>
  

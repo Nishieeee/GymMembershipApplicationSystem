@@ -13,7 +13,10 @@ session_start();
             if($user && $password == $user['password']) {              
                 $_SESSION['user_id'] = $user['user_id'];             
                 $_SESSION['role'] = $user['role'];
-
+                if($_SESSION['role'] == 'trainer') {
+                    $trainer = $this->userModel->getTrainerId($_SESSION['user_id']);
+                    $_SESSION['trainer_id'] = $trainer['trainer_id'];
+                }
                 return true;
             }
             return false;

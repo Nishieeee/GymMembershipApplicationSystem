@@ -7,6 +7,7 @@
     require_once __DIR__ . "/../models/Plan.php";
     require_once __DIR__ . "/../models/Subscription.php";
     require_once __DIR__ . "/../models/Payment.php";
+    require_once __DIR__ . "/../models/Trainer.php";
 
     class AdminController extends Controller {
 
@@ -16,13 +17,26 @@
 
             $user = new User();
             $plan = new Plan();
+            $payment = new Payment();
+            $subscription = new Subscription();
+            $trainerModel = new Trainer();
 
             $members = $user->displayAllUsers();
+            $memberCount = $user->countActiveMembers();
+            $totalEarned = $payment->totalEarned();
+            $trainers = $trainerModel->getAllTrainers();
+            $paymentDetails = $subscription->getUserPayments();
+            $totalPayments = $subscription->countTotalPayments();
             $walk_ins = $user->displayAllWalkInMembers();
             $plans = $plan->getAllPlans();
             $activePlans = $plan->getAllActivePlans();
 
             $this->adminView('dashboard', [
+                'memberCount' => $memberCount,
+                'totalEarned' => $totalEarned,
+                'paymentDetails' => $paymentDetails,
+                'totalPayments' =>  $totalPayments,
+                'trainers' => $trainers,
                 'walk_ins' => $walk_ins,
                 'members' => $members,
                 'plans' => $plans,
@@ -245,6 +259,26 @@
                     'message' => 'invalid request method',
                 ]);
             }
+        }
+
+        public function getTrainerData() {
+            header('Content-Type: application/json');
+            $trainerModel = new Trainer();
+            $trainer_id = $_GET['trainer_id'];
+            $trainerData = $trainerModel->getTrainerById($trainer_id);
+            
+            if($trainerData) {
+                echo json_encode([
+                    'success' => true,
+                    'data' => $trainerData,
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' =>"an error occured.",
+                ]);
+            }
+            
         }
     }
 
