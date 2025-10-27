@@ -278,6 +278,10 @@
                 
                 // Show selected tab content
                 $('#' + tabName).addClass('active');
+                if(tabName === 'requests') {
+                    loadRequests();
+                }
+                
             });
 
             // Schedule session
@@ -422,6 +426,7 @@
                     success: function(response) {
                         if(response.success) {
                             loadRequests();
+                            location.reload();
                         } else {
                             alert(response.message);
                         }

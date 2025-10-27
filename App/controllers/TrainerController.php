@@ -109,9 +109,10 @@ class TrainerController extends Controller{
     }
 
     public function getPendingRequests() {
+        session_start();
         header('Content-Type: application/json');
         
-        $trainerId = $_GET['trainer_id'] ?? $_SESSION['user_id'];
+        $trainerId = $_GET['trainer_id'] ?? $_SESSION['trainer_id'];
         $requests = $this->trainerModel->getPendingRequests($trainerId);
         
         echo json_encode(['success' => true, 'data' => $requests]);

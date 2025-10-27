@@ -85,12 +85,14 @@ class Trainer extends Database {
     public function handleRequest($requestId, $action) {
         $status = $action === 'accepted' ? 'accepted' : 'rejected';
         
-        $this->connect()->beginTransaction();
+        $db = $this->connect();
+        
+        $db->beginTransaction();
         
         try {
             // Update request status
             $query = "UPDATE trainer_requests SET status = :status WHERE request_id = :request_id";
-            $stmt = $this->connect()->prepare($query);
+            $stmt = $db->prepare($query);
             $stmt->bindParam(':status', $status);
             $stmt->bindParam(':request_id', $requestId);
             $stmt->execute();
@@ -98,23 +100,23 @@ class Trainer extends Database {
             // If accepted, add to trainer_members
             if($action === 'accepted') {
                 $query = "SELECT trainer_id, user_id FROM trainer_requests WHERE request_id = :request_id";
-                $stmt = $this->connect()->prepare($query);
+                $stmt = $db->prepare($query);
                 $stmt->bindParam(':request_id', $requestId);
                 $stmt->execute();
                 $request = $stmt->fetch(PDO::FETCH_ASSOC);
                 
                 $query = "INSERT INTO trainer_members (trainer_id, user_id, assigned_date, status) 
                           VALUES (:trainer_id, :user_id, NOW(), 'active')";
-                $stmt = $this->connect()->prepare($query);
+                $stmt = $db->prepare($query);
                 $stmt->bindParam(':trainer_id', $request['trainer_id']);
                 $stmt->bindParam(':user_id', $request['user_id']);
                 $stmt->execute();
             }
             
-            $this->connect()->commit();
+            $db->commit();
             return true;
         } catch(Exception $e) {
-            $this->connect()->rollBack();
+            $db->rollBack();
             return false;
         }
     }
