@@ -157,4 +157,11 @@ class TrainerController extends Controller{
             ]);
         }
     }
+    public function addTrainer() {
+
+    }
+
+    public function updateTrainer() {
+        
+    }
 }

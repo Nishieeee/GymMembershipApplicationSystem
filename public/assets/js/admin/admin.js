@@ -905,7 +905,7 @@ $(document).ready(function () {
 
     $.ajax({
       type: "POST",
-      url: "index.php?controller=Admin&action=updateTrainer",
+      url: "index.php?controller=Trainer&action=updateTrainer",
       data: formData,
       processData: false,
       contentType: false,
