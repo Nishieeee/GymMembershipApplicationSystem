@@ -586,7 +586,7 @@ $(document).ready(function () {
     $("body").css("overflow", "auto");
   });
 
-  $("#deleteForm").on("submit", function(e) {
+  $("#deleteForm").on("submit", function (e) {
     e.preventDefault();
 
     const formData = new FormData(this);
@@ -604,7 +604,7 @@ $(document).ready(function () {
       contentType: false,
       dataType: "json",
       success: function (response) {
-        if(response.success) {
+        if (response.success) {
           showDeleteMessage("✓ " + response.message, "success");
           setTimeout(() => {
             $("#deleteMemberModal").removeClass("show");
@@ -612,7 +612,10 @@ $(document).ready(function () {
             location.reload();
           }, 2000);
         } else {
-          showDeleteMessage(response.message || "Failed to update member", "error");
+          showDeleteMessage(
+            response.message || "Failed to update member",
+            "error"
+          );
           submitBtn.html(originalText).prop("disabled", false);
         }
       },
@@ -625,6 +628,417 @@ $(document).ready(function () {
         submitBtn.html(originalText).prop("disabled", false);
       },
     });
+  });
+  // ===== HELPER FUNCTION =====
+  function showDeleteMessage(message, type) {
+    const messageDiv = $("#deleteMemberMessage");
+    const bgColor = type === "error" ? "bg-red-500" : "bg-green-500";
+
+    messageDiv
+      .html(
+        `
+            <div class="p-3 rounded-lg ${bgColor} text-white text-sm">
+                ${message}
+            </div>
+        `
+      )
+      .removeClass("hidden");
+
+    if (type !== "error") {
+      setTimeout(() => messageDiv.addClass("hidden"), 3000);
+    }
+  }
+});
+
+$(document).ready(function () {
+  // ===== OPEN ADD TRAINER MODAL =====
+  $(document).on("click", "#btnAddNewTrainer", function () {
+    $("#addTrainerForm")[0].reset();
+    $("#addTrainerMessage").addClass("hidden");
+    $("#addTrainerModal").addClass("show");
+    $("body").css("overflow", "hidden");
+  });
+
+  // ===== ADD TRAINER FORM SUBMISSION =====
+  $("#addTrainerForm").on("submit", function (e) {
+    e.preventDefault();
+
+    const password = $('input[name="password"]').val();
+    const confirmPassword = $('input[name="confirm_password"]').val();
+
+    if (password.length < 8) {
+      showMessage(
+        "addTrainerMessage",
+        "Password must be at least 8 characters",
+        "error"
+      );
+      return false;
+    }
+
+    if (password !== confirmPassword) {
+      showMessage("addTrainerMessage", "Passwords do not match", "error");
+      return false;
+    }
+
+    const formData = new FormData(this);
+    const submitBtn = $("#btnAddTrainer");
+    const originalText = submitBtn.text();
+
+    submitBtn.html('<span class="loading"></span>').prop("disabled", true);
+
+    $.ajax({
+      type: "POST",
+      url: "index.php?controller=Admin&action=addTrainer",
+      data: formData,
+      processData: false,
+      contentType: false,
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showMessage("addTrainerMessage", "✓ " + response.message, "success");
+          setTimeout(() => {
+            $("#addTrainerModal").removeClass("show");
+            $("body").css("overflow", "auto");
+            location.reload();
+          }, 2000);
+        } else {
+          showMessage(
+            "addTrainerMessage",
+            response.message || "Failed to add trainer",
+            "error"
+          );
+          submitBtn.html(originalText).prop("disabled", false);
+        }
+      },
+      error: function (xhr) {
+        let errorMessage = "An error occurred. Please try again.";
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          errorMessage = xhr.responseJSON.message;
+        }
+        showMessage("addTrainerMessage", errorMessage, "error");
+        submitBtn.html(originalText).prop("disabled", false);
+      },
+    });
+  });
+
+  // ===== VIEW TRAINER DETAILS =====
+  $(document).on("click", ".btn-view-trainer", function () {
+    const row = $(this).closest(".table-row");
+    const trainerId = row.data("trainer-id");
+
+    if (!trainerId) {
+      alert("Trainer ID not found");
+      return;
+    }
+
+    $.ajax({
+      type: "GET",
+      url:
+        "index.php?controller=Admin&action=getTrainerData&trainer_id=" +
+        trainerId,
+      dataType: "json",
+      success: function (response) {
+        if (response.success && response.data) {
+          const trainer = response.data;
+
+          let detailsHTML = `
+                        <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <p class="text-gray-400 text-sm mb-1">Trainer ID</p>
+                                    <p class="text-white font-semibold">${
+                                      trainer.trainer_id
+                                    }</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm mb-1">Status</p>
+                                    <span class="status-badge status-${
+                                      trainer.status
+                                    }">${trainer.status}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                            <h4 class="text-white font-semibold mb-3">Personal Information</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Full Name</p>
+                                    <p class="text-white font-semibold">${
+                                      trainer.name
+                                    }</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Email</p>
+                                    <p class="text-white font-semibold">${
+                                      trainer.email
+                                    }</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Contact Number</p>
+                                    <p class="text-white font-semibold">${
+                                      trainer.contact_no || "N/A"
+                                    }</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-gray-800 rounded-lg p-4">
+                            <h4 class="text-white font-semibold mb-3">Trainer Details</h4>
+                            <div class="space-y-3">
+                                <div>
+                                    <p class="text-gray-400 text-sm">Specialization</p>
+                                    <p class="text-white font-semibold">${
+                                      trainer.specialization
+                                    }</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Experience</p>
+                                    <p class="text-white font-semibold">${
+                                      trainer.experience_years
+                                    } years</p>
+                                </div>
+                                <div>
+                                    <p class="text-gray-400 text-sm">Join Date</p>
+                                    <p class="text-white font-semibold">${
+                                      trainer.join_date
+                                    }</p>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+          $("#trainerDetails").html(detailsHTML);
+          $("#viewTrainerModal").data("trainer-id", trainerId);
+          $("#viewTrainerModal").addClass("show");
+          $("body").css("overflow", "hidden");
+        } else {
+          alert("Failed to load trainer data");
+        }
+      },
+      error: function () {
+        alert("An error occurred while loading trainer data");
+      },
+    });
+  });
+
+  // ===== OPEN EDIT FROM VIEW MODAL =====
+  $("#btnEditTrainer").on("click", function () {
+    const row = $(this).closest(".table-row");
+    const trainerId = row.data("trainer-id");
+    $("#viewTrainerModal").removeClass("show");
+    loadTrainerForEdit(trainerId);
+  });
+
+  // ===== DIRECT EDIT FROM TABLE =====
+  $(document).on("click", ".btn-edit-trainer", function () {
+    const row = $(this).closest(".table-row");
+    const trainerId = row.data("trainer-id");
+    loadTrainerForEdit(trainerId);
+  });
+
+  // ===== LOAD TRAINER DATA FOR EDITING =====
+  function loadTrainerForEdit(trainerId) {
+    $.ajax({
+      type: "GET",
+      url:
+        "index.php?controller=Admin&action=getTrainerData&trainer_id=" +
+        trainerId,
+      dataType: "json",
+      success: function (response) {
+        if (response.success && response.data) {
+          const trainer = response.data;
+
+          $("#edit_trainer_id").val(trainer.trainer_id);
+          $("#edit_user_id").val(trainer.user_id);
+          $("#edit_trainer_first_name").val(trainer.first_name);
+          $("#edit_trainer_last_name").val(trainer.last_name);
+          $("#edit_trainer_middle_name").val(trainer.middle_name || "");
+          $("#edit_trainer_email").val(trainer.email);
+          $("#edit_trainer_contact_no").val(trainer.contact_no || "");
+          $("#edit_specialization").val(trainer.specialization);
+          $("#edit_experience_years").val(trainer.experience_years);
+          $("#edit_trainer_status").val(trainer.status);
+          $("#edit_bio").val(trainer.bio || "");
+          $("#edit_trainer_password").val("");
+          $("#edit_confirm_trainer_password").val("");
+
+          $("#editTrainerModal").addClass("show");
+          $("body").css("overflow", "hidden");
+        } else {
+          alert("Failed to load trainer data for editing");
+        }
+      },
+      error: function () {
+        alert("An error occurred while loading trainer data");
+      },
+    });
+  }
+
+  // ===== UPDATE TRAINER FORM SUBMISSION =====
+  $("#editTrainerForm").on("submit", function (e) {
+    e.preventDefault();
+
+    const password = $("#edit_password").val();
+    const confirmPassword = $("#edit_confirm_password").val();
+
+    if (password || confirmPassword) {
+      if (password.length < 8) {
+        showMessage(
+          "editTrainerMessage",
+          "Password must be at least 8 characters",
+          "error"
+        );
+        return false;
+      }
+      if (password !== confirmPassword) {
+        showMessage("editTrainerMessage", "Passwords do not match", "error");
+        return false;
+      }
+    }
+
+    const formData = new FormData(this);
+    const submitBtn = $("#btnUpdateTrainer");
+    const originalText = submitBtn.text();
+
+    submitBtn.html('<span class="loading"></span>').prop("disabled", true);
+
+    $.ajax({
+      type: "POST",
+      url: "index.php?controller=Trainer&action=updateTrainer",
+      data: formData,
+      processData: false,
+      contentType: false,
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showMessage("editTrainerMessage", "✓ " + response.message, "success");
+          setTimeout(() => {
+            $("#editTrainerModal").removeClass("show");
+            $("body").css("overflow", "auto");
+            location.reload();
+          }, 2000);
+        } else {
+          showMessage(
+            "editTrainerMessage",
+            response.message || "Failed to update trainer",
+            "error"
+          );
+          submitBtn.html(originalText).prop("disabled", false);
+        }
+      },
+      error: function (xhr) {
+        let errorMessage = "An error occurred. Please try again.";
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          errorMessage = xhr.responseJSON.message;
+        }
+        showMessage("editTrainerMessage", errorMessage, "error");
+        submitBtn.html(originalText).prop("disabled", false);
+      },
+    });
+  });
+  // ===== DIRECT DELETE FROM TABLE =====
+  $(document).on("click", ".btn-delete-trainer", function () {
+    const row = $(this).closest(".table-row");
+    const trainerId = row.data("trainer-id");
+    $("#deleteTrainerModal").addClass("show");
+    $("#delete_trainer_id").val(trainerId);
+
+    const deleteBtn = $("#deleteBtn");
+    const originalText = deleteBtn.text();
+    deleteBtn.html('<span class="loading"></span>').prop("disabled", true);
+    $("body").css("overflow", "hidden");
+
+    setTimeout(() => {
+      deleteBtn.html(originalText).prop("disabled", false);
+    }, 2000);
+  });
+  // ===== CLOSE DELETE MODAL =====
+  $(".delete-modal-close").on("click", function () {
+    $("#deleteMemberModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+
+  $(".delete-member-close, .delete-member-cancel").on("click", function () {
+    $("#deleteMemberModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+  $("#deleteTrainerForm").on("submit", function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const submitBtn = $("#deleteTrainerBtn");
+    const originalText = submitBtn.text();
+    const trainerId = $("#delete_trainer_id").val();
+    submitBtn.html('<span class="loading"></span>').prop("disabled", true);
+
+    $.ajax({
+      type: "POST",
+      url: "index.php?controller=Trainer&action=deleteTrainer",
+      data: formData,
+      processData: false,
+      contentType: false,
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showDeleteMessage("✓ " + response.message, "success");
+          setTimeout(() => {
+            $("#deleteTrainerModal").removeClass("show");
+            $("body").css("overflow", "auto");
+            location.reload();
+          }, 2000);
+        } else {
+          showDeleteMessage(
+            response.message || "Failed to update member",
+            "error"
+          );
+          submitBtn.html(originalText).prop("disabled", false);
+        }
+      },
+      error: function (xhr) {
+        let errorMessage = "An error occurred. Please try again.";
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          errorMessage = xhr.responseJSON.message;
+        }
+        showDeleteMessage(errorMessage, "error");
+        submitBtn.html(originalText).prop("disabled", false);
+      },
+    });
+  });
+  //add trainer modal close
+  $(".add-trainer-close").on("click", function () {
+    $("#addTrainerModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+
+  $(".add-trainer-close, .add-trainer-cancel").on("click", function () {
+    $("#addTrainerModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+  //view trainer modal
+  $(".view-trainer-close, .edit-trainer-cancel").on("click", function () {
+    $("#viewTrainerModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+  //close edit trainer modal
+  $(".edit-trainer-close").on("click", function () {
+    $("#editTrainerModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+
+  $(".edit-trainer-close, .edit-trainer-cancel").on("click", function () {
+    $("#editTrainerModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+
+  $(".delete-trainer-modal-close").on("click", function () {
+    $("#deleteTrainerModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+
+  $(".delete-trainer-modal-close, .delete-trainer-cancel").on("click", function () {
+    $("#deleteTrainerModal").removeClass("show");
+    $("body").css("overflow", "auto");
   });
   // ===== HELPER FUNCTION =====
   function showDeleteMessage(message, type) {

@@ -105,10 +105,10 @@
 
                 <!-- Desktop Menu -->
                 <nav class="hidden lg:flex items-center space-x-6">
-                    <a href="../../public/index.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Home</a>
-                    <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Members</a>
+                    <a href="index.php?controller=Admin&action=dashboard" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Home</a>
+                    <!-- <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Members</a>
                     <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Payments</a>
-                    <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Plans</a>
+                    <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Plans</a> -->
                     <a href="profile.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Reports</a>
                     
                 </nav>

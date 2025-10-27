@@ -135,7 +135,11 @@
                                     <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
                                     <a href="index.php?controller=Admin&action=dashboard" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
                                     <a href="../views/auth/logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>
-                                <?php } ?>
+                                <?php } else if($_SESSION['role'] == 'trainer') { ?>
+                                    <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
+                                    <a href="index.php?controller=Trainer&action=trainerDashboard" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
+                                    <a href="../views/auth/logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>
+                                <?php }?>
                             </div>
                         </div>
                     <?php } else { ?>
