@@ -206,6 +206,18 @@
                 return 0;
             }
         }
+
+        public function getTrainerId($user_id) {
+            $sql = "SELECT trainer_id FROM trainers WHERE user_id = :user_id";
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":user_id", $user_id);
+
+            if($query->execute()){
+                return $query->fetch();
+            } else {
+                return null;
+            }
+        }
     }
 
 ?>
