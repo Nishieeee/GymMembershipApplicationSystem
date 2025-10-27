@@ -73,4 +73,21 @@ class Session extends Database {
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    public function getUserSessions($user_id) {
+        $sql = "SELECT CONCAT(m.first_name, ' ', m.last_name) as trainer_name, s.session_date FROM trainers t
+            JOIN members m ON m.user_id = t.user_id
+            JOIN sessions s ON s.trainer_id = t.trainer_id
+            WHERE s.user_id = :user_id";
+            
+        $query = $this->connect()->prepare($sql);
+
+        $query->bindParam(":user_id", $user_id);
+
+        if($query->execute()) {
+            return $query->fetchAll();
+        } else {
+            return null;
+        }
+    }
 }

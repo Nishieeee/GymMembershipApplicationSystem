@@ -6,6 +6,8 @@
     require_once __DIR__ . "/../models/User.php";
     require_once __DIR__ . "/../models/Plan.php";
     require_once __DIR__ . "/../models/Subscription.php";
+    require_once __DIR__ . "/../models/Session.php";
+    require_once __DIR__ . "/../models/Trainer.php";
 
     class DashboardController extends Controller {
         protected $db;
@@ -20,9 +22,12 @@
 
             $userModel = new User($this->db);
             $planModel = new Plan();
+            $sessionModel = new Session();
+            $trainerModel = new Trainer();
 
             $user = $userModel->getMember($user_id);
             $userPlan = $planModel->getUserPlan($user_id);
+            $mySessions = $sessionModel->getUserSessions($user_id);
             //expire user plan
             if(isset($userPlan) && $userPlan['end_date'] <= date("Y-m-d")) {
                 echo $userPlan['end_date'];
@@ -33,6 +38,7 @@
                     $this->view('dashboard', [
                         'userInfo' => $user,
                         'userPlan' => $userPlan,
+                        'mySessions' => $mySessions,
                     ]);
                 } else {
                     if($userPlan['status'] == "cancelled") {
