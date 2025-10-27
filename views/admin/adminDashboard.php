@@ -365,7 +365,7 @@
                             Search
                         </button>
                     </div>
-                    <!-- members table -->
+                    <!-- trainers table -->
                     <div class="overflow-x-auto">
                         <table class="w-full text-white">
                             <thead class="border-b border-gray-700 bg-gray-800">
@@ -1255,6 +1255,28 @@
                     </button>
                     <button type="submit" id="btnUpdateTrainer" class="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
                         Update Trainer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Delete Trainer Modal -->
+    <div id="deleteTrainerModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
+            <button class="delete-trainer-modal-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            <form id="deleteTrainerForm" method="POST" action="index.php?controller=Admin&action=deleteMember">
+                <input type="hidden" name="trainer_id" id="delete_trainer_id">
+
+                <h3 class="text-2xl font-bold text-white mb-6">Are you sure you want to Delete Member?</h3>
+                
+                <div id="deleteTrainerMessage" class="hidden"></div>
+
+                <div class="flex space-x-4 mt-6">
+                    <button type="button" class="delete-trainer-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        Close
+                    </button>
+                    <button type="submit" id="deleteTrainerBtn" class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors">
+                        Proceed
                     </button>
                 </div>
             </form>

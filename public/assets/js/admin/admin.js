@@ -937,6 +937,74 @@ $(document).ready(function () {
       },
     });
   });
+  // ===== DIRECT DELETE FROM TABLE =====
+  $(document).on("click", ".btn-delete-trainer", function () {
+    const row = $(this).closest(".table-row");
+    const trainerId = row.data("trainer-id");
+    $("#deleteTrainerModal").addClass("show");
+    $("#delete_trainer_id").val(trainerId);
+
+    const deleteBtn = $("#deleteBtn");
+    const originalText = deleteBtn.text();
+    deleteBtn.html('<span class="loading"></span>').prop("disabled", true);
+    $("body").css("overflow", "hidden");
+
+    setTimeout(() => {
+      deleteBtn.html(originalText).prop("disabled", false);
+    }, 2000);
+  });
+  // ===== CLOSE DELETE MODAL =====
+  $(".delete-modal-close").on("click", function () {
+    $("#deleteMemberModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+
+  $(".delete-member-close, .delete-member-cancel").on("click", function () {
+    $("#deleteMemberModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+  $("#deleteTrainerForm").on("submit", function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const submitBtn = $("#deleteTrainerBtn");
+    const originalText = submitBtn.text();
+    const trainerId = $("#delete_trainer_id").val();
+    submitBtn.html('<span class="loading"></span>').prop("disabled", true);
+
+    $.ajax({
+      type: "POST",
+      url: "index.php?controller=Trainer&action=deleteTrainer",
+      data: formData,
+      processData: false,
+      contentType: false,
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showDeleteMessage("✓ " + response.message, "success");
+          setTimeout(() => {
+            $("#deleteTrainerModal").removeClass("show");
+            $("body").css("overflow", "auto");
+            location.reload();
+          }, 2000);
+        } else {
+          showDeleteMessage(
+            response.message || "Failed to update member",
+            "error"
+          );
+          submitBtn.html(originalText).prop("disabled", false);
+        }
+      },
+      error: function (xhr) {
+        let errorMessage = "An error occurred. Please try again.";
+        if (xhr.responseJSON && xhr.responseJSON.message) {
+          errorMessage = xhr.responseJSON.message;
+        }
+        showDeleteMessage(errorMessage, "error");
+        submitBtn.html(originalText).prop("disabled", false);
+      },
+    });
+  });
   //add trainer modal close
   $(".add-trainer-close").on("click", function () {
     $("#addTrainerModal").removeClass("show");
@@ -962,4 +1030,33 @@ $(document).ready(function () {
     $("#editTrainerModal").removeClass("show");
     $("body").css("overflow", "auto");
   });
+
+  $(".delete-trainer-modal-close").on("click", function () {
+    $("#deleteTrainerModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+
+  $(".delete-trainer-modal-close, .delete-trainer-cancel").on("click", function () {
+    $("#deleteTrainerModal").removeClass("show");
+    $("body").css("overflow", "auto");
+  });
+  // ===== HELPER FUNCTION =====
+  function showDeleteMessage(message, type) {
+    const messageDiv = $("#deleteMemberMessage");
+    const bgColor = type === "error" ? "bg-red-500" : "bg-green-500";
+
+    messageDiv
+      .html(
+        `
+            <div class="p-3 rounded-lg ${bgColor} text-white text-sm">
+                ${message}
+            </div>
+        `
+      )
+      .removeClass("hidden");
+
+    if (type !== "error") {
+      setTimeout(() => messageDiv.addClass("hidden"), 3000);
+    }
+  }
 });

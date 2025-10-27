@@ -145,4 +145,16 @@ class Trainer extends Database {
             return false;
         }
     }
+    public function deleteTrainerViaId($trainer_id) {
+        $sql = "UPDATE trainers SET status='inactive' WHERE trainer_id = :trainer_id";
+        
+        $query = $this->connect()->prepare($sql);
+        $query->bindParam(":trainer_id", $trainer_id);
+
+        if($query->execute()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }

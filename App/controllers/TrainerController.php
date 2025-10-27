@@ -141,4 +141,20 @@ class TrainerController extends Controller{
         }
         exit;
     }
+    public function deleteTrainer() {
+        $trainer_id = $_POST['trainer_id'];
+
+        $trainer = new Trainer();
+        if($trainer->deleteTrainerViaId($trainer_id)) {
+            echo json_encode([
+                'success' => true,
+                'message' => 'trainer set to inactive',
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'An error occured, Please try again.',
+            ]);
+        }
+    }
 }
