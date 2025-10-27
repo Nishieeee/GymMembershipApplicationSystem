@@ -4,6 +4,31 @@ require_once __DIR__ . '/../config/Database.php';
 
 class Trainer extends Database {
 
+    public function getAllTrainers() {
+        $sql = "SELECT t.trainer_id, m.user_id, CONCAT(m.first_name, ' ', m.last_name) as name, m.first_name, m.last_name, m.email, t.contact_no, t.specialization, t.experience_years, t.status, t.join_date FROM members m
+        JOIN trainers t ON t.user_id = m.user_id 
+        ";
+
+        $query = $this->connect()->prepare($sql);
+        if($query->execute()) {
+            return $query->fetchAll();
+        } else {
+            return null;
+        }
+    }
+    public function getTrainerById($trainer_id) {
+        $sql = "SELECT m.user_id, t.trainer_id, m.first_name, m.last_name, m.middle_name, CONCAT(m.first_name, ' ', m.last_name) as name, m.email, t.specialization, t.experience_years, t.contact_no, t.status, t.join_date FROM members m
+        JOIN trainers t ON t.user_id = m.user_id
+        WHERE t.trainer_id = :trainer_id";
+
+        $query = $this->connect()->prepare($sql);
+        $query->bindParam(':trainer_id', $trainer_id);
+        if($query->execute()) {
+            return $query->fetch(PDO::FETCH_ASSOC);
+        } else {
+            return null;
+        }
+    }
     public function findById($trainerId) {
         $query = "SELECT u.user_id as trainer_id, CONCAT(u.first_name, ' ', u.last_name) as name, 
                   u.email, t.specialization, t.experience_years, t.contact_no, t.status, t.join_date

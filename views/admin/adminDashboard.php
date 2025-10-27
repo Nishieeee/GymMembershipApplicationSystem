@@ -232,6 +232,9 @@
                 <button class="tab-button active px-6 py-4 text-white font-semibold hover:text-blue-400 transition-colors" data-tab="members">
                     <span class="mr-2"></span> Members
                 </button>
+                <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="trainers">
+                    <span class="mr-2"></span> Trainers
+                </button>
                 <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="walkins">
                     <span class="mr-2"></span> Walk Ins
                 </button>
@@ -309,6 +312,94 @@
                                             <button id="viewMemberDetailsBtn" class="btn-view-member text-blue-400 hover:text-blue-300 mr-3">View</button>
                                             <button class="btn-edit-member text-green-400 hover:text-green-300 mr-3">Edit</button>
                                             <button class="btn-delete-member text-red-400 hover:text-red-300">Deactivate</button>
+                                        </td>
+                                    </tr>
+                                <?php }?>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="mt-6 flex items-center justify-between">
+                        <p class="text-gray-400">Showing 1-4 of <?= $memberCount['active_member_count'] ?> members</p>
+                        <div class="flex space-x-2">
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">← Previous</button>
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg">1</button>
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">2</button>
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">3</button>
+                            <button class="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 rounded-lg transition-colors">Next →</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- trainers tab -->
+            <div id="trainers" class="tab-content bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
+                <div class="p-6">
+                    <div class="mb-6 flex flex-col sm:flex-row gap-4">
+                        <button id="btnAddNewTrainer" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                            +   Add trainer
+                        </button>
+
+                    </div>
+                    <!-- search container -->
+                    <div class="mb-6 flex flex-col sm:flex-row gap-4">
+                        <div class="flex-1 relative">
+                            <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                            </svg>
+                            <input type="text" id="searchMembers" placeholder="Search by name, email, or ID..." class="search-input w-full pl-10 pr-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        </div>
+                        <select id="filterStatus" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+
+                        <select id="filterPlan" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="">Specialization</option>
+                            <option value="Cardio">Cardio</option>
+                            <option value="Strength">Strength</option>
+                            <option value="Yoga">Yoga</option>
+                            <option value="CrossFit">CrossFit</option>
+                        </select>
+                        <button class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                            Search
+                        </button>
+                    </div>
+                    <!-- members table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-white">
+                            <thead class="border-b border-gray-700 bg-gray-800">
+                                <tr>
+                                    <th class="text-left px-6 py-3 font-semibold">Name</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Email</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Contact Number</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Specialization</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Join Date</th>
+                                    <th class="text-left px-6 py-3 font-semibold">Status</th>
+                                    <th class="text-center px-6 py-3 font-semibold">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php  foreach($trainers as $trainer) { $user_name = $trainer['name'];
+                                $user_initial = substr($user_name, 0, 1); ?>
+                                    <tr class="table-row border-b border-gray-700" data-trainer-id="<?= $trainer['trainer_id'] ?>">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center">
+                                                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold mr-3"><?= $user_initial ?></div>
+                                                    <span><?= $trainer['name'] ?></span>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $trainer['email'] ?></td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $trainer['contact_no'] ?></td>
+                                        <td class="px-6 py-4"><?= isset($trainer['specialization']) ? $trainer['specialization'] : 'No specialization' ?></td>
+                                        <td class="px-6 py-4 text-gray-300"><?= $trainer['join_date'] ?></td>
+                                        <td class="px-6 py-4">
+                                            <span class="status-badge <?= $trainer['status'] == 'active' ? 'status-active' : 'status-inactive'?>"><?=isset($trainer['status']) ?  $trainer['status'] : 'inactive' ?></span>
+                                        </td>
+                                        <td class="px-6 py-4 text-center">
+                                            <button id="viewMemberDetailsBtn" class="btn-view-trainer text-blue-400 hover:text-blue-300 mr-3">View</button>
+                                            <button class="btn-edit-trainer text-green-400 hover:text-green-300 mr-3">Edit</button>
+                                            <button class="btn-delete-trainer text-red-400 hover:text-red-300">Deactivate</button>
                                         </td>
                                     </tr>
                                 <?php }?>
@@ -899,6 +990,271 @@
                     </button>
                     <button type="submit" id="deleteBtn" class="flex-1 px-4 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors">
                         Proceed
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Add Trainer Modal -->
+    <div id="addTrainerModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-2xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <button class="add-trainer-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">Add New Trainer</h3>
+            
+            <form id="addTrainerForm" method="POST" action="index.php?controller=Admin&action=addTrainer">
+                <!-- Personal Information -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Personal Information</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">First Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="first_name" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="John">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Last Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="last_name" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Doe">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Middle Name</label>
+                        <input type="text" name="middle_name" 
+                            class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="M.">
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Email <span class="text-red-500">*</span></label>
+                        <input type="email" name="email" required 
+                            class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="trainer@gymazing.com">
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Contact Number <span class="text-red-500">*</span></label>
+                        <input type="tel" name="contact_no" required 
+                            class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            placeholder="+63 9XX XXX XXXX">
+                    </div>
+                </div>
+
+                <!-- Trainer Details -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Trainer Details</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Specialization <span class="text-red-500">*</span></label>
+                            <select name="specialization" required 
+                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">Select specialization</option>
+                                <option value="Weight Training">Weight Training</option>
+                                <option value="Cardio">Cardio</option>
+                                <option value="CrossFit">CrossFit</option>
+                                <option value="Yoga">Yoga</option>
+                                <option value="Pilates">Pilates</option>
+                                <option value="Boxing">Boxing</option>
+                                <option value="Personal Training">Personal Training</option>
+                                <option value="Nutrition">Nutrition</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Experience (Years) <span class="text-red-500">*</span></label>
+                            <input type="number" name="experience_years" required min="0" max="50"
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="5">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Bio / Description</label>
+                        <textarea name="bio" rows="3" 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"
+                                placeholder="Describe trainer's expertise and approach..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Account Security -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Account Security</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Password <span class="text-red-500">*</span></label>
+                            <input type="password" name="password" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Min. 8 characters">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Confirm Password <span class="text-red-500">*</span></label>
+                            <input type="password" name="confirm_password" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Re-enter password">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="addTrainerMessage" class="hidden mb-4"></div>
+
+                <div class="flex space-x-4">
+                    <button type="button" class="add-trainer-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnAddTrainer" class="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
+                        Add Trainer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- View Trainer Modal -->
+    <div id="viewTrainerModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <button class="view-trainer-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">Trainer Details</h3>
+            
+            <div id="trainerDetails" class="space-y-4">
+                <!-- Details will be populated via jQuery -->
+            </div>
+
+            <div class="flex space-x-4 mt-6">
+                <button type="button" class="view-trainer-close flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                    Close
+                </button>
+                <button type="button" id="btnEditTrainer" class="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
+                    Edit Trainer
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Trainer Modal -->
+    <div id="editTrainerModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+        <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-2xl w-full border border-gray-700 max-h-[90vh] overflow-y-auto">
+            <button class="edit-trainer-close float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+            
+            <h3 class="text-2xl font-bold text-white mb-6">Edit Trainer</h3>
+            
+            <form id="editTrainerForm" method="POST" action="index.php?controller=Admin&action=updateTrainer">
+                <input type="hidden" name="trainer_id" id="edit_trainer_id">
+                <input type="hidden" name="user_trainer_id" id="edit_user_trainer_id">
+                
+                <!-- Personal Information -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Personal Information</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">First Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="trainer_first_name" id="edit_trainer_first_name" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Last Name <span class="text-red-500">*</span></label>
+                            <input type="text" name="trainer_last_name" id="edit_trainer_last_name" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Middle Name</label>
+                        <input type="text" name="trainer_middle_name" id="edit_trainer_middle_name" 
+                            class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Email <span class="text-red-500">*</span></label>
+                        <input type="email" name="trainer_email" id="edit_trainer_email" required 
+                            class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Contact Number <span class="text-red-500">*</span></label>
+                        <input type="tel" name="trainer_contact_no" id="edit_trainer_contact_no" required 
+                            class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                    </div>
+                </div>
+
+                <!-- Trainer Details -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Trainer Details</h4>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Specialization <span class="text-red-500">*</span></label>
+                            <select name="specialization" id="edit_specialization" required 
+                                    class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                                <option value="">Select specialization</option>
+                                <option value="Weight Training">Weight Training</option>
+                                <option value="Cardio">Cardio</option>
+                                <option value="CrossFit">CrossFit</option>
+                                <option value="Yoga">Yoga</option>
+                                <option value="Pilates">Pilates</option>
+                                <option value="Boxing">Boxing</option>
+                                <option value="Personal Training">Personal Training</option>
+                                <option value="Nutrition">Nutrition</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Experience (Years) <span class="text-red-500">*</span></label>
+                            <input type="number" name="experience_years" id="edit_experience_years" required min="0" max="50"
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Status <span class="text-red-500">*</span></label>
+                        <select name="trainer_status" id="edit_trainer_status" required 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+
+                    <!-- <div class="mt-4">
+                        <label class="block text-white font-semibold mb-2">Bio / Description</label>
+                        <textarea name="bio" id="edit_bio" rows="3" 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 resize-none"></textarea>
+                    </div> -->
+                </div>
+
+                <!-- Password Change (Optional) -->
+                <div class="bg-gray-800 rounded-lg p-4 mb-4">
+                    <h4 class="text-lg font-semibold text-white mb-4">Change Password (Optional)</h4>
+                    <p class="text-gray-400 text-sm mb-4">Leave blank to keep current password</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white font-semibold mb-2">New Password</label>
+                            <input type="password" name="trainer_password" id="edit_trainer_password" 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Min. 8 characters">
+                        </div>
+                        <div>
+                            <label class="block text-white font-semibold mb-2">Confirm Password</label>
+                            <input type="password" name="confirm_trainer_password" id="edit_confirm_trainer_password" 
+                                class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                placeholder="Re-enter password">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="editTrainerMessage" class="hidden mb-4"></div>
+
+                <div class="flex space-x-4">
+                    <button type="button" class="edit-trainer-cancel flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        Cancel
+                    </button>
+                    <button type="submit" id="btnUpdateTrainer" class="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg transition-colors">
+                        Update Trainer
                     </button>
                 </div>
             </form>
