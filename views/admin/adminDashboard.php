@@ -339,8 +339,8 @@
                             +   Add trainer
                         </button>
                         <button id="btnAddMemberNewTrainer" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                            </button>
                             +   Add Member as Trainer
-                        </button>
                     </div>
                     <!-- search container -->
                     <div class="mb-6 flex flex-col sm:flex-row gap-4">
