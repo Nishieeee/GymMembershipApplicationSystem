@@ -169,15 +169,15 @@
 
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
-                                <p class="text-blue-600 text-sm mb-1">Start Date</p>
+                                <p class="text-blue-600 text-sm mb-1"><i class="fa-regular fa-calendar-check mr-2"></i>Start Date</p>
                                 <p class="text-blue-600 font-semibold"><?= date('M d, Y', strtotime($currentPlan['start_date'])) ?></p>
                             </div>
                             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
-                                <p class="text-blue-600 text-sm mb-1">End Date</p>
+                                <p class="text-blue-600 text-sm mb-1"><i class="fa-regular fa-calendar-xmark mr-2"></i>End Date</p>
                                 <p class="text-blue-600 font-semibold"><?= date('M d, Y', strtotime($currentPlan['end_date'])) ?></p>
                             </div>
                             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
-                                <p class="text-blue-600 text-sm mb-1">Due Date</p>
+                                <p class="text-blue-600 text-sm mb-1"><i class="fa-regular fa-money-bill-1 mr-2"></i>Payment Due Date</p>
                                 <p class="text-blue-600 font-semibold"><?= date('M d, Y', strtotime($currentPlan['payment_date'])) ?></p>
                             </div>
                         </div>
@@ -187,8 +187,9 @@
                                     class="flex-1 px-8 py-4 bg-white hover:bg-gray-100 text-blue-600 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
                                 <i class="fa-regular fa-credit-card text-yellow-400"></i> Pay Now
                             </button>
-                            <button class="flex-1 px-8 py-4 border-2 border-white hover:bg-white hover:text-blue-600 text-white font-bold rounded-xl transition-all duration-300">
-                                <i class="fa-regular fa-file-lines text-white"></i> Download Invoice
+                            <button onclick="window.open('index.php?controller=Invoice&action=downloadInvoice&subscription_id=<?= $currentPlan['subscription_id'] ?>', '_blank')" 
+                                    class="flex-1 px-8 py-4 border-2 border-white hover:bg-white hover:text-blue-600 text-white font-bold rounded-xl transition-all duration-300">
+                                <i class="fa-regular fa-file-lines"></i> Download Invoice
                             </button>
                         </div>
                     </div>
@@ -289,7 +290,9 @@
                                             </span>
                                         </td>
                                         <td class="px-6 py-4 text-center">
-                                            <button class="btn-view-receipt text-blue-400 hover:text-blue-300 mr-3" data-id="<?= $payment['subscription_id'] ?>">
+                                           <button class="btn-view-receipt text-blue-400 hover:text-blue-300 mr-3" 
+                                                onclick="window.open('index.php?controller=Invoice&action=downloadReceipt&subscription_id=<?= $payment['subscription_id'] ?>', '_blank')" 
+                                                    data-id="<?= $payment['subscription_id'] ?>">
                                                 View Receipt
                                             </button>
                                         </td>
@@ -326,7 +329,9 @@
                                         <span class="text-white"><?= date('M d, Y', strtotime($payment['payment_date'])) ?></span>
                                     </div>
                                 </div>
-                                <button class="btn-view-receipt w-full mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors" data-id="<?= $payment['subscription_id'] ?>">
+                                <button class="btn-view-receipt w-full mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors" 
+                                        onclick="window.open('index.php?controller=Invoice&action=downloadReceipt&subscription_id=<?= $payment['subscription_id'] ?>', '_blank')" 
+                                        data-id="<?= $payment['subscription_id'] ?>">
                                     View Receipt
                                 </button>
                             </div>

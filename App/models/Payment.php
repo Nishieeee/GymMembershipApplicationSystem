@@ -133,8 +133,9 @@
             
             if($query->execute()) {
                 return $query->fetch();
+            } else {
+                return ['monthly_revenue' => 0];
             }
-            return ['monthly_revenue' => 0];
         }
 
         public function getLast12MonthsRevenue() {
@@ -152,8 +153,9 @@
             
             if($query->execute()) {
                 return $query->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                return [];
             }
-            return [];
         }
 
         public function getRevenueByPlan() {
@@ -169,8 +171,9 @@
             
             if($query->execute()) {
                 return $query->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                return [];
             }
-            return [];
         }
 
         public function getPendingPayments() {
@@ -182,8 +185,9 @@
             
             if($query->execute()) {
                 return $query->fetch();
+            } else {
+                return ['pending_count' => 0, 'pending_amount' => 0];
             }
-            return ['pending_count' => 0, 'pending_amount' => 0];
         }
 
         public function getPaymentStats() {
@@ -200,8 +204,9 @@
             
             if($query->execute()) {
                 return $query->fetch();
+            } else {
+                return null;
             }
-            return null;
         }
 
         public function getDailyRevenueLast30Days() {
@@ -219,8 +224,9 @@
             
             if($query->execute()) {
                 return $query->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                return [];
             }
-            return [];
         }
 
         public function getPaymentMethodStats() {
@@ -238,8 +244,9 @@
             
             if($query->execute()) {
                 return $query->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                return [];
             }
-            return [];
         }
 
         public function getRevenueByDateRange($start_date, $end_date) {
@@ -259,8 +266,20 @@
             
             if($query->execute()) {
                 return $query->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                return [];
             }
-            return [];
+        }
+        public function getPaymentBySubscriptionId($subscription_id) {
+            $sql = "SELECT * FROM payments WHERE subscription_id = :subscription_id ORDER BY payment_date DESC LIMIT 1";
+            
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":subscription_id", $subscription_id);
+            
+            if($query->execute()) {
+                return $query->fetch(PDO::FETCH_ASSOC);
+            }
+            return null;
         }
     }
     

@@ -119,6 +119,17 @@
             }
             return [];
         }
+        public function getSubscriptionById($subscription_id) {
+            $sql = "SELECT * FROM subscriptions WHERE subscription_id = :subscription_id";
+            
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":subscription_id", $subscription_id);
+            
+            if($query->execute()) {
+                return $query->fetch(PDO::FETCH_ASSOC);
+            }
+            return null;
+        }
     }
 ?>
  

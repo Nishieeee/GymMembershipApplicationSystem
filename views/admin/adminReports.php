@@ -375,14 +375,14 @@
                 <div class="mb-6 flex justify-between items-center">
                     <h2 class="text-2xl font-bold text-white">Reports & Analytics</h2>
                     <div class="flex space-x-2 no-print">
-                        <select id="reportPeriod" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <!-- <select id="reportPeriod" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option value="7">Last 7 Days</option>
                             <option value="30" selected>Last 30 Days</option>
                             <option value="90">Last 90 Days</option>
                             <option value="365">Last Year</option>
-                        </select>
-                        <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                                Export PDF
+                        </select> -->
+                        <button class="px-8 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
+                            <i class="fa-regular fa-share-from-square"></i> Export PDF
                         </button>
                     </div>
                 </div>

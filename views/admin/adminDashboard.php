@@ -608,9 +608,16 @@
                                         <td class="px-6 py-4 text-gray-300"><?= $paymentDetail['payment_date'] ?></td>
                                         <td class="px-6 py-4 text-gray-300"><?= $paymentDetail['status'] ?></td>
                                         <td class="px-6 py-4 text-center">
-                                            <button class="btn-view-walkin text-blue-400 hover:text-blue-300 mr-3">View</button>
-                                            <button class="btn-edit-walkin text-green-400 hover:text-green-300 mr-3">Edit</button>
-                                            <button class="btn-delete-walkin text-red-400 hover:text-red-300">Delete</button>
+                                            <button class="btn-view text-blue-400 hover:text-blue-300 mr-3">View</button>
+                                            <button class="btn-edit text-green-400 hover:text-green-300 mr-3">Edit</button>
+                                            <?php if($paymentDetail['status'] == 'pending') {?>
+                                                <button class="btn-remind text-orange-400 hover:text-orange-300 mr-3">Remind</button>
+                                            <?php } else if($paymentDetail['status'] == 'paid') {?>
+                                                <button class="btn-refund text-red-400 hover:text-red-300 mr-3">Refund</button>
+                                            <?php } else {?>
+                                                <div></div>
+                                            <?php }?>
+
                                         </td>
                                     </tr>
                                 <?php }?>

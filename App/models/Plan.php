@@ -64,7 +64,17 @@
                 return false;
             }
         }
-
+        public function getPlanById($plan_id) {
+            $sql = "SELECT * FROM membership_plans WHERE plan_id = :plan_id";
+            
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":plan_id", $plan_id);
+            
+            if($query->execute()) {
+                return $query->fetch(PDO::FETCH_ASSOC);
+            }
+            return null;
+        }
     }
 
 ?>
