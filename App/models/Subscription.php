@@ -88,6 +88,37 @@
                 return null;
             }
         }
+
+        public function getExpiringSubscriptions($days = 7) {
+            $sql = "SELECT 
+                    COUNT(*) as expiring_count
+                    FROM subscriptions 
+                    WHERE status = 'active' 
+                    AND end_date BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL :days DAY)";
+            
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":days", $days, PDO::PARAM_INT);
+            
+            if($query->execute()) {
+                return $query->fetch();
+            }
+            return ['expiring_count' => 0];
+        }
+
+        public function getSubscriptionStatusBreakdown() {
+            $sql = "SELECT 
+                    status,
+                    COUNT(*) as count
+                    FROM subscriptions
+                    GROUP BY status";
+            
+            $query = $this->connect()->prepare($sql);
+            
+            if($query->execute()) {
+                return $query->fetchAll(PDO::FETCH_ASSOC);
+            }
+            return [];
+        }
     }
 ?>
  

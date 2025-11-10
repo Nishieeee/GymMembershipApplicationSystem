@@ -132,7 +132,7 @@
                 </div>
                 <div class="w-full mb-1">
                     <label for="password" class="text-zinc-700 text-sm ">Password</label>
-                    <input type="password" name="password" placeholder="Pass" value="<?= $register['password'] ?>" class="w-full p-1 text-sm border border-gray-500/50 rounded-sm">
+                    <input type="password" name="password" placeholder="Password" value="<?= $register['password'] ?>" class="w-full p-1 text-sm border border-gray-500/50 rounded-sm">
                     <p class="text-red-500 text-sm"><?= $registerError['password'] ?></p>
                 </div>
                 <div class="w-full mb-1">
