@@ -31,7 +31,38 @@
             $plans = $plan->getAllPlans();
             $activePlans = $plan->getAllActivePlans();
 
-            // KPI and Reports Data
+            $this->adminView('dashboard', [
+                'memberCount' => $memberCount,
+                'totalEarned' => $totalEarned,
+                'paymentDetails' => $paymentDetails,
+                'totalPayments' =>  $totalPayments,
+                'trainers' => $trainers,
+                'walk_ins' => $walk_ins,
+                'members' => $members,
+                'plans' => $plans,
+                'activePlans' => $activePlans,
+            ]);
+        } 
+        public function reports() {
+            session_start();
+            $user_id = $_SESSION['user_id'];
+
+            $user = new User();
+            $plan = new Plan();
+            $payment = new Payment();
+            $subscription = new Subscription();
+            $trainerModel = new Trainer();
+
+            $members = $user->displayAllUsers();
+            $memberCount = $user->countActiveMembers();
+            $totalEarned = $payment->totalEarned();
+            $trainers = $trainerModel->getAllTrainers();
+            $paymentDetails = $subscription->getUserPayments();
+            $totalPayments = $subscription->countTotalPayments();
+            $walk_ins = $user->displayAllWalkInMembers();
+            $plans = $plan->getAllPlans();
+            $activePlans = $plan->getAllActivePlans();
+
             $last12MonthsRevenue = $payment->getLast12MonthsRevenue();
             $dailyRevenue30Days = $payment->getDailyRevenueLast30Days();
             $revenueByPlan = $payment->getRevenueByPlan();
@@ -47,7 +78,7 @@
             $expiringSubscriptions = $subscription->getExpiringSubscriptions(7);
             $subscriptionStatusBreakdown = $subscription->getSubscriptionStatusBreakdown();
 
-            $this->adminView('dashboard', [
+            $this->adminView('reports', [
                 'memberCount' => $memberCount,
                 'totalEarned' => $totalEarned,
                 'paymentDetails' => $paymentDetails,
@@ -57,7 +88,8 @@
                 'members' => $members,
                 'plans' => $plans,
                 'activePlans' => $activePlans,
-                'last12MonthsRevenue' => $last12MonthsRevenue,
+
+               'last12MonthsRevenue' => $last12MonthsRevenue,
                 'dailyRevenue30Days' => $dailyRevenue30Days,
                 'revenueByPlan' => $revenueByPlan,
                 'paymentStats' => $paymentStats,
@@ -70,7 +102,7 @@
                 'expiringSubscriptions' => $expiringSubscriptions,
                 'subscriptionStatusBreakdown' => $subscriptionStatusBreakdown,
             ]);
-        } 
+        }
         public function getReportData() {
             header('Content-Type: application/json');
             

@@ -109,7 +109,7 @@
                     <!-- <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Members</a>
                     <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Payments</a>
                     <a href="classes.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Plans</a> -->
-                    <a href="profile.php" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Reports</a>
+                    <a href="index.php?controller=Admin&action=reports" class="nav-link text-white hover:text-blue-400 font-medium transition-colors">Reports</a>
                     
                 </nav>
 
