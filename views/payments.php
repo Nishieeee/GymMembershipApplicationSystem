@@ -421,7 +421,7 @@
             </div>
 
             <!-- Dynamic Payment Form -->
-            <form id="paymentDetailsForm" class="space-y-4">
+            <form id="paymentDetailsForm" method="GET" class="space-y-4">
                  <input type="hidden" id="form_subscription_id" name="subscription_id">
 
                 <input type="hidden" id="form_amount" name="amount">
@@ -513,7 +513,7 @@
                     <button type="button" class="payment-details-back flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
                         ← Back
                     </button>
-                    <button type="submit" id="btnConfirmPayment" class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
+                    <button type="submit" id="btnConfirmPayment"  class="flex-1 px-4 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-lg transition-colors">
                         Confirm Payment
                     </button>
                 </div>

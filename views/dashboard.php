@@ -294,9 +294,9 @@
                             <a href="#" class="block px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300 text-center">
                                 View Progress
                             </a>
-                            <a href="#" class="block px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300 text-center">
+                            <!-- <a href="" class="block px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300 text-center">
                                 Download Receipt
-                            </a>
+                            </a> -->
                         </div>
                     </div>
 
