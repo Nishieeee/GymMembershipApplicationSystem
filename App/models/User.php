@@ -27,7 +27,12 @@
             }
         }
         public function displayAllUsers() {
-            $sql = "SELECT m.user_id, CONCAT(m.first_name, ' ', m.last_name) as name, m.email, m.created_at, p.plan_name, s.end_date, m.status FROM members m LEFT JOIN subscriptions s on s.user_id = m.user_id LEFT JOIN membership_plans p ON p.plan_id = s.plan_id WHERE role = 'member' GROUP BY m.user_id  ORDER BY m.created_at DESC";
+            $sql = "SELECT 
+                    m.user_id, CONCAT(m.first_name, ' ', m.last_name) as name, m.email, m.created_at, p.plan_name, s.end_date, m.status 
+                    FROM members m 
+                    LEFT JOIN subscriptions s on s.user_id = m.user_id 
+                    LEFT JOIN membership_plans p ON p.plan_id = s.plan_id 
+                    WHERE role = 'member' GROUP BY m.user_id  ORDER BY m.created_at DESC";
 
             $query = $this->connect()->prepare($sql);
 
@@ -66,7 +71,10 @@
 
         }
         public function getMember($user_id) {
-            $sql = "SELECT user_id, CONCAT(first_name, ' ', last_name) as name, first_name, email, role, created_at FROM members WHERE user_id = :user_id";
+            $sql = "SELECT 
+                    user_id, CONCAT(first_name, ' ', last_name) as name, first_name, email, role, created_at 
+                    FROM members 
+                    WHERE user_id = :user_id";
 
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":user_id", $user_id);
@@ -79,10 +87,11 @@
         }
 
         public function getMemberSubcription($user_id) {
-            $sql = "select CONCAT(m.first_name, ' ', m.last_name) as name, m.phone_no, m.created_at, p.plan_name, s.end_date, s.status from members m
-            join subscriptions s on s.user_id = m.user_id
-            join membership_plans p on p.plan_id = s.plan_id
-            where m.user_id = :user_id";
+            $sql = "SELECT 
+                    CONCAT(m.first_name, ' ', m.last_name) as name, m.phone_no, m.created_at, p.plan_name, s.end_date, s.status FROM members m
+                    JOIN subscriptions s ON s.user_id = m.user_id
+                    JOIN membership_plans p ON p.plan_id = s.plan_id
+                    WHERE m.user_id = :user_id";
 
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":user_id", $user_id);
@@ -94,7 +103,10 @@
             }
         }
         public function addMember(array $UserData) {
-            $sql = "INSERT INTO `members`( `first_name`, `last_name`, `middle_name`, `email`, `date_of_birth` , `gender` , `password`, `role`, `created_at`) VALUES (:first_name , :last_name, :middle_name, :email, :date_of_birth, :gender, :password, 'member' , NOW())";
+            $sql = "INSERT INTO 
+            `members`( `first_name`, `last_name`, `middle_name`, `email`, `date_of_birth` , `gender` , `password`, `role`, `created_at`) 
+            VALUES 
+            (:first_name , :last_name, :middle_name, :email, :date_of_birth, :gender, :password, 'member' , NOW())";
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":first_name", $UserData['first_name']);
             $query->bindParam(":last_name", $UserData['last_name']);
@@ -120,7 +132,10 @@
             }
         }
         public function addWalkinMember($userData) {
-            $sql = "INSERT INTO walk_ins(first_name, last_name, middle_name, email, contact_no, session_type, payment_method, payment_amount, visit_time, end_date) VALUES (:first_name, :last_name, :middle_name, :email, :contact_no, :session_type, :payment_method ,:payment_amount, :visit_time, :end_date)";
+            $sql = "INSERT INTO 
+            walk_ins(first_name, last_name, middle_name, email, contact_no, session_type, payment_method, payment_amount, visit_time, end_date) 
+            VALUES 
+            (:first_name, :last_name, :middle_name, :email, :contact_no, :session_type, :payment_method ,:payment_amount, :visit_time, :end_date)";
 
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":first_name", $userData['first_name']);
@@ -145,7 +160,11 @@
         public function getMemberData() {
             $user_id = $_GET['user_id'];
 
-            $sql = "SELECT m.*, mp.plan_name FROM members m LEFT JOIN subscriptions s ON s.user_id = m.user_id LEFT JOIN membership_plans mp ON mp.plan_id = s.plan_id WHERE m.user_id = :user_id";
+            $sql = "SELECT m.*, mp.plan_name 
+                    FROM members m 
+                    LEFT JOIN subscriptions s ON s.user_id = m.user_id 
+                    LEFT JOIN membership_plans mp ON mp.plan_id = s.plan_id 
+                    WHERE m.user_id = :user_id";
 
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":user_id", $user_id);
@@ -208,7 +227,9 @@
         }
 
         public function getTrainerId($user_id) {
-            $sql = "SELECT trainer_id FROM trainers WHERE user_id = :user_id";
+            $sql = "SELECT trainer_id 
+            FROM trainers 
+            WHERE user_id = :user_id";
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":user_id", $user_id);
 

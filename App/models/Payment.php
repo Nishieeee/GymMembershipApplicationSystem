@@ -36,7 +36,11 @@
         }
 
         public function getPaymentDetails($user_id) {
-            $sql = "SELECT s.subscription_id, mp.plan_name, s.start_date, s.end_date, p.amount, p.payment_id, p.payment_date, p.status FROM subscriptions s JOIN membership_plans mp ON mp.plan_id = s.plan_id
+            $sql = "SELECT 
+            s.subscription_id, mp.plan_name, s.start_date, s.end_date, 
+            p.amount, p.payment_id, p.payment_date, p.status 
+            FROM subscriptions s 
+            JOIN membership_plans mp ON mp.plan_id = s.plan_id
             JOIN payments p ON p.subscription_id = s.subscription_id
             WHERE s.user_id = :user_id ORDER BY status DESC";
 
@@ -104,7 +108,9 @@
         }
 
         public function getPaymentId($subscription_id) {
-            $sql = "SELECT payment_id FROM payments WHERE subscription_id = :subscription_id";
+            $sql = "SELECT payment_id
+                    FROM payments
+                    WHERE subscription_id = :subscription_id";
 
             $query = $this->connect()->prepare($sql);
             
