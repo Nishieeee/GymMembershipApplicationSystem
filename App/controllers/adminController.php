@@ -140,6 +140,72 @@
                 ]);
             }
         }
+        public function getFilteredReportData() {
+            header('Content-Type: application/json');
+            
+            if($_SERVER['REQUEST_METHOD'] == 'GET') {
+                $payment = new Payment();
+                $user = new User();
+                $subscription = new Subscription();
+                
+                // Get filter parameters
+                $dateRange = $_GET['date_range'] ?? '30';
+                $startDate = $_GET['start_date'] ?? '';
+                $endDate = $_GET['end_date'] ?? '';
+                
+                // Calculate dates
+                if ($dateRange == 'custom' && !empty($startDate) && !empty($endDate)) {
+                    $start = $startDate;
+                    $end = $endDate;
+                } else {
+                    $end = date('Y-m-d');
+                    $start = date('Y-m-d', strtotime("-{$dateRange} days"));
+                }
+                
+                // Get filtered data
+                $data = [
+                    // Revenue data
+                    'revenue_trend' => $payment->getRevenueTrend($start, $end),
+                    'daily_revenue' => $payment->getDailyRevenue($start, $end),
+                    'revenue_by_plan' => $payment->getRevenueByPlan($start, $end),
+                    'payment_method_stats' => $payment->getPaymentMethodStats($start, $end),
+                    
+                    // Member data
+                    'member_growth' => $user->getMemberGrowth($start, $end),
+                    'members_by_plan' => $user->getMembersByPlan(),
+                    'active_inactive_count' => $user->getActiveInactiveCount(),
+                    'retention_rate' => $user->getRetentionRate(),
+                    
+                    // Payment stats
+                    'payment_stats' => $payment->getPaymentStatsFiltered($start, $end),
+                    'pending_payments' => $payment->getPendingPayments(),
+                    
+                    // Subscription data
+                    'expiring_subscriptions' => $subscription->getExpiringSubscriptions(7),
+                    'subscription_status_breakdown' => $subscription->getSubscriptionStatusBreakdown(),
+                    
+                    // Date info
+                    'filter_info' => [
+                        'start_date' => $start,
+                        'end_date' => $end,
+                        'days' => (strtotime($end) - strtotime($start)) / 86400,
+                        'formatted_start' => date('M d, Y', strtotime($start)),
+                        'formatted_end' => date('M d, Y', strtotime($end))
+                    ]
+                ];
+                
+                echo json_encode([
+                    'success' => true,
+                    'data' => $data
+                ]);
+            } else {
+                http_response_code(405);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Invalid request method'
+                ]);
+            }
+        }
         public function addPlan() {
             $user = new User();
             $plan = new Plan();

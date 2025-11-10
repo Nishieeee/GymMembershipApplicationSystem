@@ -292,6 +292,42 @@
             }
             return ['active' => 0, 'total' => 0, 'rate' => 0];
         }
+        public function getMemberGrowth($startDate, $endDate) {
+            // Determine grouping based on date range
+            $days = (strtotime($endDate) - strtotime($startDate)) / 86400;
+            
+            if ($days <= 31) {
+                $dateFormat = '%Y-%m-%d';
+                $labelFormat = '%b %d';
+            } elseif ($days <= 90) {
+                $dateFormat = '%Y-%u';
+                $labelFormat = 'Week %u';
+            } else {
+                $dateFormat = '%Y-%m';
+                $labelFormat = '%b %Y';
+            }
+            
+            $sql = "SELECT 
+                    DATE_FORMAT(created_at, :date_format) as period,
+                    DATE_FORMAT(created_at, :label_format) as period_label,
+                    COUNT(*) as new_members
+                    FROM members 
+                    WHERE role = 'member'
+                    AND DATE(created_at) BETWEEN :start_date AND :end_date
+                    GROUP BY DATE_FORMAT(created_at, :date_format), DATE_FORMAT(created_at, :label_format)
+                    ORDER BY period ASC";
+            
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":date_format", $dateFormat);
+            $query->bindParam(":label_format", $labelFormat);
+            $query->bindParam(":start_date", $startDate);
+            $query->bindParam(":end_date", $endDate);
+            
+            if($query->execute()) {
+                return $query->fetchAll(PDO::FETCH_ASSOC);
+            }
+            return [];
+        }
     }
 
 ?>
