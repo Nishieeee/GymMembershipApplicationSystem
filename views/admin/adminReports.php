@@ -372,17 +372,75 @@
 
     <main class="pb-12 mt-20">
         <div class="p-6">
-                <div class="mb-6 flex justify-between items-center">
-                    <h2 class="text-2xl font-bold text-white">Reports & Analytics</h2>
-                    <div class="flex space-x-2 no-print">
-                        <!-- <select id="reportPeriod" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="7">Last 7 Days</option>
-                            <option value="30" selected>Last 30 Days</option>
-                            <option value="90">Last 90 Days</option>
-                            <option value="365">Last Year</option>
-                        </select> -->
-                        <button class="px-8 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors">
-                            <i class="fa-regular fa-share-from-square"></i> Export PDF
+                <div class="mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white">Reports & Analytics</h2>
+                        <p class="text-gray-400 text-sm mt-1">Filter and analyze your gym's performance data</p>
+                    </div>
+                    <div class="flex flex-wrap gap-3 no-print">
+                        <!-- Date Range Filter -->
+                        <div class="flex items-center gap-2">
+                            <label class="text-white text-sm font-semibold">Date Range:</label>
+                            <select id="dateRangeFilter" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="7">Last 7 Days</option>
+                                <option value="30" selected>Last 30 Days</option>
+                                <option value="90">Last 3 Months</option>
+                                <option value="180">Last 6 Months</option>
+                                <option value="365">Last 12 Months</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+
+                        <!-- Custom Date Range -->
+                        <div id="customDateRange" class="hidden flex items-center gap-2">
+                            <input type="date" id="startDate" class="px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                            <span class="text-white">to</span>
+                            <input type="date" id="endDate" class="px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
+                        </div>
+
+                        <!-- Chart Type Filter -->
+                        <select id="chartTypeFilter" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="all">All Charts</option>
+                            <option value="revenue">Revenue Only</option>
+                            <option value="members">Members Only</option>
+                            <option value="payments">Payments Only</option>
+                        </select>
+
+                        <!-- Apply Filter Button -->
+                        <button id="btnApplyFilter" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                            <i class="fas fa-filter mr-2"></i>Apply Filter
+                        </button>
+
+                        <!-- Reset Filter Button -->
+                        <button id="btnResetFilter" class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors">
+                            <i class="fas fa-redo mr-2"></i>Reset
+                        </button>
+
+                        <!-- Export Button -->
+                        <button onclick="window.print()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
+                            <i class="fas fa-file-pdf mr-2"></i>Export PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Loading Indicator -->
+                <div id="loadingIndicator" class="hidden text-center py-8">
+                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+                    <p class="text-white mt-4">Loading chart data...</p>
+                </div>
+
+                <!-- Filter Summary -->
+                <div id="filterSummary" class="mb-6 bg-blue-900 bg-opacity-30 border border-blue-600 rounded-lg p-4 hidden">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="text-blue-200 text-sm">
+                                <i class="fas fa-info-circle mr-2"></i>
+                                <strong>Active Filter:</strong> 
+                                <span id="filterSummaryText">Last 30 Days</span>
+                            </p>
+                        </div>
+                        <button onclick="$('#btnResetFilter').click()" class="text-blue-300 hover:text-blue-100 text-sm underline">
+                            Clear Filter
                         </button>
                     </div>
                 </div>

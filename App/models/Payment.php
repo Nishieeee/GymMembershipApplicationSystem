@@ -36,7 +36,11 @@
         }
 
         public function getPaymentDetails($user_id) {
-            $sql = "SELECT s.subscription_id, mp.plan_name, s.start_date, s.end_date, p.amount, p.payment_id, p.payment_date, p.status FROM subscriptions s JOIN membership_plans mp ON mp.plan_id = s.plan_id
+            $sql = "SELECT 
+            s.subscription_id, mp.plan_name, s.start_date, s.end_date, 
+            p.amount, p.payment_id, p.payment_date, p.status 
+            FROM subscriptions s 
+            JOIN membership_plans mp ON mp.plan_id = s.plan_id
             JOIN payments p ON p.subscription_id = s.subscription_id
             WHERE s.user_id = :user_id ORDER BY status DESC";
 
@@ -104,7 +108,9 @@
         }
 
         public function getPaymentId($subscription_id) {
-            $sql = "SELECT payment_id FROM payments WHERE subscription_id = :subscription_id";
+            $sql = "SELECT payment_id
+                    FROM payments
+                    WHERE subscription_id = :subscription_id";
 
             $query = $this->connect()->prepare($sql);
             
@@ -144,7 +150,7 @@
                     DATE_FORMAT(payment_date, '%b %Y') as month_label,
                     SUM(amount) as revenue
                     FROM payments 
-                    WHERE status='paid' 
+                    WHERE status='paid'  
                     AND payment_date >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
                     GROUP BY DATE_FORMAT(payment_date, '%Y-%m'), DATE_FORMAT(payment_date, '%b %Y')
                     ORDER BY month ASC";
@@ -278,9 +284,93 @@
             
             if($query->execute()) {
                 return $query->fetch(PDO::FETCH_ASSOC);
+            } else {
+                return null;
             }
-            return null;
         }
+        public function getDailyRevenue($startDate, $endDate) {
+            $sql = "SELECT 
+                    DATE(payment_date) as date,
+                    DATE_FORMAT(payment_date, '%b %d') as date_label,
+                    COALESCE(SUM(amount), 0) as revenue
+                    FROM payments 
+                    WHERE status='paid' 
+                    AND DATE(payment_date) BETWEEN :start_date AND :end_date
+                    GROUP BY DATE(payment_date), DATE_FORMAT(payment_date, '%b %d')
+                    ORDER BY date ASC";
+            
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":start_date", $startDate);
+            $query->bindParam(":end_date", $endDate);
+            
+            if($query->execute()) {
+                return $query->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                return [];
+            }
+        }
+        public function getRevenueTrend($startDate, $endDate) {
+            // Determine grouping based on date range
+            $days = (strtotime($endDate) - strtotime($startDate)) / 86400;
+            
+            if ($days <= 31) {
+                // Daily grouping for up to 31 days
+                $dateFormat = '%Y-%m-%d';
+                $labelFormat = '%b %d';
+            } elseif ($days <= 90) {
+                // Weekly grouping for up to 90 days
+                $dateFormat = '%Y-%u';
+                $labelFormat = 'Week %u';
+            } else {
+                // Monthly grouping for longer periods
+                $dateFormat = '%Y-%m';
+                $labelFormat = '%b %Y';
+            }
+            
+            $sql = "SELECT 
+                    DATE_FORMAT(payment_date, :date_format) as period,
+                    DATE_FORMAT(payment_date, :label_format) as period_label,
+                    SUM(amount) as revenue
+                    FROM payments 
+                    WHERE status='paid' 
+                    AND DATE(payment_date) BETWEEN :start_date AND :end_date
+                    GROUP BY DATE_FORMAT(payment_date, :date_format), DATE_FORMAT(payment_date, :label_format)
+                    ORDER BY period ASC";
+            
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":date_format", $dateFormat);
+            $query->bindParam(":label_format", $labelFormat);
+            $query->bindParam(":start_date", $startDate);
+            $query->bindParam(":end_date", $endDate);
+            
+            if($query->execute()) {
+                return $query->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                return [];
+            }
+        }
+        public function getPaymentStatsFiltered($startDate, $endDate) {
+            $sql = "SELECT 
+                    COUNT(*) as total_transactions,
+                    SUM(CASE WHEN status='paid' THEN 1 ELSE 0 END) as paid_count,
+                    SUM(CASE WHEN status='pending' THEN 1 ELSE 0 END) as pending_count,
+                    SUM(CASE WHEN status='failed' THEN 1 ELSE 0 END) as failed_count,
+                    COALESCE(SUM(CASE WHEN status='paid' THEN amount ELSE 0 END), 0) as total_paid,
+                    COALESCE(SUM(CASE WHEN status='pending' THEN amount ELSE 0 END), 0) as total_pending
+                    FROM payments
+                    WHERE DATE(payment_date) BETWEEN :start_date AND :end_date";
+            
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":start_date", $startDate);
+            $query->bindParam(":end_date", $endDate);
+            
+            if($query->execute()) {
+                return $query->fetch();
+            } else {
+                return null;
+            }
+        }
+
     }
     
 
