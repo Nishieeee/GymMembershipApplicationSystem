@@ -6,6 +6,7 @@
     <title>Reports | Gymazing</title>
     <script src= "../public/assets/js/tailwindcss/tailwindcss.js"></script>
     <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="../public/assets/icons/fontawesome/css/all.min.css"></link>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
@@ -250,7 +251,7 @@
             color: #06b6d4 !important;
         }
         
-        /* Fix tables */
+        
         table {
             border-collapse: collapse !important;
             width: 100% !important;
@@ -267,22 +268,22 @@
             color: black !important;
         }
         
-        /* Fix borders */
+        
         .border-gray-700,
         .border-gray-600 {
             border-color: #ccc !important;
         }
         
-        /* Ensure charts are visible */
         canvas {
             max-width: 100% !important;
             height: auto !important;
             page-break-inside: avoid !important;
         }
-        
-        /* Fix grid layouts for print */
+       
         .grid {
-            display: block !important;
+            display: grid !important;
+            grid-template-columns: 2;
+            gap: 2rem;
         }
         
         .grid > div {
@@ -391,7 +392,7 @@
                     <!-- Total Revenue -->
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl">💰</div>
+                            <div class="text-4xl"><i class="fa-regular fa-money-bill-1 text-white text-3xl"></i></div>
                             <span class="text-green-400 text-sm font-semibold">+<?= number_format((($paymentStats['total_paid'] ?? 0) / max(($totalEarned['total_earned'] ?? 1), 1) * 100), 1) ?>%</span>
                         </div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Total Revenue</p>
@@ -402,7 +403,7 @@
                     <!-- Pending Payments -->
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl">⏳</div>
+                            <div class="text-4xl"><i class="fa-regular fa-hourglass text-white text-3xl"></i></div>
                             <span class="text-orange-400 text-sm font-semibold"><?= $pendingPayments['pending_count'] ?> pending</span>
                         </div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Pending Revenue</p>
@@ -413,7 +414,9 @@
                     <!-- Active Members -->
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl">👥</div>
+                            <div class="text-4xl">
+                                <i class="fa-solid fa-user text-white text-3xl"></i>
+                            </div>
                             <span class="text-blue-400 text-sm font-semibold"><?= round(($activeInactiveCount['active_count'] / max(($memberCount['active_member_count'] ?? 1), 1)) * 100, 1) ?>%</span>
                         </div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Active Members</p>
@@ -424,7 +427,7 @@
                     <!-- Retention Rate -->
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl">📈</div>
+                            <div class="text-4xl"><i class="fa-regular fa-barchart text-white text-3xl"></i></div>
                             <span class="text-purple-400 text-sm font-semibold">Retention</span>
                         </div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Retention Rate</p>
