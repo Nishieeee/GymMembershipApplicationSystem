@@ -87,43 +87,25 @@ $(document).ready(function() {
         }, 3000);
     }
 
-    // Print specific report section
-    window.printReport = function() {
-        const printContent = document.getElementById('reports').innerHTML;
-        const originalContent = document.body.innerHTML;
+    function printReportPDF() {
+        // Add print class to body
+        document.body.classList.add('printing');
         
-        document.body.innerHTML = `
-            <html>
-            <head>
-                <title>Gymazing - Report</title>
-                <style>
-                    body { font-family: Arial, sans-serif; }
-                    .stat-card { 
-                        border: 1px solid #ccc; 
-                        padding: 20px; 
-                        margin: 10px;
-                        display: inline-block;
-                        width: 23%;
-                    }
-                    canvas { max-width: 100%; }
-                    @media print {
-                        .no-print { display: none; }
-                    }
-                </style>
-            </head>
-            <body>
-                <h1>Gymazing Fitness - Analytics Report</h1>
-                <p>Generated: ${new Date().toLocaleDateString()}</p>
-                ${printContent}
-            </body>
-            </html>
-        `;
+        // Set print-friendly title
+        const originalTitle = document.title;
+        document.title = `Gymazing Report - ${new Date().toLocaleDateString()}`;
         
-        window.print();
-        document.body.innerHTML = originalContent;
-        location.reload();
-    };
-
+        // Trigger print
+        setTimeout(() => {
+            window.print();
+            
+            // Restore after print
+            setTimeout(() => {
+                document.title = originalTitle;
+                document.body.classList.remove('printing');
+            }, 100);
+        }, 500);
+    }
     // Real-time data refresh (optional)
     function startAutoRefresh() {
         setInterval(function() {

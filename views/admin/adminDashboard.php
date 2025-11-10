@@ -178,6 +178,194 @@
                 opacity: 1;
             }
         }
+        /* Print Styles */
+        /* Print Styles - FIXED VERSION */
+    @media print {
+        /* Hide elements that shouldn't be printed */
+        .no-print,
+        button,
+        select,
+        input,
+        nav,
+        .modal-backdrop,
+        #alertContainer {
+            display: none !important;
+        }
+        
+        /* Reset body background */
+        body {
+            background: white !important;
+            color: black !important;
+        }
+        
+        /* Fix all card backgrounds */
+        .stat-card, 
+        .bg-gray-800, 
+        .bg-gray-900,
+        .bg-neutral-900,
+        .gradient-bg {
+            background: white !important;
+            border: 1px solid #ccc !important;
+            color: black !important;
+        }
+        
+        /* Fix all text colors */
+        .text-white,
+        .text-gray-400,
+        .text-gray-300,
+        .text-gray-500,
+        h1, h2, h3, h4, h5, h6,
+        p, span, div, td, th {
+            color: black !important;
+        }
+        
+        /* Keep colored text visible */
+        .text-green-400,
+        .text-green-500 {
+            color: #22c55e !important;
+        }
+        
+        .text-red-400,
+        .text-red-500 {
+            color: #ef4444 !important;
+        }
+        
+        .text-blue-400,
+        .text-blue-500 {
+            color: #3b82f6 !important;
+        }
+        
+        .text-orange-400,
+        .text-orange-500 {
+            color: #fb923c !important;
+        }
+        
+        .text-purple-400,
+        .text-purple-500 {
+            color: #a855f7 !important;
+        }
+        
+        .text-yellow-400,
+        .text-yellow-500 {
+            color: #eab308 !important;
+        }
+        
+        .text-cyan-400,
+        .text-cyan-500 {
+            color: #06b6d4 !important;
+        }
+        
+        /* Fix tables */
+        table {
+            border-collapse: collapse !important;
+            width: 100% !important;
+        }
+        
+        thead {
+            background: #f3f4f6 !important;
+            border-bottom: 2px solid #000 !important;
+        }
+        
+        th, td {
+            border: 1px solid #ccc !important;
+            padding: 8px !important;
+            color: black !important;
+        }
+        
+        /* Fix borders */
+        .border-gray-700,
+        .border-gray-600 {
+            border-color: #ccc !important;
+        }
+        
+        /* Ensure charts are visible */
+        canvas {
+            max-width: 100% !important;
+            height: auto !important;
+            page-break-inside: avoid !important;
+        }
+        
+        /* Fix grid layouts for print */
+        .grid {
+            display: block !important;
+        }
+        
+        .grid > div {
+            display: block !important;
+            width: 100% !important;
+            margin-bottom: 20px !important;
+            page-break-inside: avoid !important;
+        }
+        
+        /* Page break control */
+        .stat-card,
+        .bg-gray-800 {
+            page-break-inside: avoid !important;
+            margin-bottom: 15px !important;
+        }
+        
+        /* Add print header */
+        @page {
+            margin: 1cm;
+        }
+        
+        /* Fix rounded corners for print */
+        .rounded-xl,
+        .rounded-lg {
+            border-radius: 8px !important;
+        }
+        
+        /* Status badges */
+        .status-badge {
+            border: 1px solid !important;
+            padding: 4px 12px !important;
+        }
+        
+        .status-active {
+            background-color: #d1fae5 !important;
+            color: #065f46 !important;
+            border-color: #22c55e !important;
+        }
+        
+        .status-inactive {
+            background-color: #fee2e2 !important;
+            color: #991b1b !important;
+            border-color: #ef4444 !important;
+        }
+        
+        .status-pending {
+            background-color: #fed7aa !important;
+            color: #92400e !important;
+            border-color: #fb923c !important;
+        }
+    }
+
+    /* Print-specific classes you can add */
+    .print-header {
+        display: none;
+    }
+
+    @media print {
+        .print-header {
+            display: block !important;
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #000;
+        }
+        
+        .print-header h1 {
+            font-size: 24px;
+            margin: 0;
+            color: black !important;
+        }
+        
+        .print-header p {
+            font-size: 12px;
+            margin: 5px 0;
+            color: #666 !important;
+        }
+    }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
@@ -228,7 +416,7 @@
         </div>
         <!-- tab navigation -->
         <div class="mb-8">
-            <div class="bg-neutral-900 rounded-t-xl border-b border-gray-700 flex items-center">
+            <div class="bg-neutral-900 rounded-t-xl border-b border-gray-700 flex items-center sm:flex-wrap" >
                 <button class="tab-button active px-6 py-4 text-white font-semibold hover:text-blue-400 transition-colors" data-tab="members">
                     <span class="mr-2"></span> Members
                 </button>
@@ -634,11 +822,11 @@
                 </div>
             </div>
             <!-- Reports & KPIs Tab -->
-            <div id="reports" class="tab-content bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
+            <div id="reports" class="print-header tab-content bg-neutral-900 rounded-b-xl border border-t-0 border-gray-700 shadow-lg overflow-hidden">
                 <div class="p-6">
                     <div class="mb-6 flex justify-between items-center">
                         <h2 class="text-2xl font-bold text-white">Reports & Analytics</h2>
-                        <div class="flex space-x-2">
+                        <div class="flex space-x-2 no-print">
                             <select id="reportPeriod" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                                 <option value="7">Last 7 Days</option>
                                 <option value="30" selected>Last 30 Days</option>
