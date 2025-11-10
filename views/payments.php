@@ -9,6 +9,8 @@
     <title>Payment & Billing - Gymazing</title>
     <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
     <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="../public/assets/icons/fontawesome/css/all.min.css"></link>
+
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
@@ -183,10 +185,10 @@
                         <div class="flex flex-col sm:flex-row gap-4">
                             <button id="btnPayNow" data-subscription-id="<?= $currentPlan['subscription_id'] ?>" data-amount="<?= $currentPlan['amount'] ?>" data-plan="<?= $currentPlan['plan_name'] ?>"
                                     class="flex-1 px-8 py-4 bg-white hover:bg-gray-100 text-blue-600 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                💳 Pay Now
+                                <i class="fa-regular fa-credit-card text-yellow-400"></i> Pay Now
                             </button>
                             <button class="flex-1 px-8 py-4 border-2 border-white hover:bg-white hover:text-blue-600 text-white font-bold rounded-xl transition-all duration-300">
-                                📄 Download Invoice
+                                <i class="fa-regular fa-file-lines text-white"></i> Download Invoice
                             </button>
                         </div>
                     </div>
@@ -252,7 +254,7 @@
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-white">Transaction History</h2>
                     <button class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
-                        <span>⬇</span> Export History
+                        <i class="fa-regular fa-share-from-square"></i> Export History
                     </button>
                 </div>
 

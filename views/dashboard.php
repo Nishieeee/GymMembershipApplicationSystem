@@ -15,23 +15,16 @@
     $user['end_date'] = isset($userPlan['end_date']) ? $userPlan['end_date'] : "";
     $user['status'] = isset($userPlan['status']) ? $userPlan['status'] : "";
     $stats = [
-        ["label" => "Classes Attended", "value" => 24, "icon" => "📚"],
-        ["label" => "Workouts This Month", "value" => 12, "icon" => "💪"],
-        ["label" => "Days Remaining", "value" => 30, "icon" => "📅"],
-        ["label" => "Personal Trainer", "value" => "Yes", "icon" => "👨‍🏫"]
+        ["label" => "Classes Attended", "value" => 24, "icon" => '<i class="fa-regular fa-rectangle-list text-yellow-400"></i>'],
+        ["label" => "Workouts This Month", "value" => 12, "icon" => '<i class="fa-regular fa-hand text-orange-400"></i>'],
+        ["label" => "Days Remaining", "value" => 30, "icon" => '<i class="fa-regular fa-calendar text-red-400"></i>'],
+        ["label" => "Personal Trainer", "value" => "Yes", "icon" => '<i class="fa-regular fa-user text-blue-400"></i>']
     ];
 
     $upcoming_classes = [
         ["name" => "CrossFit Training", "time" => "10:00 AM - 11:00 AM", "trainer" => "Coach Mike", "capacity" => "15/20"],
         ["name" => "Strength Building", "time" => "2:00 PM - 3:30 PM", "trainer" => "Coach Sarah", "capacity" => "12/15"],
         ["name" => "Cardio Blast", "time" => "5:00 PM - 6:00 PM", "trainer" => "Coach Alex", "capacity" => "18/25"],
-    ];
-
-    $achievements = [
-        ["name" => "First Class", "date" => "2024-01-15", "icon" => "🏆"],
-        ["name" => "100 Workouts", "date" => "2024-06-20", "icon" => "💯"],
-        ["name" => "Consistency King", "date" => "2024-08-10", "icon" => "👑"],
-        ["name" => "Personal Best", "date" => "2024-09-05", "icon" => "⭐"],
     ];
 ?>
 
@@ -43,6 +36,7 @@
     <title>Gymazing! | Dashboard</title>
     <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
     <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="../public/assets/icons/fontawesome/css/all.min.css"></link>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
@@ -152,7 +146,7 @@
             <!-- hero Section -->
             <div id="dashboard" class="dashboard-section mb-12">
                 <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 lg:p-12 text-white shadow-xl">
-                    <h1 class="text-3xl lg:text-4xl font-bold mb-2">Welcome back, <?= $user['name'] ?>! 👋</h1>
+                    <h1 class="text-3xl lg:text-4xl font-bold mb-2">Welcome back, <?= $user['name'] ?>!</h1>
                     <p class="text-blue-100 text-lg">
                         <span class="font-semibold">Status:</span> 
                         <span class="inline-block px-3 py-1 <?=  $userPlan['status'] == 'active' ? 'bg-green-500' : 'bg-red-500' ?>  rounded-full text-sm font-bold ml-2">
@@ -253,8 +247,8 @@
                                         <div class="flex-1">
                                             <h3 class="text-lg font-bold text-white mb-2"><?= $user['name'] ?></h3>
                                             <div class="space-y-1 text-sm text-gray-400">
-                                                <p>⏰ <?= $session['session_date'] ?></p>
-                                                <p>👨‍🏫 Trainer: <?= $session['trainer_name'] ?></p>
+                                                <p><i class="fa-regular fa-alarm-clock text-red-400"></i> <?= $session['session_date'] ?></p>
+                                                <p><i class="fa-regular fa-user text-blue-400"></i> Trainer: <?= $session['trainer_name'] ?></p>
                                               
                                             </div>
                                         </div>
@@ -281,24 +275,6 @@
 
                 <!-- Right Column - Achievements & Quick Links -->
                 <div class="space-y-8">
-                    
-                    <!-- Achievements -->
-                    <div class="dashboard-section bg-neutral-900 rounded-xl p-8 border border-gray-700 shadow-lg">
-                        <h2 class="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
-                            <span class="text-2xl">🏆</span>
-                            <span>Achievements</span>
-                        </h2>
-                        <div class="grid grid-cols-2 gap-4">
-                            <?php if(isset($userPlan)) { foreach ($achievements as $achievement) { ?>
-                                <div class="achievement-badge bg-gray-800 rounded-lg p-4 text-center cursor-pointer hover:bg-gray-700">
-                                    <div class="text-3xl mb-2"><?= $achievement['icon'] ?></div>
-                                    <p class="text-white text-sm font-semibold"><?= $achievement['name'] ?></p>
-                                    <p class="text-gray-400 text-xs mt-1"><?= date('M d', strtotime($achievement['date'])) ?></p>
-                                </div>
-                            <?php   }
-                                }?>
-                        </div>
-                    </div>
 
                     <!-- Quick Actions -->
                     <div class="dashboard-section bg-neutral-900 rounded-xl p-8 border border-gray-700 shadow-lg">
@@ -329,9 +305,9 @@
                         <h3 class="text-lg font-bold text-white mb-3">Need Help?</h3>
                         <p class="text-blue-100 text-sm mb-4">Contact our support team for any assistance</p>
                         <div class="space-y-2 text-sm text-blue-100">
-                            <p>📞 +63 123 456 7890</p>
-                            <p>📧 support@gymazing.com</p>
-                            <p>⏰ Available 24/7</p>
+                            <p><i class="fa-regular fa-comment-dots text-red-400"></i> +63 123 456 7890</p>
+                            <p><i class="fa-regular fa-envelope text-blue-400"></i> support@gymazing.com</p>
+                            <p><i class="fa-regular fa-alarm-clock text-yellow-400"></i> Available 24/7</p>
                         </div>
                     </div>
                 </div>
