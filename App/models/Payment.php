@@ -278,8 +278,9 @@
             
             if($query->execute()) {
                 return $query->fetch(PDO::FETCH_ASSOC);
+            } else {
+                return null;
             }
-            return null;
         }
         public function getDailyRevenue($startDate, $endDate) {
             $sql = "SELECT 
@@ -298,8 +299,9 @@
             
             if($query->execute()) {
                 return $query->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                return [];
             }
-            return [];
         }
         public function getRevenueTrend($startDate, $endDate) {
             // Determine grouping based on date range
@@ -337,8 +339,9 @@
             
             if($query->execute()) {
                 return $query->fetchAll(PDO::FETCH_ASSOC);
+            } else {
+                return [];
             }
-            return [];
         }
         public function getPaymentStatsFiltered($startDate, $endDate) {
             $sql = "SELECT 
@@ -357,8 +360,9 @@
             
             if($query->execute()) {
                 return $query->fetch();
+            } else {
+                return null;
             }
-            return null;
         }
 
     }
