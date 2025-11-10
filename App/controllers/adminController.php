@@ -43,7 +43,103 @@
                 'activePlans' => $activePlans,
             ]);
         } 
+        public function reports() {
+            session_start();
+            $user_id = $_SESSION['user_id'];
 
+            $user = new User();
+            $plan = new Plan();
+            $payment = new Payment();
+            $subscription = new Subscription();
+            $trainerModel = new Trainer();
+
+            $members = $user->displayAllUsers();
+            $memberCount = $user->countActiveMembers();
+            $totalEarned = $payment->totalEarned();
+            $trainers = $trainerModel->getAllTrainers();
+            $paymentDetails = $subscription->getUserPayments();
+            $totalPayments = $subscription->countTotalPayments();
+            $walk_ins = $user->displayAllWalkInMembers();
+            $plans = $plan->getAllPlans();
+            $activePlans = $plan->getAllActivePlans();
+
+            $last12MonthsRevenue = $payment->getLast12MonthsRevenue();
+            $dailyRevenue30Days = $payment->getDailyRevenueLast30Days();
+            $revenueByPlan = $payment->getRevenueByPlan();
+            $paymentStats = $payment->getPaymentStats();
+            $pendingPayments = $payment->getPendingPayments();
+            $paymentMethodStats = $payment->getPaymentMethodStats();
+
+            $memberGrowth = $user->getMemberGrowthLast12Months();
+            $activeInactiveCount = $user->getActiveInactiveCount();
+            $membersByPlan = $user->getMembersByPlan();
+            $retentionRate = $user->getRetentionRate();
+
+            $expiringSubscriptions = $subscription->getExpiringSubscriptions(7);
+            $subscriptionStatusBreakdown = $subscription->getSubscriptionStatusBreakdown();
+
+            $this->adminView('reports', [
+                'memberCount' => $memberCount,
+                'totalEarned' => $totalEarned,
+                'paymentDetails' => $paymentDetails,
+                'totalPayments' =>  $totalPayments,
+                'trainers' => $trainers,
+                'walk_ins' => $walk_ins,
+                'members' => $members,
+                'plans' => $plans,
+                'activePlans' => $activePlans,
+
+               'last12MonthsRevenue' => $last12MonthsRevenue,
+                'dailyRevenue30Days' => $dailyRevenue30Days,
+                'revenueByPlan' => $revenueByPlan,
+                'paymentStats' => $paymentStats,
+                'pendingPayments' => $pendingPayments,
+                'paymentMethodStats' => $paymentMethodStats,
+                'memberGrowth' => $memberGrowth,
+                'activeInactiveCount' => $activeInactiveCount,
+                'membersByPlan' => $membersByPlan,
+                'retentionRate' => $retentionRate,
+                'expiringSubscriptions' => $expiringSubscriptions,
+                'subscriptionStatusBreakdown' => $subscriptionStatusBreakdown,
+            ]);
+        }
+        public function getReportData() {
+            header('Content-Type: application/json');
+            
+            if($_SERVER['REQUEST_METHOD'] == 'GET') {
+                $period = $_GET['period'] ?? 30;
+                
+                $payment = new Payment();
+                $user = new User();
+                $subscription = new Subscription();
+                
+                // Calculate date range
+                $end_date = date('Y-m-d');
+                $start_date = date('Y-m-d', strtotime("-{$period} days"));
+                
+                // Get data for the period
+                $data = [
+                    'revenue_trend' => $payment->getRevenueByDateRange($start_date, $end_date),
+                    'total_revenue' => $payment->totalEarned()['total_earned'],
+                    'pending_revenue' => $payment->getPendingPayments()['pending_amount'],
+                    'active_members' => $user->countActiveMembers()['active_member_count'],
+                    'retention_rate' => $user->getRetentionRate()['rate'],
+                    'member_growth' => $user->getMemberGrowthLast12Months(),
+                    'revenue_by_plan' => $payment->getRevenueByPlan(),
+                ];
+                
+                echo json_encode([
+                    'success' => true,
+                    'data' => $data
+                ]);
+            } else {
+                http_response_code(405);
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Invalid request method'
+                ]);
+            }
+        }
         public function addPlan() {
             $user = new User();
             $plan = new Plan();

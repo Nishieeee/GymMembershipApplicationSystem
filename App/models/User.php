@@ -66,7 +66,7 @@
 
         }
         public function getMember($user_id) {
-            $sql = "SELECT CONCAT(first_name, ' ', last_name) as name, first_name, email, role, created_at FROM members WHERE user_id = :user_id";
+            $sql = "SELECT user_id, CONCAT(first_name, ' ', last_name) as name, first_name, email, role, created_at FROM members WHERE user_id = :user_id";
 
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":user_id", $user_id);
@@ -217,6 +217,80 @@
             } else {
                 return null;
             }
+        }
+        
+        public function getMemberGrowthLast12Months() {
+            $sql = "SELECT 
+                    DATE_FORMAT(created_at, '%Y-%m') as month,
+                    DATE_FORMAT(created_at, '%b %Y') as month_label,
+                    COUNT(*) as new_members
+                    FROM members 
+                    WHERE role = 'member'
+                    AND created_at >= DATE_SUB(NOW(), INTERVAL 12 MONTH)
+                    GROUP BY DATE_FORMAT(created_at, '%Y-%m'), DATE_FORMAT(created_at, '%b %Y')
+                    ORDER BY month ASC";
+            
+            $query = $this->connect()->prepare($sql);
+            
+            if($query->execute()) {
+                return $query->fetchAll(PDO::FETCH_ASSOC);
+            }
+            return [];
+        }
+
+        public function getActiveInactiveCount() {
+            $sql = "SELECT 
+                    SUM(CASE WHEN status='active' THEN 1 ELSE 0 END) as active_count,
+                    SUM(CASE WHEN status='inactive' THEN 1 ELSE 0 END) as inactive_count
+                    FROM members 
+                    WHERE role = 'member'";
+            
+            $query = $this->connect()->prepare($sql);
+            
+            if($query->execute()) {
+                return $query->fetch();
+            }
+            return ['active_count' => 0, 'inactive_count' => 0];
+        }
+
+        public function getMembersByPlan() {
+            $sql = "SELECT 
+                    mp.plan_name,
+                    COUNT(DISTINCT s.user_id) as member_count
+                    FROM membership_plans mp
+                    LEFT JOIN subscriptions s ON s.plan_id = mp.plan_id AND s.status = 'active'
+                    WHERE mp.status = 'active'
+                    GROUP BY mp.plan_id, mp.plan_name
+                    ORDER BY member_count DESC";
+            
+            $query = $this->connect()->prepare($sql);
+            
+            if($query->execute()) {
+                return $query->fetchAll(PDO::FETCH_ASSOC);
+            }
+            return [];
+        }
+
+        public function getRetentionRate() {
+            $sql = "SELECT 
+                    COUNT(CASE WHEN status='active' THEN 1 END) as active,
+                    COUNT(*) as total
+                    FROM members 
+                    WHERE role = 'member'
+                    AND created_at <= DATE_SUB(NOW(), INTERVAL 1 MONTH)";
+            
+            $query = $this->connect()->prepare($sql);
+            
+            if($query->execute()) {
+                $result = $query->fetch();
+                $rate = $result['total'] > 0 ? ($result['active'] / $result['total']) * 100 : 0;
+                return [
+                    'active' => $result['active'],
+                    'total' => $result['total'],
+                    'rate' => round($rate, 2)
+                ];
+            }
+            return ['active' => 0, 'total' => 0, 'rate' => 0];
         }
     }
 

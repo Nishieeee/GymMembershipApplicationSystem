@@ -137,6 +137,7 @@
             $userCurrentPlan = $subscriptionModel->checkUserCurrentPlan($_SESSION['user_id']);
             $subscription_id = $userCurrentPlan['subscription_id'];
             if($subscriptionModel->expirePlan($subscription_id)) {
+                $userModel->deleteMemberViaId($user_id);
                 $userPlan['status'] = 'expired';
                 $this->view('dashboard', [
                     'userInfo' => $user,

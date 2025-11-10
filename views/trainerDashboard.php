@@ -15,6 +15,7 @@
     <title>Trainer Dashboard - Gymazing</title>
     <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
     <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="../public/assets/icons/fontawesome/css/all.min.css"></link>
     <style>
         .gradient-bg {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
@@ -98,22 +99,22 @@
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-neutral-900 rounded-xl p-6 border border-gray-700">
-                <div class="text-4xl mb-3"><!--add icon here--></div>
+                <div class="text-4xl mb-3"><i class="fa-regular fa-user text-blue-400"></i></div>
                 <p class="text-gray-400 text-sm">Assigned Members</p>
                 <p class="text-3xl font-bold text-white"><?= $stats['total_members'] ?></p>
             </div>
             <div class="bg-neutral-900 rounded-xl p-6 border border-gray-700">
-                <div class="text-4xl mb-3"><!--add icon here--></div>
+                <div class="text-4xl mb-3"><i class="fa-regular fa-calendar text-red-400"></i></div>
                 <p class="text-gray-400 text-sm">Upcoming Sessions</p>
                 <p class="text-3xl font-bold text-white"><?= $stats['upcoming_sessions'] ?></p>
             </div>
             <div class="bg-neutral-900 rounded-xl p-6 border border-gray-700">
-                <div class="text-4xl mb-3"><!--add icon here--></div>
+                <div class="text-4xl mb-3"><i class="fa-regular fa-calendar-check text-yellow-400"></i></div>
                 <p class="text-gray-400 text-sm">Completed This Month</p>
                 <p class="text-3xl font-bold text-white"><?= $stats['completed_sessions'] ?></p>
             </div>
             <div class="bg-neutral-900 rounded-xl p-6 border border-gray-700">
-                <div class="text-4xl mb-3"><!--add icon here--></div>
+                <div class="text-4xl mb-3"><i class="fa-regular fa-hourglass text-orange-400"></i></div>
                 <p class="text-gray-400 text-sm">Pending Requests</p>
                 <p class="text-3xl font-bold text-white"><?= $stats['pending_requests'] ?></p>
             </div>
@@ -123,13 +124,13 @@
         <div class="mb-8">
             <div class="bg-neutral-900 rounded-t-xl border-b border-gray-700 flex items-center">
                 <button class="tab-button active px-6 py-4 text-white font-semibold hover:text-blue-400 transition-colors" data-tab="members">
-                    👥 Assigned Members
+                    <i class="fa-regular fa-user text-blue-400"></i> Assigned Members
                 </button>
                 <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="sessions">
-                    📅 Sessions
+                    <i class="fa-regular fa-calendar text-red-400"></i> Sessions
                 </button>
                 <button class="tab-button px-6 py-4 text-gray-400 font-semibold hover:text-blue-400 transition-colors" data-tab="requests">
-                    🔔 Requests
+                    <i class="fa-regular fa-bell text-yellow-400"></i> Requests
                 </button>
             </div>
 
@@ -184,8 +185,8 @@
                             <div class="flex-1">
                                 <h3 class="text-lg font-bold text-white mb-2"><?= htmlspecialchars($session['member_name']) ?></h3>
                                 <div class="text-sm text-gray-400 space-y-1">
-                                    <p>📅 <?= date('M d, Y', strtotime($session['session_date'])) ?> at <?= date('h:i A', strtotime($session['session_date'])) ?></p>
-                                    <p>📍 Session ID: <?= $session['session_id'] ?></p>
+                                    <p><i class="fa-regular fa-calendar text-red-400"></i> <?= date('M d, Y', strtotime($session['session_date'])) ?> at <?= date('h:i A', strtotime($session['session_date'])) ?></p>
+                                    <p><i class="fa-regular fa-id-card text-blue-400"></i> Session ID: <?= $session['session_id'] ?></p>
                                 </div>
                             </div>
                             <div class="flex flex-col items-end space-y-2">
