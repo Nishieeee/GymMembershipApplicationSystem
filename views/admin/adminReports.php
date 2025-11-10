@@ -392,7 +392,7 @@
                     <!-- Total Revenue -->
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl"><i class="fa-regular fa-money-bill-1 text-white text-3xl"></i></div>
+                            <div class="text-4xl"><i class="fa-regular fa-money-bill-1 text-green-400 text-3xl"></i></div>
                             <span class="text-green-400 text-sm font-semibold">+<?= number_format((($paymentStats['total_paid'] ?? 0) / max(($totalEarned['total_earned'] ?? 1), 1) * 100), 1) ?>%</span>
                         </div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Total Revenue</p>
@@ -403,8 +403,8 @@
                     <!-- Pending Payments -->
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl"><i class="fa-regular fa-hourglass text-white text-3xl"></i></div>
-                            <span class="text-orange-400 text-sm font-semibold"><?= $pendingPayments['pending_count'] ?> pending</span>
+                            <div class="text-4xl"><i class="fa-regular fa-hourglass text-yellow-400 text-3xl"></i></div>
+                            <span class="text-yellow-400 text-sm font-semibold"><?= $pendingPayments['pending_count'] ?> pending</span>
                         </div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Pending Revenue</p>
                         <p class="text-3xl font-bold text-white">₱<?= number_format($pendingPayments['pending_amount'] ?? 0, 2) ?></p>
@@ -415,7 +415,7 @@
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
                             <div class="text-4xl">
-                                <i class="fa-solid fa-user text-white text-3xl"></i>
+                                <i class="fa-solid fa-user text-blue-500 text-3xl"></i>
                             </div>
                             <span class="text-blue-400 text-sm font-semibold"><?= round(($activeInactiveCount['active_count'] / max(($memberCount['active_member_count'] ?? 1), 1)) * 100, 1) ?>%</span>
                         </div>
@@ -427,7 +427,7 @@
                     <!-- Retention Rate -->
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl"><i class="fa-regular fa-barchart text-white text-3xl"></i></div>
+                            <div class="text-4xl"><i class="fa-regular fa-chart-bar text-purple-400 text-3xl"></i></div>
                             <span class="text-purple-400 text-sm font-semibold">Retention</span>
                         </div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Retention Rate</p>
@@ -438,8 +438,8 @@
                     <!-- Expiring Subscriptions -->
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl">⚠️</div>
-                            <span class="text-red-400 text-sm font-semibold">Urgent</span>
+                            <div class="text-4xl"><i class="fa-regular fa-alarm-clock text-orange-500"></i></div>
+                            <span class="text-orange-400 text-sm font-semibold">Urgent</span>
                         </div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Expiring Soon</p>
                         <p class="text-3xl font-bold text-white"><?= $expiringSubscriptions['expiring_count'] ?? 0 ?></p>
@@ -449,7 +449,7 @@
                     <!-- Average Transaction -->
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl">💳</div>
+                            <div class="text-4xl"><i class="fa-regular fa-credit-card text-cyan-400 text-3xl"></i></div>
                             <span class="text-cyan-400 text-sm font-semibold">Avg</span>
                         </div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Avg Transaction</p>
@@ -460,7 +460,7 @@
                     <!-- Total Plans -->
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl">📋</div>
+                            <div class="text-4xl"><i class="fa-regular fa-clipboard text-yellow-400 text-3xl"></i></div>
                             <span class="text-yellow-400 text-sm font-semibold"><?= count($activePlans) ?> active</span>
                         </div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Membership Plans</p>
@@ -471,7 +471,7 @@
                     <!-- Payment Success Rate -->
                     <div class="stat-card rounded-xl p-6">
                         <div class="flex items-center justify-between mb-4">
-                               <div class="text-4xl">✅</div>
+                               <div class="text-4xl"><i class="fa-regular fa-circle-check text-green-400 text-3xl"></i></div>
                             <span class="text-green-400 text-sm font-semibold">Success</span>
                         </div>
                         <p class="text-gray-400 text-sm font-medium mb-1">Success Rate</p>
