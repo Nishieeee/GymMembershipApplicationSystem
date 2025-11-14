@@ -11,6 +11,7 @@
             $subscribe = new Subscription();
             $planModel = new Plan();
             $paymentModel = new Payment();
+            $userModel = new User();
             $user_id = $_SESSION['user_id'];
 
             //subscription details
@@ -93,6 +94,8 @@
                             $paymentDetails['payment_date'] = $userPlan['end_date'];
                             $paymentDetails['status'] = "pending";
                             if($paymentModel->openPayment($paymentDetails)) {
+                                $user = $userModel->getMember($user_id);
+                                $this->notifySubscription($user['email'], $user['name']);
                                 header("location: index.php?controller=Dashboard&action=member");
                                 //also success pages
                             } else {
@@ -153,7 +156,7 @@
             }
         }
         public function notifyExpired($email, $name) {
-            $mail = $this->mailer(); // using base controller helpe
+            $mail = $this->mailer(); 
             $mail->addAddress($email, $name);
             $mail->Subject = "Subscription Expired";
             $mail->isHTML(true);
@@ -165,6 +168,38 @@
                 <p>Thank you!</p>
             ";
             $mail->AltBody = "Hi $name, your subscription has expired. Please renew your plan.";
+            $mail->send();
+        }
+
+        public function notifySubscription($email, $name) {
+            $mail = $this->mailer();
+            $mail->addAddress($email, $name);
+            $mail->Subject = "Subscription Activated Successfully!";
+            $mail->isHTML(true);
+            $mail->Body = "
+                <div style='font-family: Arial, sans-serif; padding: 20px; background-color: #f4f6f9;'>
+                    <div style='max-width: 600px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px;'>
+                        <h2 style='color: #4CAF50;'>Welcome to Our Service! 🌟</h2>
+
+                        <p>Hi <strong>{$name}</strong>,</p>
+                        <p>We're excited to let you know that your subscription has been <strong>successfully activated</strong>!</p>
+
+                        <div style='margin: 20px 0; padding: 15px; background-color: #e8f5e9; border-left: 4px solid #4CAF50;'>
+                            <p style='margin: 0; font-size: 15px;'>You now have full access to all premium features.</p>
+                        </div>
+
+                        <p>Start exploring now and enjoy the experience! </p>
+
+                        <a href='https://your-website.com/dashboard' style='display:inline-block; margin-top: 15px; background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Go to Dashboard</a>
+
+                        <hr style='margin-top: 30px;'>
+
+                        <p style='font-size: 12px; color: #777;'>If you have any questions, feel free to reach out to our support team.</p>
+                        <p style='font-size: 12px; color: #777;'>&copy; " . date('Y') . " Gymazing!. All rights reserved.</p>
+                    </div>
+                </div>
+            ";
+            $mail->AltBody = "Hi {$name}, your subscription was successfully activated! Enjoy full access now.";
             $mail->send();
         }
     }
