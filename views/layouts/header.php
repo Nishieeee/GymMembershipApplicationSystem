@@ -144,11 +144,11 @@
                         </div>
                     <?php } else { ?>
                         <!-- Guest buttons -->
-                        <a href="../views/auth/login.php" 
+                        <a href="index.php?controller=auth&action=login" 
                            class="px-5 py-2.5 text-white font-semibold hover:text-blue-400 transition-colors duration-200">
                             Login
                         </a>
-                        <a href="../views/auth/register.php" 
+                        <a href="index.php?controller=auth&action=register" 
                            class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold rounded-lg shadow-lg hover:shadow-xl transition-all duration-200 transform hover:scale-105">
                             Get Started
                         </a>
