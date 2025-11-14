@@ -4,7 +4,6 @@
     require_once __DIR__ . "/../models/User.php";
     require_once __DIR__ . "/../models/Plan.php";
     require_once __DIR__ . "/../models/Payment.php";
-
     class SubscribeController extends Controller {
         
         public function Subscribe() {
@@ -139,6 +138,9 @@
             if($subscriptionModel->expirePlan($subscription_id)) {
                 $userModel->deleteMemberViaId($user_id);
                 $userPlan['status'] = 'expired';
+                //email user of expired subscription
+                $this->notifyExpired($user['email'], $user['name']);
+
                 $this->view('dashboard', [
                     'userInfo' => $user,
                     'userPlan' => $userPlan,
@@ -149,6 +151,21 @@
                     'userPlan' => $userPlan,
                 ]);
             }
+        }
+        public function notifyExpired($email, $name) {
+            $mail = $this->mailer(); // using base controller helpe
+            $mail->addAddress($email, $name);
+            $mail->Subject = "Subscription Expired";
+            $mail->isHTML(true);
+            $mail->Body = "
+                <h3>Hello, $name</h3>
+                <p>Your subscription has expired.</p>
+                <p><a href='https://gymazing.com/renew'>Renew now</a> to continue enjoying our services!</p>
+                <br>
+                <p>Thank you!</p>
+            ";
+            $mail->AltBody = "Hi $name, your subscription has expired. Please renew your plan.";
+            $mail->send();
         }
     }
 
