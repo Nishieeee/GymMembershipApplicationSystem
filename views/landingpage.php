@@ -129,7 +129,7 @@
                     <div class="order-1 lg:order-2 flex items-center justify-center">
                         <div class="relative w-full max-w-lg">
                             <div class="absolute inset-0 bg-blue-600 rounded-2xl blur-3xl opacity-20"></div>
-                            <img src="assets/images/cafelayan-4.jpg" alt="Fitness Training" class="relative rounded-2xl shadow-2xl w-full h-auto object-cover">
+                            <img src="assets/images/image.png" alt="Fitness Training" class="relative rounded-2xl shadow-2xl w-full h-auto object-cover">
                         </div>
                     </div>
                 </div>

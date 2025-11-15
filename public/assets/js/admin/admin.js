@@ -850,7 +850,7 @@ $(document).ready(function () {
           const trainer = response.data;
 
           $("#edit_trainer_id").val(trainer.trainer_id);
-          $("#edit_user_id").val(trainer.user_id);
+          $("#edit_user_trainer_id").val(trainer.user_id);
           $("#edit_trainer_first_name").val(trainer.first_name);
           $("#edit_trainer_last_name").val(trainer.last_name);
           $("#edit_trainer_middle_name").val(trainer.middle_name || "");
@@ -1036,11 +1036,32 @@ $(document).ready(function () {
     $("body").css("overflow", "auto");
   });
 
-  $(".delete-trainer-modal-close, .delete-trainer-cancel").on("click", function () {
-    $("#deleteTrainerModal").removeClass("show");
-    $("body").css("overflow", "auto");
-  });
+  $(".delete-trainer-modal-close, .delete-trainer-cancel").on(
+    "click",
+    function () {
+      $("#deleteTrainerModal").removeClass("show");
+      $("body").css("overflow", "auto");
+    }
+  );
   // ===== HELPER FUNCTION =====
+  function showMessage(message, type) {
+    const messageDiv = $("#editMemberMessage");
+    const bgColor = type === "error" ? "bg-red-500" : "bg-green-500";
+
+    messageDiv
+      .html(
+        `
+            <div class="p-3 rounded-lg ${bgColor} text-white text-sm">
+                ${message}
+            </div>
+        `
+      )
+      .removeClass("hidden");
+
+    if (type !== "error") {
+      setTimeout(() => messageDiv.addClass("hidden"), 3000);
+    }
+  }
   function showDeleteMessage(message, type) {
     const messageDiv = $("#deleteMemberMessage");
     const bgColor = type === "error" ? "bg-red-500" : "bg-green-500";

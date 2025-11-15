@@ -1,72 +1,4 @@
-<?php 
-    require_once "../../App/controllers/AuthController.php";
-    require_once "../../App/models/User.php";
 
-    $user = new User();
-    $Auth = new AuthController($user);
-    
-    $register = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "date_of_birth" => "", "gender"=>"" , "password" => "", "cPassword" => ""];
-    $registerError = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "date_of_birth" => "", "gender"=>"" , "password" => "", "cPassword" => "", "register"=>""];
-    if($_SERVER['REQUEST_METHOD'] == "POST") {
-
-        $register["first_name"] =  trim(htmlspecialchars($_POST['first_name']));
-        $register["last_name"] = trim(htmlspecialchars($_POST['last_name']));
-        $register["middle_name"] = isset($_POST['middle_name']) ? trim(htmlspecialchars($_POST['middle_name'])) : "";
-        $register["email"] =  trim(htmlspecialchars($_POST['email']));
-        $register["date_of_birth"] = trim(htmlspecialchars($_POST['date_of_birth']));
-        $register["gender"] =  trim(htmlspecialchars($_POST['gender']));
-        $register["password"] = trim(htmlspecialchars($_POST['password']));
-        $register["cPassword"] = trim(htmlspecialchars($_POST['cPassword']));
-
-        if(empty($register['first_name'])) {
-            $registerError['first_name'] = "Please provide your first name";
-        }
-        if(empty($register['last_name'])) {
-            $registerError['last_name'] = "Please provide your last name";
-        }
-        if(empty($register['email'])) {
-            $registerError['email'] = "Please  provide a valid email";
-        } else if(!filter_var($register['email'], FILTER_VALIDATE_EMAIL)) {
-            $registerError['email'] = "Please provide a valid email address";
-        }
-
-        if(empty($register['date_of_birth'])) {
-            $registerError['date_of_birth'] = "Please provide you birthdate";
-        } else if($register['date_of_birth'] < 12) {
-            $registerError['date_of_birth'] = "Children are not allowed in the gym";
-        }
-        if(!isset($register["gender"] )) {
-            $registerError['gender'] = "Please set your preferred gender";
-        }
-        if(empty($register['password'])) {
-            $registerError['password'] = "Password should not be empty.";
-        } else if(strlen($register['password']) < 8) {
-            $registerError['password'] = "Password should not be less than 8 characters";
-        } else if($register['password'] != $register['cPassword']) {
-            $registerError['password'] = "Passwords do not match";
-            $registerError['cPassword'] = "Passwords do not match";
-        }
-
-        if(empty($register['cPassword'])) {
-            $registerError['cPassword'] = "Please enter you password again.";
-        }
-
-        if(empty(array_filter($registerError))) {
-            if(!$user->findByEmail($register['email'])) {
-                if($Auth->Register($register)) {
-                   header("location: login.php"); 
-                } else {
-                    $registerError['register'] = "Error registering user. Please try again";
-                }
-            } else {
-                $registerError['register'] = "Account already exist.";
-            }
-            
-        }
-        
-    }
-
-?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -132,7 +64,7 @@
                 </div>
                 <div class="w-full mb-1">
                     <label for="password" class="text-zinc-700 text-sm ">Password</label>
-                    <input type="password" name="password" placeholder="Pass" value="<?= $register['password'] ?>" class="w-full p-1 text-sm border border-gray-500/50 rounded-sm">
+                    <input type="password" name="password" placeholder="Password" value="<?= $register['password'] ?>" class="w-full p-1 text-sm border border-gray-500/50 rounded-sm">
                     <p class="text-red-500 text-sm"><?= $registerError['password'] ?></p>
                 </div>
                 <div class="w-full mb-1">
