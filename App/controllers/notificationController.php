@@ -6,7 +6,7 @@ class NotificationController extends Controller {
     private $notificationModel;
     
     public function __construct() {
-        $this->notificationModel = new NotificationModel();
+        $this->notificationModel = new Notification();
     }
     
     /**
@@ -37,6 +37,7 @@ class NotificationController extends Controller {
      * Get unread count (AJAX endpoint)
      */
     public function getUnreadCount() {
+        session_start();
         header('Content-Type: application/json');
         
         if(!isset($_SESSION['user_id'])) {
@@ -52,8 +53,8 @@ class NotificationController extends Controller {
      * Mark notification as read
      */
     public function markAsRead() {
+        session_start();
         header('Content-Type: application/json');
-        
         if(!isset($_SESSION['user_id'])) {
             echo json_encode(['success' => false, 'error' => 'Unauthorized']);
             exit();
@@ -73,6 +74,7 @@ class NotificationController extends Controller {
      * Mark all as read
      */
     public function markAllAsRead() {
+        session_start();
         header('Content-Type: application/json');
         
         if(!isset($_SESSION['user_id'])) {

@@ -1,7 +1,7 @@
 <?php
 
 require_once __DIR__ . "/../config/Database.php";
-class NotificationModel extends Database {
+class Notification extends Database {
     
     public function create($userId, $title, $message, $type = 'info', $category = 'general', $link = null) {
         $sql = "INSERT INTO notifications (user_id, title, message, type, category, link) 
@@ -17,7 +17,6 @@ class NotificationModel extends Database {
             ':link' => $link
         ]);
     }
-    
 
     public function getUserNotifications($userId, $limit = 20, $unreadOnly = false) {
         $sql = "SELECT * FROM notifications WHERE user_id = :user_id";

@@ -4,6 +4,7 @@
     require_once __DIR__ . "/../models/User.php";
     require_once __DIR__ . "/../models/Plan.php";
     require_once __DIR__ . "/../models/Payment.php";
+    require_once __DIR__ . "/../models/notification.php";
     class SubscribeController extends Controller {
         
         public function Subscribe() {
@@ -132,6 +133,7 @@
 
             $userModel = new User();
             $planModel = new Plan();
+            $notificationModel = new Notification();
 
             $user = $userModel->getMember($user_id);
             $userPlan = $planModel->getUserPlan($user_id);
@@ -143,6 +145,8 @@
                 $userPlan['status'] = 'expired';
                 //email user of expired subscription
                 $this->notifyExpired($user['email'], $user['name']);
+
+                $notificationModel->create($user_id, "Plan Expiration", "Your Current Plan has Expired", "warning", "membership", "");
 
                 $this->view('dashboard', [
                     'userInfo' => $user,
