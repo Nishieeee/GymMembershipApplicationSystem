@@ -10,7 +10,7 @@
 <body>
     <main class="min-h-screen w-full bg-[var(--primary)] flex items-center justify-center font-sans">
         <div class="p-1 w-80 bg-[var(--primary)] border border-gray-500/50 shadow-md rounded-md ">
-            <form method="GET" action="index.php?controller=auth&action=verifyLogin" class="p-5">
+            <form method="POST" action="index.php?controller=auth&action=verifyLogin" class="p-5">
             <div class="mb-3 flex items-center space-x-2">
                     <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-700 rounded-lg flex items-center justify-center shadow-lg">
                         <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,7 +39,7 @@
                 </div>
                 <div class="flex-1 text-center items-center justify-center">
                     <a href="#" class="text-sm text-blue-500 underline">Forgot Password?</a>
-                    <p class="text-sm">Create new Account. <a href="register.php" class="text-blue-500 underline">Sign up</a></p>
+                    <p class="text-sm">Create new Account. <a href="index.php?controller=auth&action=register" class="text-blue-500 underline">Sign up</a></p>
                 </div>
             </form>
         </div>
