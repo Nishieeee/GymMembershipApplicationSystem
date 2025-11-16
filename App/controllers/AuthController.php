@@ -211,5 +211,45 @@ class AuthController extends Controller {
             return false;
         }
     }
+
+    public function notifyNewUser($email, $name) {
+        $mail = $this->mailer();
+
+        $mail->addAddress($email, $name);
+        $mail->Subject = "Welcome to Our Community, {$name}! 🎉";
+        $mail->isHTML(true);
+        $mail->Body = "
+            <div style='font-family: Arial, sans-serif; padding: 20px; background-color: #f4f7fa;'>
+                <div style='max-width: 600px; margin: auto; background-color: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #e1e5ea;'>
+
+                    <h2 style='color: #3E91F7;'>Welcome aboard, {$name}! 👋</h2>
+
+                    <p>We’re thrilled to have you here. Your account has been successfully created and you’re all set to explore our features!</p>
+
+                    <div style='margin: 15px 0; padding: 12px; background-color: #eef5ff; border-left: 4px solid #3E91F7;'>
+                        <p style='margin: 0; font-size: 15px;'>✨ Enjoy full access to your dashboard and customize your experience.</p>
+                    </div>
+
+                    <p>To get started, click the button below:</p>
+
+                    <a href='https://your-website.com/dashboard' 
+                    style='display:inline-block; margin: 15px 0; background-color: #3E91F7; 
+                    color: white; padding: 12px 20px; text-decoration: none; border-radius: 6px;'>
+                    Go to Dashboard
+                    </a>
+
+                    <p style='margin-top: 25px;'>If you ever need help, our support team is always ready to assist you 😊</p>
+
+                    <hr style='margin-top: 30px;'>
+
+                    <p style='font-size: 12px; color: #777;'>If you didn’t create this account, please ignore this email or contact support.</p>
+                    <p style='font-size: 12px; color: #777;'>&copy; " . date('Y') . " Gymazing. All rights reserved.</p>
+                </div>
+            </div>
+        ";
+        $mail->AltBody = "Welcome {$name}! Your account has been created successfully. Visit your dashboard to get started.";
+
+
+    }
 }
 ?>
