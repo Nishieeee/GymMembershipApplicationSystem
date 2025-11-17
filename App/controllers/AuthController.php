@@ -54,7 +54,7 @@ class AuthController extends Controller {
             if(empty(array_filter($loginErrors))) {
                 if($this->loginUser($login['email'], $login['password'])) {
                     if($_SESSION['role'] == 'trainer') {
-                        header("Location: index.php?controller=trainer&action=dashboard");
+                        header("Location: index.php?controller=trainer&action=trainerDashboard");
                     } else if($_SESSION['role'] == 'admin') {
                         header("Location: index.php?controller=Admin&action=dashboard");
                     } else {

@@ -116,11 +116,11 @@ class NotificationHelper {
         );
     }
     
-    public static function sessionScheduled($trainerId, $clientName, $date, $time) {
+    public static function sessionScheduled($trainerId, $clientName, $date) {
         return self::getModel()->create(
             $trainerId,
             'New Session Scheduled',
-            "A new session with $clientName has been scheduled for $date at $time.",
+            "A new session with $clientName has been scheduled for $date",
             'info',
             'schedule',
             'index.php?controller=trainer&action=schedule'
