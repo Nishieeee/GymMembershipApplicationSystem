@@ -108,7 +108,7 @@
         }
 
         public function getPaymentId($subscription_id) {
-            $sql = "SELECT payment_id
+            $sql = "SELECT payment_id, amount
                     FROM payments
                     WHERE subscription_id = :subscription_id";
 

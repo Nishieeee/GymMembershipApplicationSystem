@@ -1,9 +1,14 @@
 <?php 
     require_once __DIR__ . "/../Controller.php";
+    //models
     require_once __DIR__ . "/../models/Subscription.php";
     require_once __DIR__ . "/../models/User.php";
     require_once __DIR__ . "/../models/Plan.php";
     require_once __DIR__ . "/../models/Payment.php";
+    require_once __DIR__ . "/../models/notification.php";
+    //helper
+    require_once __DIR__ . "/../helpers/notificationHelper.php";
+    
     class SubscribeController extends Controller {
         
         public function Subscribe() {
@@ -12,7 +17,10 @@
             $planModel = new Plan();
             $paymentModel = new Payment();
             $userModel = new User();
+            $notificationModel = new Notification();
+
             $user_id = $_SESSION['user_id'];
+            
 
             //subscription details
             $subscriptionDetails = [
@@ -70,6 +78,7 @@
                                 $paymentDetails['payment_date'] = $userPlan['end_date'];
                                 $paymentDetails['status'] = "pending";
                                 if($paymentModel->openPayment($paymentDetails)) {
+                                    NotificationHelper::membershipRenewed($user_id, $subscriptionDetails['end_date']);
                                     header("location: index.php?controller=Dashboard&action=member");
                                     //also success pages
                                 } else {
@@ -115,11 +124,14 @@
             session_start();
 
             $subscriptionModel = new Subscription();
-            
+            $notificationModel = new Notification();
+
             $userPlan = $subscriptionModel->checkUserCurrentPlan($_SESSION['user_id']);
             $subscription_id = $userPlan['subscription_id'];
             echo $subscription_id;
             if($subscriptionModel->cancelPlan($subscription_id)) {
+                $notificationModel->create($_SESSION['user_id'], "Plan cancellation", "Your Current Plan has been Cancelled", "warning", "membership");
+
                 header("location: index.php?controller=Dashboard&action=member");
             } else {
                 //show error
@@ -132,6 +144,7 @@
 
             $userModel = new User();
             $planModel = new Plan();
+            $notificationModel = new Notification();
 
             $user = $userModel->getMember($user_id);
             $userPlan = $planModel->getUserPlan($user_id);
@@ -143,6 +156,8 @@
                 $userPlan['status'] = 'expired';
                 //email user of expired subscription
                 $this->notifyExpired($user['email'], $user['name']);
+                NotificationHelper::membershipExpired($user_id);
+                $notificationModel->create($user_id, "Plan Expiration", "Your Current Plan has Expired", "warning", "membership");
 
                 $this->view('dashboard', [
                     'userInfo' => $user,
@@ -155,6 +170,8 @@
                 ]);
             }
         }
+
+        
         public function notifyExpired($email, $name) {
             $mail = $this->mailer(); 
             $mail->addAddress($email, $name);
@@ -201,6 +218,10 @@
             ";
             $mail->AltBody = "Hi {$name}, your subscription was successfully activated! Enjoy full access now.";
             $mail->send();
+        }
+
+        public function notifyUpgradedPlan($email, $name) {
+            
         }
     }
 
