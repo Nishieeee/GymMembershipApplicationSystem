@@ -155,6 +155,7 @@
                 $userModel->deleteMemberViaId($user_id);
                 $userPlan['status'] = 'expired';
                 //email user of expired subscription
+                $this->notifyExpired($user['email'], $user['name']);
                 NotificationHelper::membershipExpired($user_id);
                 $notificationModel->create($user_id, "Plan Expiration", "Your Current Plan has Expired", "warning", "membership");
 
@@ -217,6 +218,10 @@
             ";
             $mail->AltBody = "Hi {$name}, your subscription was successfully activated! Enjoy full access now.";
             $mail->send();
+        }
+
+        public function notifyUpgradedPlan($email, $name) {
+            
         }
     }
 
