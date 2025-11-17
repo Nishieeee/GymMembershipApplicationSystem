@@ -2,7 +2,10 @@
 <?php
 require_once __DIR__ . '/../models/Trainer.php';
 require_once __DIR__ . '/../models/Session.php';
+require_once __DIR__ . '/../models/User.php';
 require_once __DIR__ . "/../Controller.php";
+
+require_once __DIR__ . "/../helpers/notificationHelper.php";
 class TrainerController extends Controller{
     private $trainerModel;
     private $sessionModel;
@@ -74,8 +77,10 @@ class TrainerController extends Controller{
             'notes' => $notes,
             'status' => 'scheduled'
         ]);
-
+        $userModel = new User();
+        $userDetails = $userModel->getMember($userId);
         if($result) {
+            NotificationHelper::sessionScheduled($trainerId, $userDetails['name'] ,$sessionDate);
             http_response_code(200);
             echo json_encode(['success' => true, 'message' => 'Session scheduled successfully']);
         } else {

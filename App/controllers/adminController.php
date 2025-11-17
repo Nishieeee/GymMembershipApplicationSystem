@@ -8,6 +8,7 @@
     require_once __DIR__ . "/../models/Subscription.php";
     require_once __DIR__ . "/../models/Payment.php";
     require_once __DIR__ . "/../models/Trainer.php";
+    require_once __DIR__ . "/../models/notification.php";
 
     class AdminController extends Controller {
 
