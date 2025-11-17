@@ -55,6 +55,8 @@ class AuthController extends Controller {
                 if($this->loginUser($login['email'], $login['password'])) {
                     if($_SESSION['role'] == 'trainer') {
                         header("Location: index.php?controller=trainer&action=dashboard");
+                    } else if($_SESSION['role'] == 'admin') {
+                        header("Location: index.php?controller=Admin&action=dashboard");
                     } else {
                         header("Location: index.php?controller=dashboard&action=member");
                     }
@@ -174,6 +176,7 @@ class AuthController extends Controller {
             if(empty(array_filter($registerError))) {
                 if(!$user->findByEmail($register['email'])) {
                     if($this->RegisterUser($register)) {
+                        NotificationHelper::newMemberRegistered(7, $register['first_name'] . ' ' . $register['last_name']);
                         header("Location: index.php?controller=auth&action=login"); 
                         exit();
                     } else {

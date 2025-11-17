@@ -1,8 +1,11 @@
 <?php 
     require_once __DIR__ . "/../Controller.php";
+    require_once __DIR__ . "/../models/User.php";
     require_once __DIR__ . "/../models/Payment.php";
     require_once __DIR__ . "/../models/subscription.php";
     require_once __DIR__ . "/../models/Plan.php";
+
+    require_once __DIR__ . "/../helpers/notificationHelper.php";
 
 
     class PaymentController extends Controller {
@@ -21,6 +24,8 @@
         }
 
     public function processPayment() {
+        session_start();
+        $user_id = $_SESSION['user_id'];
         header('Content-Type: application/json');
 
         if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -55,6 +60,13 @@
         // Respond accordingly
         if ($result) {
             // $this->notifyPaymentSuccess();
+            $paymentModel = new Payment();
+            $userModel = new User();
+
+            $payment_details = $paymentModel->getPaymentId($paymentDetails['subscription_id']);
+            $userDetails = $userModel->getMember($user_id);
+            NotificationHelper::paymentReceived($user_id, $payment_details['amount']);
+            NotificationHelper::paymentReceived_Admin(7, $userDetails['name'], $payment_details['amount']);
             http_response_code(200);
             echo json_encode([
                 'success' => true,

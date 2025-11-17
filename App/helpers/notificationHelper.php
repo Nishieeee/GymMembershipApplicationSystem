@@ -1,12 +1,12 @@
 <?php 
-require_once __DIR__ . "/models/NotificationModel.php";
+require_once __DIR__ . "/../models/notification.php";
 require_once __DIR__ . "/../config/Database.php";
 class NotificationHelper {
     private static $notificationModel;
     
     private static function getModel() {
         if(self::$notificationModel === null) {
-            self::$notificationModel = new NotificationModel();
+            self::$notificationModel = new Notification();
         }
         return self::$notificationModel;
     }
