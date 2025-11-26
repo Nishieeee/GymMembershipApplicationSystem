@@ -443,6 +443,242 @@
             }
             
         }
+
+        public function addMemberAsTrainer() {
+            header('Content-Type: application/json');
+            
+            if($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                http_response_code(405);
+                echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+                exit;
+            }
+            
+            $userId = trim($_POST['user_id'] ?? '');
+            $specialization = trim($_POST['specialization'] ?? '');
+            $experienceYears = trim($_POST['experience_years'] ?? '0');
+            $contactNo = trim($_POST['contact_no'] ?? '');
+
+            // Validation
+            if(empty($userId) || empty($specialization)) {
+                http_response_code(400);
+                echo json_encode(['success' => false, 'message' => 'Missing required fields']);
+                exit;
+            }
+
+            $db = null;
+            
+            try {
+                $userModel = new User();
+                $trainerModel = new Trainer();
+                
+                // Check if user exists
+                $user = $userModel->getMember($userId);
+                if(!$user) {
+                    http_response_code(400);
+                    echo json_encode(['success' => false, 'message' => 'User not found']);
+                    exit;
+                }
+
+                // Check if already a trainer
+                if(isset($user['role']) && $user['role'] === 'trainer') {
+                    http_response_code(400);
+                    echo json_encode(['success' => false, 'message' => 'User is already a trainer']);
+                    exit;
+                }
+
+                // Get database connection
+                $db = $trainerModel->connect();
+                $db->beginTransaction();
+
+                // Update user role to trainer
+                $updateRoleQuery = "UPDATE members SET role = 'trainer' WHERE user_id = ?";
+                $stmt = $db->prepare($updateRoleQuery);
+                
+                if(!$stmt->execute([$userId])) {
+                    throw new Exception('Failed to update user role');
+                }
+
+                // Insert into trainers table
+                $trainerQuery = "INSERT INTO trainers (user_id, specialization, experience_years, contact_no, status, join_date) 
+                                VALUES (?, ?, ?, ?, 'active', NOW())";
+                $stmt = $db->prepare($trainerQuery);
+                
+                if(!$stmt->execute([$userId, $specialization, $experienceYears, $contactNo])) {
+                    throw new Exception('Failed to create trainer record');
+                }
+
+                // COMMIT THE TRANSACTION FIRST - This is the important part!
+                $db->commit();
+                
+                // Get member name for notifications
+                $memberName = ($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '');
+                
+                // Now try to send notifications (after successful commit)
+                // If this fails, we don't care - the database is already updated
+                $this->sendTrainerNotifications($userId, $memberName, $specialization);
+
+                // Success response
+                http_response_code(200);
+                echo json_encode([
+                    'success' => true, 
+                    'message' => 'Member promoted to trainer successfully'
+                ]);
+
+            } catch(Exception $e) {
+                // Only rollback if transaction is still active
+                if($db && $db->inTransaction()) {
+                    $db->rollBack();
+                }
+                
+                error_log("Error promoting member to trainer: " . $e->getMessage());
+                
+                http_response_code(500);
+                echo json_encode([
+                    'success' => false, 
+                    'message' => 'Failed to promote member to trainer'
+                ]);
+            }
+            exit;
+        }
+        private function sendTrainerNotifications($userId, $memberName, $specialization) {
+            try {
+                // Check if NotificationHelper file exists
+                $helperPath = __DIR__ . '/../helpers/NotificationHelper.php';
+                if(!file_exists($helperPath)) {
+                    error_log("NotificationHelper not found at: $helperPath");
+                    return false;
+                }
+                
+                require_once $helperPath;
+                
+                // Check if the class exists
+                if(!class_exists('NotificationHelper')) {
+                    error_log("NotificationHelper class not found");
+                    return false;
+                }
+                
+                // Try to send notification to the promoted trainer
+                try {
+                    NotificationHelper::trainerPromoted($userId, $specialization);
+                } catch(Exception $e) {
+                    error_log("Failed to send trainer promotion notification: " . $e->getMessage());
+                }
+                
+                // Try to notify admins
+                try {
+                    NotificationHelper::notifyAllAdmins(
+                        'New Trainer Added',
+                        "$memberName has been promoted to trainer with specialization in $specialization.",
+                        'index.php?controller=Admin&action=dashboard'
+                    );
+                } catch(Exception $e) {
+                    error_log("Failed to send admin notification: " . $e->getMessage());
+                }
+                
+                // Try to send email
+                try {
+                    $this->sendTrainerWelcomeEmail($userId, $memberName, $specialization);
+                } catch(Exception $e) {
+                    error_log("Failed to send welcome email: " . $e->getMessage());
+                }
+                
+                return true;
+                
+            } catch(Exception $e) {
+                error_log("Notification system error: " . $e->getMessage());
+                return false;
+            }
+        }
+       private function sendTrainerWelcomeEmail($userId, $memberName, $specialization) {
+            try {
+                // Get user email
+                $userModel = new User();
+                $user = $userModel->getMember($userId);
+                
+                if(!$user || empty($user['email'])) {
+                    error_log("Cannot send email - user email not found");
+                    return false;
+                }
+                
+                $email = $user['email'];
+                $firstName = $user['first_name'] ?? 'Trainer';
+                
+                $subject = "Welcome to the Gymazing Trainer Team!";
+                
+                $message = "
+                <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                        .header { background: linear-gradient(135deg, #1e40af, #3b82f6); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }
+                        .content { background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }
+                    </style>
+                </head>
+                <body>
+                    <div class='container'>
+                        <div class='header'>
+                            <h1>🎉 Welcome to the Trainer Team!</h1>
+                        </div>
+                        <div class='content'>
+                            <h2>Hi $firstName,</h2>
+                            <p>Congratulations! You've been promoted to a trainer at Gymazing!</p>
+                            
+                            <p><strong>Your Specialization:</strong> $specialization</p>
+                            
+                            <p>As a trainer, you now have access to:</p>
+                            <ul>
+                                <li>Trainer Dashboard</li>
+                                <li>Member Management</li>
+                                <li>Session Scheduling</li>
+                                <li>Progress Tracking Tools</li>
+                            </ul>
+                            
+                            <p>Best regards,<br>The Gymazing Team</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                ";
+                
+                $headers = "MIME-Version: 1.0" . "\r\n";
+                $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+                $headers .= "From: Gymazing <noreply@gymazing.com>" . "\r\n";
+                
+                // Use @ to suppress errors if mail() fails
+                @mail($email, $subject, $message, $headers);
+                
+                return true;
+                
+            } catch(Exception $e) {
+                error_log("Email send error: " . $e->getMessage());
+                return false;
+            }
+        }
+
+
+        /**
+         * Get all members who are not trainers (for dropdown)
+         */
+        public function getNonTrainerMembers() {
+            header('Content-Type: application/json');
+            
+            $userModel = new User();
+            $db = $userModel->connect();
+            
+            $query = "SELECT user_id, CONCAT(first_name, ' ', last_name) as name, email 
+                    FROM members 
+                    WHERE role = 'member' 
+                    ORDER BY first_name, last_name";
+            
+            $stmt = $db->prepare($query);
+            $stmt->execute();
+            $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode(['success' => true, 'data' => $members]);
+            exit;
+        }
+
     }
 
 

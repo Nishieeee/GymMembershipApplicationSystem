@@ -72,7 +72,7 @@
         }
         public function getMember($user_id) {
             $sql = "SELECT 
-                    user_id, CONCAT(first_name, ' ', last_name) as name, first_name, email, role, created_at 
+                    user_id, CONCAT(first_name, ' ', last_name) as name, first_name, last_name, email, role, created_at 
                     FROM members 
                     WHERE user_id = :user_id";
 

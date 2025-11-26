@@ -1080,4 +1080,420 @@ $(document).ready(function () {
       setTimeout(() => messageDiv.addClass("hidden"), 3000);
     }
   }
+  // Add Member as Trainer Button
+  $('#btnAddMemberNewTrainer').click(function() {
+      // First, load available members
+      $.ajax({
+          url: 'index.php?controller=Admin&action=getNonTrainerMembers',
+          method: 'GET',
+          dataType: 'json',
+          success: function(response) {
+              if(response.success) {
+                  showAddMemberAsTrainerModal(response.data);
+              }
+          },
+          error: function() {
+              showAlert('Failed to load members', 'error');
+          }
+      });
+  });
+
+  function showAddMemberAsTrainerModal(members) {
+      // Create modal dynamically
+      const modal = `
+          <div id="addMemberAsTrainerModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+              <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
+                  <button class="close-member-trainer-modal float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
+                  
+                  <h3 class="text-2xl font-bold text-white mb-6">Promote Member to Trainer</h3>
+                  
+                  <form id="addMemberAsTrainerForm">
+                      <div class="mb-4">
+                          <label class="block text-white font-semibold mb-2">Select Member</label>
+                          <select name="user_id" required class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg">
+                              <option value="">Choose a member...</option>
+                              ${members.map(m => `<option value="${m.user_id}">${m.name} (${m.email})</option>`).join('')}
+                          </select>
+                      </div>
+                      
+                      <div class="mb-4">
+                          <label class="block text-white font-semibold mb-2">Specialization</label>
+                          <select name="specialization" required class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg">
+                              <option value="">Select specialization...</option>
+                              <option value="Weight Training">Weight Training</option>
+                              <option value="Cardio">Cardio</option>
+                              <option value="CrossFit">CrossFit</option>
+                              <option value="Yoga">Yoga</option>
+                              <option value="Pilates">Pilates</option>
+                              <option value="Boxing">Boxing</option>
+                              <option value="Personal Training">Personal Training</option>
+                              <option value="Nutrition">Nutrition</option>
+                          </select>
+                      </div>
+                      
+                      <div class="mb-4">
+                          <label class="block text-white font-semibold mb-2">Experience (Years)</label>
+                          <input type="number" name="experience_years" value="0" min="0" max="50" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg">
+                      </div>
+                      
+                      <div class="mb-4">
+                          <label class="block text-white font-semibold mb-2">Contact Number</label>
+                          <input type="tel" name="contact_no" placeholder="+63 9XX XXX XXXX" class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg">
+                      </div>
+                      
+                      <div id="memberTrainerMessage" class="hidden mb-4"></div>
+                      
+                      <div class="flex space-x-4">
+                          <button type="button" class="close-member-trainer-modal flex-1 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg">
+                              Cancel
+                          </button>
+                          <button type="submit" class="flex-1 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-lg">
+                              Promote to Trainer
+                          </button>
+                      </div>
+                  </form>
+              </div>
+          </div>
+      `;
+      
+      // Append modal to body
+      $('body').append(modal);
+      $('#addMemberAsTrainerModal').addClass('show');
+      
+      // Close modal handlers
+      $('.close-member-trainer-modal').click(function() {
+          $('#addMemberAsTrainerModal').removeClass('show');
+          setTimeout(() => $('#addMemberAsTrainerModal').remove(), 300);
+      });
+  }
+
+  // Handle Member to Trainer Form Submission
+  $(document).on('submit', '#addMemberAsTrainerForm', function(e) {
+      e.preventDefault();
+      
+      const formData = $(this).serialize();
+      const submitBtn = $(this).find('button[type="submit"]');
+      const originalText = submitBtn.text();
+      
+      submitBtn.prop('disabled', true).html('<span class="loading"></span> Processing...');
+      
+      $.ajax({
+          url: 'index.php?controller=Admin&action=addMemberAsTrainer',
+          method: 'POST',
+          data: formData,
+          dataType: 'json',
+          success: function(response) {
+              if(response.success) {
+                  showAlert(response.message, 'success');
+                  $('#addMemberAsTrainerModal').removeClass('show');
+                  setTimeout(() => {
+                      $('#addMemberAsTrainerModal').remove();
+                      location.reload();
+                  }, 1500);
+              } else {
+                  showAlert(response.message, 'error');
+                  submitBtn.prop('disabled', false).text(originalText);
+              }
+          },
+          error: function(xhr) {
+              const response = xhr.responseJSON || {};
+              showAlert(response.message || 'Failed to promote member to trainer', 'error');
+              submitBtn.prop('disabled', false).text(originalText);
+          }
+      });
+  });
+
+  // Add New Trainer Button
+  $('#btnAddNewTrainer').click(function() {
+      $('#addTrainerModal').addClass('show');
+  });
+
+  // Close Add Trainer Modal
+  $('.add-trainer-close, .add-trainer-cancel').click(function() {
+      $('#addTrainerModal').removeClass('show');
+      $('#addTrainerForm')[0].reset();
+      $('#addTrainerMessage').addClass('hidden');
+  });
+
+  // Handle Add Trainer Form Submission
+  $('#addTrainerForm').submit(function(e) {
+      e.preventDefault();
+      
+      const formData = $(this).serialize();
+      const submitBtn = $('#btnAddTrainer');
+      const originalText = submitBtn.text();
+      
+      // Validate passwords match
+      const password = $('input[name="password"]').val();
+      const confirmPassword = $('input[name="confirm_password"]').val();
+      
+      if(password !== confirmPassword) {
+          showAlert('Passwords do not match', 'error');
+          return;
+      }
+      
+      submitBtn.prop('disabled', true).html('<span class="loading"></span> Adding Trainer...');
+      
+      $.ajax({
+          url: 'index.php?controller=Trainer&action=addTrainer',
+          method: 'POST',
+          data: formData,
+          dataType: 'json',
+          success: function(response) {
+              if(response.success) {
+                  showAlert(response.message, 'success');
+                  $('#addTrainerModal').removeClass('show');
+                  setTimeout(() => {
+                      location.reload();
+                  }, 1500);
+              } else {
+                  showAlert(response.message, 'error');
+                  submitBtn.prop('disabled', false).text(originalText);
+              }
+          },
+          error: function(xhr) {
+              const response = xhr.responseJSON || {};
+              showAlert(response.message || 'Failed to add trainer', 'error');
+              submitBtn.prop('disabled', false).text(originalText);
+          }
+      });
+  });
+
+  // View Trainer Details
+  $(document).on('click', '.btn-view-trainer', function() {
+      const trainerId = $(this).closest('tr').data('trainer-id');
+      
+      $.ajax({
+          url: 'index.php?controller=Admin&action=getTrainerData',
+          method: 'GET',
+          data: { trainer_id: trainerId },
+          dataType: 'json',
+          success: function(response) {
+              if(response.success) {
+                  displayTrainerDetails(response.data);
+                  $('#viewTrainerModal').addClass('show');
+              } else {
+                  showAlert('Failed to load trainer details', 'error');
+              }
+          },
+          error: function() {
+              showAlert('Error loading trainer details', 'error');
+          }
+      });
+  });
+
+  function displayTrainerDetails(trainer) {
+      const html = `
+          <div class="bg-gray-800 rounded-lg p-4 mb-3">
+              <h4 class="text-lg font-semibold text-white mb-3">Personal Information</h4>
+              <div class="space-y-2">
+                  <p class="text-gray-300"><strong>Name:</strong> ${trainer.name}</p>
+                  <p class="text-gray-300"><strong>Email:</strong> ${trainer.email}</p>
+                  <p class="text-gray-300"><strong>Contact:</strong> ${trainer.contact_no || 'N/A'}</p>
+              </div>
+          </div>
+          
+          <div class="bg-gray-800 rounded-lg p-4 mb-3">
+              <h4 class="text-lg font-semibold text-white mb-3">Trainer Details</h4>
+              <div class="space-y-2">
+                  <p class="text-gray-300"><strong>Specialization:</strong> ${trainer.specialization}</p>
+                  <p class="text-gray-300"><strong>Experience:</strong> ${trainer.experience_years} years</p>
+                  <p class="text-gray-300"><strong>Join Date:</strong> ${trainer.join_date}</p>
+                  <p class="text-gray-300">
+                      <strong>Status:</strong> 
+                      <span class="status-badge ${trainer.status === 'active' ? 'status-active' : 'status-inactive'}">
+                          ${trainer.status}
+                      </span>
+                  </p>
+              </div>
+          </div>
+      `;
+      
+      $('#trainerDetails').html(html);
+      
+      // Store trainer data for edit
+      $('#btnEditTrainer').data('trainer-data', trainer);
+  }
+
+  // Close View Trainer Modal
+  $('.view-trainer-close').click(function() {
+      $('#viewTrainerModal').removeClass('show');
+  });
+
+  // Edit Trainer Button (from view modal)
+  $('#btnEditTrainer').click(function() {
+      const trainerData = $(this).data('trainer-data');
+      
+      // Populate edit form
+      $('#edit_trainer_id').val(trainerData.trainer_id);
+      $('#edit_user_trainer_id').val(trainerData.user_id);
+      $('#edit_trainer_first_name').val(trainerData.first_name);
+      $('#edit_trainer_last_name').val(trainerData.last_name);
+      $('#edit_trainer_middle_name').val(trainerData.middle_name);
+      $('#edit_trainer_email').val(trainerData.email);
+      $('#edit_trainer_contact_no').val(trainerData.contact_no);
+      $('#edit_specialization').val(trainerData.specialization);
+      $('#edit_experience_years').val(trainerData.experience_years);
+      $('#edit_trainer_status').val(trainerData.status);
+      
+      // Close view modal and open edit modal
+      $('#viewTrainerModal').removeClass('show');
+      $('#editTrainerModal').addClass('show');
+  });
+
+  // Edit Trainer Direct Button
+  $(document).on('click', '.btn-edit-trainer', function() {
+      const trainerId = $(this).closest('tr').data('trainer-id');
+      
+      $.ajax({
+          url: 'index.php?controller=Admin&action=getTrainerData',
+          method: 'GET',
+          data: { trainer_id: trainerId },
+          dataType: 'json',
+          success: function(response) {
+              if(response.success) {
+                  const trainer = response.data;
+                  
+                  // Populate edit form
+                  $('#edit_trainer_id').val(trainer.trainer_id);
+                  $('#edit_user_trainer_id').val(trainer.user_id);
+                  $('#edit_trainer_first_name').val(trainer.first_name);
+                  $('#edit_trainer_last_name').val(trainer.last_name);
+                  $('#edit_trainer_middle_name').val(trainer.middle_name);
+                  $('#edit_trainer_email').val(trainer.email);
+                  $('#edit_trainer_contact_no').val(trainer.contact_no);
+                  $('#edit_specialization').val(trainer.specialization);
+                  $('#edit_experience_years').val(trainer.experience_years);
+                  $('#edit_trainer_status').val(trainer.status);
+                  
+                  $('#editTrainerModal').addClass('show');
+              } else {
+                  showAlert('Failed to load trainer details', 'error');
+              }
+          },
+          error: function() {
+              showAlert('Error loading trainer details', 'error');
+          }
+      });
+  });
+
+  // Close Edit Trainer Modal
+  $('.edit-trainer-close, .edit-trainer-cancel').click(function() {
+      $('#editTrainerModal').removeClass('show');
+      $('#editTrainerForm')[0].reset();
+      $('#editTrainerMessage').addClass('hidden');
+  });
+
+  // Handle Update Trainer Form Submission
+  $('#editTrainerForm').submit(function(e) {
+      e.preventDefault();
+      
+      const formData = $(this).serialize();
+      const submitBtn = $('#btnUpdateTrainer');
+      const originalText = submitBtn.text();
+      
+      // Validate passwords match if provided
+      const password = $('#edit_trainer_password').val();
+      const confirmPassword = $('#edit_confirm_trainer_password').val();
+      
+      if(password && password !== confirmPassword) {
+          showAlert('Passwords do not match', 'error');
+          return;
+      }
+      
+      submitBtn.prop('disabled', true).html('<span class="loading"></span> Updating...');
+      
+      $.ajax({
+          url: 'index.php?controller=Trainer&action=updateTrainer',
+          method: 'POST',
+          data: formData,
+          dataType: 'json',
+          success: function(response) {
+              if(response.success) {
+                  showAlert(response.message, 'success');
+                  $('#editTrainerModal').removeClass('show');
+                  setTimeout(() => {
+                      location.reload();
+                  }, 1500);
+              } else {
+                  showAlert(response.message, 'error');
+                  submitBtn.prop('disabled', false).text(originalText);
+              }
+          },
+          error: function(xhr) {
+              const response = xhr.responseJSON || {};
+              showAlert(response.message || 'Failed to update trainer', 'error');
+              submitBtn.prop('disabled', false).text(originalText);
+          }
+      });
+  });
+
+  // Delete/Deactivate Trainer
+  $(document).on('click', '.btn-delete-trainer', function() {
+      const trainerId = $(this).closest('tr').data('trainer-id');
+      
+      $('#delete_trainer_id').val(trainerId);
+      $('#deleteTrainerModal').addClass('show');
+  });
+
+  // Close Delete Trainer Modal
+  $('.delete-trainer-modal-close, .delete-trainer-cancel').click(function() {
+      $('#deleteTrainerModal').removeClass('show');
+  });
+
+  // Handle Delete Trainer Form Submission
+  $('#deleteTrainerForm').submit(function(e) {
+      e.preventDefault();
+      
+      const trainerId = $('#delete_trainer_id').val();
+      const submitBtn = $('#deleteTrainerBtn');
+      const originalText = submitBtn.text();
+      
+      submitBtn.prop('disabled', true).html('<span class="loading"></span> Processing...');
+      
+      $.ajax({
+          url: 'index.php?controller=Trainer&action=deleteTrainer',
+          method: 'POST',
+          data: { trainer_id: trainerId },
+          dataType: 'json',
+          success: function(response) {
+              if(response.success) {
+                  showAlert(response.message, 'success');
+                  $('#deleteTrainerModal').removeClass('show');
+                  setTimeout(() => {
+                      location.reload();
+                  }, 1500);
+              } else {
+                  showAlert(response.message, 'error');
+                  submitBtn.prop('disabled', false).text(originalText);
+              }
+          },
+          error: function(xhr) {
+              const response = xhr.responseJSON || {};
+              showAlert(response.message || 'Failed to deactivate trainer', 'error');
+              submitBtn.prop('disabled', false).text(originalText);
+          }
+      });
+  });
+
+  // Alert Function
+  function showAlert(message, type) {
+      const alertClass = type === 'success' ? 'bg-green-500' : 'bg-red-500';
+      const icon = type === 'success' ? '✓' : '✕';
+      
+      const alert = `
+          <div class="alert ${alertClass} text-white px-6 py-4 rounded-lg shadow-lg flex items-center">
+              <span class="mr-3 text-2xl">${icon}</span>
+              <span>${message}</span>
+          </div>
+      `;
+      
+      $('#alertContainer').append(alert);
+      
+      setTimeout(() => {
+          $('#alertContainer .alert').first().fadeOut(300, function() {
+              $(this).remove();
+          });
+      }, 5000);
+  }
 });
