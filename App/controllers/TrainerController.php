@@ -174,9 +174,11 @@ class TrainerController extends Controller {
  * Send welcome email to new trainer with credentials
  */
 private function sendNewTrainerEmail($email, $firstName, $specialization, $tempPassword) {
-    $subject = "Welcome to Gymazing - Your Trainer Account";
-    
-    $message = "
+    $mail = $this->mailer();
+    $mail->addAddress($email, $firstName);
+    $mail->Subject = "Welcome to Gymazing - Your Trainer Account";
+    $mail->isHTML(true);
+    $mail->Body = "
     <html>
     <head>
         <style>
@@ -229,12 +231,7 @@ private function sendNewTrainerEmail($email, $firstName, $specialization, $tempP
     </body>
     </html>
     ";
-    
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= "From: Gymazing <noreply@gymazing.com>" . "\r\n";
-    
-    return mail($email, $subject, $message, $headers);
+    $mail->send();
 }
 
 public function updateTrainer() {
@@ -384,13 +381,15 @@ public function updateTrainer() {
  * Send email when trainer status changes
  */
 private function sendTrainerStatusChangeEmail($email, $firstName, $status) {
-    $subject = $status === 'active' ? "Your Trainer Account is Now Active" : "Trainer Account Status Update";
-    
+    $mail = $this->mailer();
+    $mail->addAddress($email, $firstName);
+    $mail->Subject = $status === 'active' ? "Your Trainer Account is Now Active" : "Trainer Account Status Update";
+    $mail->isHTML(true);
     $statusMessage = $status === 'active' 
         ? "Your trainer account has been reactivated! You can now access all trainer features." 
         : "Your trainer account has been temporarily deactivated. Please contact administration for more information.";
     
-    $message = "
+    $mail->Body = "
     <html>
     <body style='font-family: Arial, sans-serif;'>
         <h2>Hi $firstName,</h2>
@@ -401,11 +400,7 @@ private function sendTrainerStatusChangeEmail($email, $firstName, $status) {
     </html>
     ";
     
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= "From: Gymazing <noreply@gymazing.com>" . "\r\n";
-    
-    return mail($email, $subject, $message, $headers);
+    $mail->send();
 }
 
 public function deleteTrainer() {
@@ -482,26 +477,24 @@ public function deleteTrainer() {
 /**
  * Send email when trainer is deactivated
  */
-private function sendTrainerDeactivationEmail($email, $firstName) {
-    $subject = "Trainer Account Deactivated";
-    
-    $message = "
-    <html>
-    <body style='font-family: Arial, sans-serif;'>
-        <h2>Hi $firstName,</h2>
-        <p>We're writing to inform you that your trainer account at Gymazing has been deactivated.</p>
-        <p>If you believe this is an error or would like to discuss reactivation, please contact our administration team.</p>
-        <p>Thank you for your service to our gym community.</p>
-        <p>Best regards,<br>The Gymazing Team</p>
-    </body>
-    </html>
-    ";
-    
-    $headers = "MIME-Version: 1.0" . "\r\n";
-    $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-    $headers .= "From: Gymazing <noreply@gymazing.com>" . "\r\n";
-    
-    return mail($email, $subject, $message, $headers);
+    private function sendTrainerDeactivationEmail($email, $firstName) {
+        $mail = $this->mailer();
+        $mail->addAddress($email, $firstName);
+        $mail->Subject = "Trainer Account Deactivated";
+        $mail->isHTML(true);
+        $mail->Body = "
+        <html>
+        <body style='font-family: Arial, sans-serif;'>
+            <h2>Hi $firstName,</h2>
+            <p>We're writing to inform you that your trainer account at Gymazing has been deactivated.</p>
+            <p>If you believe this is an error or would like to discuss reactivation, please contact our administration team.</p>
+            <p>Thank you for your service to our gym community.</p>
+            <p>Best regards,<br>The Gymazing Team</p>
+        </body>
+        </html>
+        ";
+        
+        $mail->send();
     }
 }   
 ?>
