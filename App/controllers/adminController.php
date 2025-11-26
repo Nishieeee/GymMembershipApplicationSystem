@@ -507,15 +507,13 @@
                     throw new Exception('Failed to create trainer record');
                 }
 
-                // COMMIT THE TRANSACTION FIRST - This is the important part!
                 $db->commit();
                 
                 // Get member name for notifications
                 $memberName = ($user['first_name'] ?? '') . ' ' . ($user['last_name'] ?? '');
-                
-                // Now try to send notifications (after successful commit)
-                // If this fails, we don't care - the database is already updated
-                $this->sendTrainerNotifications($userId, $memberName, $specialization);
+                $email = $user['email'];
+
+                $this->sendTrainerNotifications($email, $userId, $memberName, $specialization);
 
                 // Success response
                 http_response_code(200);
@@ -540,7 +538,7 @@
             }
             exit;
         }
-        private function sendTrainerNotifications($userId, $memberName, $specialization) {
+        private function sendTrainerNotifications($email, $userId, $memberName, $specialization) {
             try {
                 // Check if NotificationHelper file exists
                 $helperPath = __DIR__ . '/../helpers/NotificationHelper.php';
@@ -573,14 +571,9 @@
                     );
                 } catch(Exception $e) {
                     error_log("Failed to send admin notification: " . $e->getMessage());
-                }
+                }             
+                $this->sendTrainerWelcomeEmail($email, $memberName, $specialization);
                 
-                // Try to send email
-                try {
-                    $this->sendTrainerWelcomeEmail($userId, $memberName, $specialization);
-                } catch(Exception $e) {
-                    error_log("Failed to send welcome email: " . $e->getMessage());
-                }
                 
                 return true;
                 
@@ -589,23 +582,12 @@
                 return false;
             }
         }
-       private function sendTrainerWelcomeEmail($userId, $memberName, $specialization) {
-            try {
-                // Get user email
-                $userModel = new User();
-                $user = $userModel->getMember($userId);
-                
-                if(!$user || empty($user['email'])) {
-                    error_log("Cannot send email - user email not found");
-                    return false;
-                }
-                
-                $email = $user['email'];
-                $firstName = $user['first_name'] ?? 'Trainer';
-                
-                $subject = "Welcome to the Gymazing Trainer Team!";
-                
-                $message = "
+       private function sendTrainerWelcomeEmail($email, $memberName, $specialization) {
+            $mail = $this->mailer();
+            $mail->addAddress($email, $memberName);
+            $mail->Subject = "Hello, New Trainer!";
+            $mail->isHTML(true);
+            $mail->Body = "
                 <html>
                 <head>
                     <style>
@@ -621,7 +603,7 @@
                             <h1>🎉 Welcome to the Trainer Team!</h1>
                         </div>
                         <div class='content'>
-                            <h2>Hi $firstName,</h2>
+                            <h2>Hi $memberName,</h2>
                             <p>Congratulations! You've been promoted to a trainer at Gymazing!</p>
                             
                             <p><strong>Your Specialization:</strong> $specialization</p>
@@ -639,21 +621,8 @@
                     </div>
                 </body>
                 </html>
-                ";
-                
-                $headers = "MIME-Version: 1.0" . "\r\n";
-                $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-                $headers .= "From: Gymazing <noreply@gymazing.com>" . "\r\n";
-                
-                // Use @ to suppress errors if mail() fails
-                @mail($email, $subject, $message, $headers);
-                
-                return true;
-                
-            } catch(Exception $e) {
-                error_log("Email send error: " . $e->getMessage());
-                return false;
-            }
+            ";
+            $mail->send();
         }
 
 
