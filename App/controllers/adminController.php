@@ -625,10 +625,6 @@
             $mail->send();
         }
 
-
-        /**
-         * Get all members who are not trainers (for dropdown)
-         */
         public function getNonTrainerMembers() {
             header('Content-Type: application/json');
             

@@ -253,8 +253,51 @@ class AuthController extends Controller {
             </div>
         ";
         $mail->AltBody = "Welcome {$name}! Your account has been created successfully. Visit your dashboard to get started.";
+    }
 
+    public function forgotPasswordNotifier($email, $name) {
+        $mail = $this->mailer();
+        $mail->addAddress($email, $name);
+        $mail->Subject = "Forgot Password";
+        $mail->isHTML(true);
+        $mail->Body = "
+            <div style='font-family: Arial, sans-serif; padding: 20px; background-color: #f4f6f9;'>
+                <div style='max-width: 600px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px;'>
+                    
+                    <h2 style='color: #4CAF50;'>Password Reset Request 🔐</h2>
 
+                    <p>Hi <strong>{$name}</strong>,</p>
+                    <p>We received a request to reset your password. No worries—let’s get you back into your account.</p>
+
+                    <div style='margin: 20px 0; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffca28;'>
+                        <p style='margin: 0; font-size: 15px;'>
+                            Click the button below to reset your password. This link will expire in <strong>30 minutes</strong>.
+                        </p>
+                    </div>
+
+                    <a href='#' 
+                        style='display:inline-block; margin-top: 15px; background-color: #4CAF50; 
+                            color: white; padding: 10px 20px; text-decoration: none; 
+                            border-radius: 5px; font-weight: bold;'>
+                        Reset Password
+                    </a>
+
+                    <p style='margin-top: 20px; font-size: 14px; color: #555;'>
+                        If you didn’t request this password reset, you can safely ignore this email.
+                    </p>
+
+                    <hr style='margin-top: 30px;'>
+
+                    <p style='font-size: 12px; color: #777;'>Need help? Contact our support team anytime.</p>
+                    <p style='font-size: 12px; color: #777;'>&copy; " . date('Y') . " Gymazing!. All rights reserved.</p>
+
+                </div>
+            </div>
+        ";
+
+        $mail->AltBody = "Hi {$name}, you requested a password reset. Click this link to reset it: <a>Link</a>";
+
+        $mail->send();
     }
 }
 ?>
