@@ -440,8 +440,7 @@
                     'success' => false,
                     'message' =>"an error occured.",
                 ]);
-            }
-            
+            }  
         }
 
         public function addMemberAsTrainer() {

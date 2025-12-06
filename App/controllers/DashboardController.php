@@ -67,6 +67,45 @@
         public function cancelSubscription() {
             $this->view('cancelSubscription',[]);
         } 
+
+        public function getTrainerMembers() {
+            header('Content-Type: application/json');
+            
+            $userModel = new User();
+            $db = $userModel->connect();
+            
+            $query = "SELECT user_id, CONCAT(first_name, ' ', last_name) as name, email 
+                    FROM members 
+                    WHERE role = 'trainer' 
+                    ORDER BY first_name, last_name";
+            
+            $stmt = $db->prepare($query);
+            $stmt->execute();
+            $members = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            
+            echo json_encode(['success' => true, 'data' => $members]);
+            exit;
+        }
+
+        public function bookTrainer() {
+            session_start();
+            header('Content-Type: application/json');
+
+            $session = [
+                "user_id" => "",
+                "trainer_id" => "",
+                "session_date" => "",
+                "notes" => "",
+                "status" => "",
+                "created_at" => ""
+            ];
+
+            $sessionModel = new Session();
+
+            
+
+
+        }
         
     }
 ?>
