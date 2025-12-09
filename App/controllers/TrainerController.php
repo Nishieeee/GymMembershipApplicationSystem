@@ -17,7 +17,7 @@ class TrainerController extends Controller {
 
     public function trainerDashboard() {
         $this->requireLogin();
-        $trainerId = 1;
+        $trainerId = $_SESSION['trainer_id'] ?? 1;
 
         // Fetch trainer data
         $trainerData = $this->getTrainerById($trainerId);
@@ -32,6 +32,21 @@ class TrainerController extends Controller {
             'stats' => $stats,
  
         ]);
+    }
+    public function getPendingRequests() {
+        $this->requireLogin();
+        header('Content-Type: application/json');
+
+        $trainerId = $_SESSION['trainer_id'] ?? null;
+        if(!$trainerId) {
+            http_response_code(401);
+            echo json_encode(['success' => false, 'message' => 'Unauthorized']);
+            return;
+        }
+
+        $requests = $this->trainerModel->getPendingRequests($trainerId);
+        echo json_encode(['success' => true, 'data' => $requests]);
+        return;
     }
      public function getTrainerById($trainerId) {
         return $this->trainerModel->findById($trainerId);
