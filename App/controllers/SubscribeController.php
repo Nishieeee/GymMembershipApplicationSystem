@@ -12,6 +12,7 @@
     class SubscribeController extends Controller {
         
         public function Subscribe() {
+            $this->requireLogin();
             session_start();
             $subscribe = new Subscription();
             $planModel = new Plan();
@@ -121,6 +122,7 @@
         }
 
         public function CancelSubscription() {
+            $this->requireLogin();
             session_start();
 
             $subscriptionModel = new Subscription();
@@ -139,6 +141,7 @@
         }
 
         public function expirePlan() {
+            $this->requireLogin();
             session_start();
             $user_id = $_SESSION['user_id'];
 

@@ -4,6 +4,7 @@
     class UserController extends User {
 
         public function getUserDetails($user_id) {
+            $this->requireLogin();
             $sql = "SELECT CONCAT(m.first_name, ' ', m.last_name) as name, m.first_name, m.email, m.role, m.created_at, p.plan_name, s.end_date, s.status FROM members m 
             JOIN subscriptions s ON s.user_id = m.user_id
             LEFT JOIN membership_plans p ON p.plan_id = s.plan_id 
@@ -77,6 +78,7 @@
         }
 
         public function updateMember() {
+            $this->requireLogin();
             $user_id = $_GET['user_id'];
 
             $user = new User();

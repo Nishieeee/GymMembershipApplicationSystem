@@ -8,6 +8,7 @@ require_once __DIR__ . "/../models/Plan.php";
 class InvoiceController extends Controller {
     
     public function downloadInvoice() {
+        $this->requireLogin();
         session_start();
         $user_id = $_SESSION['user_id'];
         $subscription_id = $_GET['subscription_id'] ?? null;
@@ -37,6 +38,7 @@ class InvoiceController extends Controller {
     }
 
     public function downloadReceipt() {
+        $this->requireLogin();
         session_start();
         $user_id = $_SESSION['user_id'];
         $subscription_id = $_GET['subscription_id'] ?? null;

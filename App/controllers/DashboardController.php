@@ -17,6 +17,7 @@
         }
 
         public function member() {
+            $this->requireLogin();
             session_start();
             $user_id = $_SESSION['user_id'];
 
@@ -65,10 +66,12 @@
         }
 
         public function cancelSubscription() {
+            $this->requireLogin();
             $this->view('cancelSubscription',[]);
         } 
 
         public function getTrainerMembers() {
+            $this->requireLogin();
             header('Content-Type: application/json');
             
             $userModel = new User();

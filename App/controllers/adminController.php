@@ -13,6 +13,7 @@
     class AdminController extends Controller {
 
         public function dashboard() {
+            $this->requireLogin();
             session_start();
             $user_id = $_SESSION['user_id'];
 
@@ -45,6 +46,7 @@
             ]);
         } 
         public function reports() {
+            $this->requireLogin();
             session_start();
             $user_id = $_SESSION['user_id'];
 

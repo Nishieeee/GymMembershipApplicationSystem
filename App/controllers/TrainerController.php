@@ -16,6 +16,7 @@ class TrainerController extends Controller {
     }
 
     public function trainerDashboard() {
+        $this->requireLogin();
         $trainerId = 1;
 
         // Fetch trainer data
