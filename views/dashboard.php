@@ -339,95 +339,102 @@
 
     <script src="../public/assets/js/dashboard.js"></script>
     <script>
-        (function() {
-            const openBtn = document.getElementById('openRequestTrainer');
-            const modal = document.getElementById('bookTrainerModal');
-            const closeBtn = document.getElementById('closeBookTrainer');
-            const trainerSelect = document.getElementById('trainerSelect');
-            const sessionNotes = document.getElementById('sessionNotes');
-            const submitBtn = document.getElementById('submitBookTrainer');
-            const messageBox = document.getElementById('bookTrainerMessage');
+        $(function() {
+            const $modal = $('#bookTrainerModal');
+            const $trainerSelect = $('#trainerSelect');
+            const $sessionNotes = $('#sessionNotes');
+            const $submitBtn = $('#submitBookTrainer');
+            const $messageBox = $('#bookTrainerMessage');
 
             function showModal() {
-                modal.classList.remove('hidden');
-                modal.classList.add('flex');
-                messageBox.textContent = '';
+                $modal.removeClass('hidden').addClass('flex');
+                $messageBox.text('').removeClass('text-green-400 text-red-400');
                 loadTrainers();
             }
 
             function hideModal() {
-                modal.classList.add('hidden');
-                modal.classList.remove('flex');
+                $modal.addClass('hidden').removeClass('flex');
             }
 
             function loadTrainers() {
-                trainerSelect.innerHTML = '<option value=\"\">Loading...</option>';
-                fetch('index.php?controller=Dashboard&action=listTrainers')
-                    .then(res => res.json())
-                    .then(data => {
+                $trainerSelect.html('<option value=\"\">Loading...</option>');
+                $.ajax({
+                    url: 'index.php?controller=Dashboard&action=listTrainers',
+                    method: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
                         if (!data.success || !data.trainers) {
-                            trainerSelect.innerHTML = '<option value=\"\">No trainers available</option>';
+                            $trainerSelect.html('<option value=\"\">No trainers available</option>');
                             return;
                         }
-                        trainerSelect.innerHTML = '<option value=\"\">Select a trainer</option>';
+                        let opts = '<option value=\"\">Select a trainer</option>';
                         data.trainers.forEach(t => {
-                            const opt = document.createElement('option');
-                            opt.value = t.trainer_id;
-                            opt.textContent = `${t.name} (${t.specialization ?? 'Trainer'})`;
-                            trainerSelect.appendChild(opt);
+                            opts += `<option value=\"${t.trainer_id}\">${t.name} (${t.specialization ?? 'Trainer'})</option>`;
                         });
-                    })
-                    .catch(() => {
-                        trainerSelect.innerHTML = '<option value=\"\">Error loading trainers</option>';
-                    });
+                        $trainerSelect.html(opts);
+                    },
+                    error: function() {
+                        $trainerSelect.html('<option value=\"\">Error loading trainers</option>');
+                    }
+                });
             }
 
             function setMessage(text, success = false) {
-                messageBox.textContent = text;
-                messageBox.className = success ? 'text-green-400' : 'text-red-400';
+                $messageBox
+                    .text(text)
+                    .removeClass('text-green-400 text-red-400')
+                    .addClass(success ? 'text-green-400' : 'text-red-400');
             }
 
             function submitRequest() {
-                const trainerId = trainerSelect.value;
-                const notesVal = sessionNotes.value.trim();
+                const trainerId = $trainerSelect.val();
+                const notesVal = $sessionNotes.val().trim();
                 if (!trainerId) {
                     setMessage('Please select a trainer.');
                     return;
                 }
-                submitBtn.disabled = true;
+                $submitBtn.prop('disabled', true);
                 setMessage('');
+
                 const formData = new FormData();
                 formData.append('trainer_id', trainerId);
                 formData.append('notes', notesVal);
-                fetch('index.php?controller=Dashboard&action=requestTrainer', {
+
+                $.ajax({
+                    url: 'index.php?controller=Dashboard&action=requestTrainer',
                     method: 'POST',
-                    body: formData
-                })
-                .then(async res => {
-                    let data = {};
-                    try { data = await res.json(); } catch(e) { /* non-JSON */ }
-                    if (!res.ok) {
-                        setMessage(data.message || 'Unable to send request.');
-                        return;
-                    }
-                    if (data.success) {
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    dataType: 'json',
+                    success: function(data, textStatus, jqXHR) {
+                        if (jqXHR.status !== 200 || !data.success) {
+                            setMessage(data.message || 'Unable to send request.');
+                            return;
+                        }
                         setMessage('Request sent!', true);
                         setTimeout(hideModal, 800);
-                    } else {
-                        setMessage(data.message || 'Unable to send request.');
+                    },
+                    error: function(xhr) {
+                        let msg = 'Network error, please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            msg = xhr.responseJSON.message;
+                        }
+                        setMessage(msg);
+                    },
+                    complete: function() {
+                        $submitBtn.prop('disabled', false);
                     }
-                })
-                .catch(() => setMessage('Network error, please try again.'))
-                .finally(() => submitBtn.disabled = false);
+                });
             }
 
-            openBtn?.addEventListener('click', showModal);
-            closeBtn?.addEventListener('click', hideModal);
-            modal?.addEventListener('click', (e) => {
-                if (e.target === modal) hideModal();
+            $('#openRequestTrainer').on('click', showModal);
+            $('#closeBookTrainer').on('click', hideModal);
+            $modal.on('click', function(e) {
+                if (e.target === this) hideModal();
             });
-            submitBtn?.addEventListener('click', submitRequest);
-        })();
+            $submitBtn.on('click', submitRequest);
+        });
     </script>
 </body>
 </html>
