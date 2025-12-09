@@ -128,15 +128,15 @@
                             <div id="account_menu" class="hidden absolute right-0 mt-2 w-48 bg-gray-800 rounded-lg shadow-xl  transition-all duration-200">
                                 <?php $_SESSION['role'] == ""?>
                                 <?php if($_SESSION['role'] == 'member') { ?>
-                                    <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
+                                    <a href="index.php?controller=user&action=profile" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
                                     <a href="index.php?controller=Dashboard&action=member" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
                                     <a href="../views/auth/logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>    
                                 <?php } else if($_SESSION['role'] == 'admin') { ?>
-                                    <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
+                                    <a href="index.php?controller=user&action=profile" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
                                     <a href="index.php?controller=Admin&action=dashboard" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
                                     <a href="../views/auth/logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>
                                 <?php } else if($_SESSION['role'] == 'trainer') { ?>
-                                    <a href="profile.php" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
+                                    <a href="index.php?controller=user&action=profile" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Profile</a>
                                     <a href="index.php?controller=Trainer&action=trainerDashboard" class="block px-4 py-3 text-white hover:bg-gray-700 transition-colors">Dashboard</a>
                                     <a href="../views/auth/logout.php" class="block px-4 py-3 text-white hover:bg-gray-700 rounded-b-lg transition-colors">Logout</a>
                                 <?php }?>
@@ -184,7 +184,7 @@
                                class="block w-full px-4 py-3 text-center text-white font-semibold hover:bg-gray-800 rounded-lg transition-all duration-200">
                                 Dashboard
                             </a>
-                            <a href="profile.php" 
+                            <a href="index.php?controller=user&action=profile" 
                                class="block w-full px-4 py-3 text-center text-white font-semibold hover:bg-gray-800 rounded-lg transition-all duration-200">
                                 Profile
                             </a>
