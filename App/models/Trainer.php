@@ -1,4 +1,3 @@
-
 <?php
 require_once __DIR__ . '/../config/Database.php';
 
@@ -178,4 +177,5 @@ class Trainer extends Database {
         $query->bindParam(':note', $note);
         return $query->execute();
     }
+    
 }

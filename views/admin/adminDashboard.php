@@ -181,15 +181,15 @@
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
-    
-    <!-- Admin Navbar -->
+    <!-- Sidebar -->
     <?php include __DIR__ . "/layouts/adminnavbar.php" ?>
 
-    <!--  Alerts Container -->
-    <div id="alertContainer" class="fixed top-24 right-4 z-40 space-y-4"></div>
+    <div class="flex-1 w-full md:ml-64">
+        <!--  Alerts Container -->
+        <div id="alertContainer" class="fixed top-6 right-4 z-40 space-y-4"></div>
 
-    <main class="pb-12 mt-20">
-        <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main class="pb-12 pt-6">
+            <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Header Section -->
             <div class="mb-8">
                 <h1 class="text-4xl font-bold text-white mb-2">Admin Dashboard</h1>

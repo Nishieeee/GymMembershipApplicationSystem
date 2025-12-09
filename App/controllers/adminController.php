@@ -14,7 +14,6 @@
 
         public function dashboard() {
             $this->requireLogin();
-            session_start();
             $user_id = $_SESSION['user_id'];
 
             $user = new User();
@@ -47,7 +46,6 @@
         } 
         public function reports() {
             $this->requireLogin();
-            session_start();
             $user_id = $_SESSION['user_id'];
 
             $user = new User();

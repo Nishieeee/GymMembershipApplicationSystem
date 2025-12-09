@@ -365,12 +365,12 @@
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
-     <!-- Admin Navbar -->
+     <!-- Admin Sidebar -->
     <?php include __DIR__ . "/layouts/adminnavbar.php" ?> 
     <!--  Alerts Container -->
-    <div id="alertContainer" class="fixed top-24 right-4 z-40 space-y-4"></div>
+    <div id="alertContainer" class="fixed top-6 right-4 z-40 space-y-4"></div>
 
-    <main class="pb-12 mt-20">
+    <main class="pb-12 pt-6 md:ml-64">
         <div class="p-6">
                 <div class="mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
                     <div>
