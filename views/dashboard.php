@@ -288,9 +288,9 @@
                             <a href="profile.php" class="block px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300 text-center">
                                 Edit Profile
                             </a>
-                            <a href="#" class="block px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300 text-center">
-                                Book a Trainer
-                            </a>
+                            <button id="openRequestTrainer" class="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300 text-center">
+                                Request a Trainer
+                            </button>
                             <a href="#" class="block px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300 text-center">
                                 View Progress
                             </a>
@@ -315,6 +315,119 @@
         </div>
     </main>
     <?php include_once __DIR__ . "/layouts/footer.php" ?>                            
+    <!-- Request Trainer Modal -->
+    <div id="bookTrainerModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50">
+        <div class="bg-neutral-900 border border-gray-700 rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6 relative">
+            <button id="closeBookTrainer" class="absolute top-3 right-3 text-gray-400 hover:text-white">&times;</button>
+            <h3 class="text-2xl font-bold text-white mb-4">Request a Trainer</h3>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-sm text-gray-300 mb-1">Trainer</label>
+                    <select id="trainerSelect" class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg p-3 focus:border-blue-500">
+                        <option value="">Loading...</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-300 mb-1">Notes (optional)</label>
+                    <textarea id="sessionNotes" rows="3" class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg p-3 focus:border-blue-500" placeholder="Any preferences or goals"></textarea>
+                </div>
+                <div id="bookTrainerMessage" class="text-sm"></div>
+                <button id="submitBookTrainer" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-3 transition">Send Request</button>
+            </div>
+        </div>
+    </div>
+
     <script src="../public/assets/js/dashboard.js"></script>
+    <script>
+        (function() {
+            const openBtn = document.getElementById('openRequestTrainer');
+            const modal = document.getElementById('bookTrainerModal');
+            const closeBtn = document.getElementById('closeBookTrainer');
+            const trainerSelect = document.getElementById('trainerSelect');
+            const sessionNotes = document.getElementById('sessionNotes');
+            const submitBtn = document.getElementById('submitBookTrainer');
+            const messageBox = document.getElementById('bookTrainerMessage');
+
+            function showModal() {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+                messageBox.textContent = '';
+                loadTrainers();
+            }
+
+            function hideModal() {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+
+            function loadTrainers() {
+                trainerSelect.innerHTML = '<option value=\"\">Loading...</option>';
+                fetch('index.php?controller=Dashboard&action=listTrainers')
+                    .then(res => res.json())
+                    .then(data => {
+                        if (!data.success || !data.trainers) {
+                            trainerSelect.innerHTML = '<option value=\"\">No trainers available</option>';
+                            return;
+                        }
+                        trainerSelect.innerHTML = '<option value=\"\">Select a trainer</option>';
+                        data.trainers.forEach(t => {
+                            const opt = document.createElement('option');
+                            opt.value = t.trainer_id;
+                            opt.textContent = `${t.name} (${t.specialization ?? 'Trainer'})`;
+                            trainerSelect.appendChild(opt);
+                        });
+                    })
+                    .catch(() => {
+                        trainerSelect.innerHTML = '<option value=\"\">Error loading trainers</option>';
+                    });
+            }
+
+            function setMessage(text, success = false) {
+                messageBox.textContent = text;
+                messageBox.className = success ? 'text-green-400' : 'text-red-400';
+            }
+
+            function submitRequest() {
+                const trainerId = trainerSelect.value;
+                const notesVal = sessionNotes.value.trim();
+                if (!trainerId) {
+                    setMessage('Please select a trainer.');
+                    return;
+                }
+                submitBtn.disabled = true;
+                setMessage('');
+                const formData = new FormData();
+                formData.append('trainer_id', trainerId);
+                formData.append('notes', notesVal);
+                fetch('index.php?controller=Dashboard&action=requestTrainer', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(async res => {
+                    let data = {};
+                    try { data = await res.json(); } catch(e) { /* non-JSON */ }
+                    if (!res.ok) {
+                        setMessage(data.message || 'Unable to send request.');
+                        return;
+                    }
+                    if (data.success) {
+                        setMessage('Request sent!', true);
+                        setTimeout(hideModal, 800);
+                    } else {
+                        setMessage(data.message || 'Unable to send request.');
+                    }
+                })
+                .catch(() => setMessage('Network error, please try again.'))
+                .finally(() => submitBtn.disabled = false);
+            }
+
+            openBtn?.addEventListener('click', showModal);
+            closeBtn?.addEventListener('click', hideModal);
+            modal?.addEventListener('click', (e) => {
+                if (e.target === modal) hideModal();
+            });
+            submitBtn?.addEventListener('click', submitRequest);
+        })();
+    </script>
 </body>
 </html>
