@@ -147,18 +147,26 @@
             $this->requireLogin();
             $user_id = $_SESSION['user_id'];
             $userModel = new User();
+            
             $userInfo = $userModel->getMember($user_id);
+            
+            // --- NEW: Fetch Address ---
+            $addressInfo = $userModel->getMemberAddress($user_id);
+            
             $profileData = [
                 'userInfo' => $userInfo,
+                'addressInfo' => $addressInfo, // <--- Add this line
                 'role' => $userInfo['role'] ?? '',
                 'assignedMembers' => [],
                 'sessions' => []
             ];
+
             if ($userInfo['role'] === 'trainer') {
                 $trainerModel = new Trainer();
                 $assignedMembers = $trainerModel->getAssignedMembers($user_id);
                 $sessionModel = new Session();
                 $sessions = $sessionModel->getUpcomingByTrainer($user_id);
+                
                 $profileData['assignedMembers'] = $assignedMembers;
                 $profileData['sessions'] = $sessions;
             } else if ($userInfo['role'] === 'member') {
@@ -166,6 +174,7 @@
                 $sessions = $sessionModel->getByUser($user_id);
                 $profileData['sessions'] = $sessions;
             }
+            
             $this->view('profile', $profileData);
         }
     }

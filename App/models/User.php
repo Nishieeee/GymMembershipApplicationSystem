@@ -395,6 +395,22 @@
             }
             return [];
         }
+
+        public function getMemberAddress($user_id) {
+            $sql = "SELECT ma.street_address, ma.city, ma.zip 
+                    FROM member_address_link mal 
+                    JOIN member_address ma ON mal.zip = ma.zip 
+                    WHERE mal.user_id = :user_id 
+                    LIMIT 1";
+                    
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":user_id", $user_id);
+            
+            if($query->execute()) {
+                return $query->fetch();
+            }
+            return null;
+        }
     }
 
 ?>

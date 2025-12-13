@@ -88,11 +88,24 @@
                             </span>
                         </div>
 
-                        <div class="flex items-center justify-center md:justify-start text-slate-400 text-sm">
-                            <div class="flex items-center bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-700/50">
+                        <div class="flex flex-col md:flex-row items-center justify-center md:justify-start text-slate-400 text-sm gap-3">
+                            
+                            <div class="flex items-center bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-700/50 w-full md:w-auto justify-center md:justify-start">
                                 <i class="fa-solid fa-envelope mr-3 text-blue-500"></i>
                                 <?= htmlspecialchars($userInfo['email']) ?>
                             </div>
+
+                            <?php if (!empty($addressInfo)): ?>
+                            <div class="flex items-center bg-slate-800/50 px-4 py-2 rounded-lg border border-slate-700/50 w-full md:w-auto justify-center md:justify-start">
+                                <i class="fa-solid fa-location-dot mr-3 text-red-500"></i>
+                                <span>
+                                    <?= htmlspecialchars($addressInfo['street_address']) ?>, 
+                                    <?= htmlspecialchars($addressInfo['city']) ?> 
+                                    <span class="text-slate-500 ml-1">(<?= htmlspecialchars($addressInfo['zip']) ?>)</span>
+                                </span>
+                            </div>
+                            <?php endif; ?>
+                            
                         </div>
                     </div>
                 </div>
