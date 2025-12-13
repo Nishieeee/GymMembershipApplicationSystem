@@ -96,6 +96,64 @@
                 ]);
             }
         }
+
+        public function getWalkinData() {
+            $this->requireLogin();
+            
+            if (!isset($_GET['walkin_id'])) {
+                echo json_encode(['success' => false, 'message' => 'Walk-in ID is required']);
+                return;
+            }
+
+            $userModel = new User();
+            $walkinData = $userModel->getWalkinById($_GET['walkin_id']);
+
+            if ($walkinData) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'data' => $walkinData
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Walk-in record not found']);
+            }
+            exit;
+        }
+
+        public function updateWalkin() {
+            $this->requireLogin();
+            header('Content-Type: application/json');
+
+            if($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $walkin_id = $_POST['walkin_id'];
+                $userModel = new User();
+                
+                $walkinDetails = [
+                    'first_name' => trim(htmlspecialchars($_POST['first_name'])),
+                    'last_name' => trim(htmlspecialchars($_POST['last_name'])),
+                    'middle_name' => trim(htmlspecialchars($_POST['middle_name'] ?? "")),
+                    'email' => trim(htmlspecialchars($_POST['email'] ?? "")),
+                    'contact_no' => trim(htmlspecialchars($_POST['contact_no'])),
+                    'session_type' => trim(htmlspecialchars($_POST['session_type'])),
+                    'payment_method' => trim(htmlspecialchars($_POST['payment_method'])),
+                    'payment_amount' => trim(htmlspecialchars($_POST['payment_amount'])),
+                    'visit_time' => $_POST['visit_time'],
+                    'end_date' => $_POST['end_date']
+                ];
+
+                if($userModel->updateWalkinMember($walkinDetails, $walkin_id)) {
+                    echo json_encode([
+                        'success' => true,
+                        'message' => 'Walk-in details updated successfully',
+                    ]);
+                } else {
+                    echo json_encode([
+                        'success' => false,
+                        'message' => 'Failed to update walk-in details',
+                    ]);
+                }
+            }
+        }
         public function updateMember() {
             $this->requireLogin();
             $user_id = $_GET['user_id'];

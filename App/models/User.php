@@ -44,7 +44,7 @@
         }
 
         public function displayAllWalkInMembers() {
-            $sql = "SELECT CONCAT(first_name, ' ', last_name) as name, email, contact_no, session_type, payment_amount, visit_time, end_date FROM walk_ins";
+            $sql = "SELECT walkin_id, CONCAT(first_name, ' ', last_name) as name, email, contact_no, session_type, payment_amount, visit_time, end_date FROM walk_ins";
 
             $query = $this->connect()->prepare($sql);
 
@@ -203,6 +203,48 @@
 
         } 
         
+        public function getWalkinById($walkin_id) {
+            $sql = "SELECT * FROM walk_ins WHERE walkin_id = :walkin_id";
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":walkin_id", $walkin_id);
+
+            if($query->execute()) {
+                return $query->fetch();
+            } else {
+                return null;
+            }
+        }
+
+        public function updateWalkinMember($data, $walkin_id) {
+            $sql = "UPDATE walk_ins SET 
+                    first_name = :first_name,
+                    last_name = :last_name,
+                    middle_name = :middle_name,
+                    email = :email,
+                    contact_no = :contact_no,
+                    session_type = :session_type,
+                    payment_method = :payment_method,
+                    payment_amount = :payment_amount,
+                    visit_time = :visit_time,
+                    end_date = :end_date
+                    WHERE walkin_id = :walkin_id";
+
+            $query = $this->connect()->prepare($sql);
+            
+            $query->bindParam(":first_name", $data['first_name']);
+            $query->bindParam(":last_name", $data['last_name']);
+            $query->bindParam(":middle_name", $data['middle_name']);
+            $query->bindParam(":email", $data['email']);
+            $query->bindParam(":contact_no", $data['contact_no']);
+            $query->bindParam(":session_type", $data['session_type']);
+            $query->bindParam(":payment_method", $data['payment_method']);
+            $query->bindParam(":payment_amount", $data['payment_amount']);
+            $query->bindParam(":visit_time", $data['visit_time']);
+            $query->bindParam(":end_date", $data['end_date']);
+            $query->bindParam(":walkin_id", $walkin_id);
+
+            return $query->execute();
+        }
         public function getMemberData() {
             $user_id = $_GET['user_id'];
 

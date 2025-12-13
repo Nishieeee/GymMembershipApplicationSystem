@@ -189,7 +189,235 @@ $(document).ready(function () {
       },
     });
   });
+  $(document).ready(function() {
+    
+      // --- View Walk-in Details ---
+      $(document).on('click', '.btn-view-walkin', function() {
+          // Find the closest tr to get the ID if stored there, or assume logic to get ID
+          // Note: Your table PHP loop doesn't have data-walkin-id on the tr, adding it assumes you will add it.
+          // If not, we find it from context or button attribute.
+          // Assuming you add data-walkin-id="<?= $walkin['walkin_id'] ?>" to the tr in adminDashboard.php
+          let walkinId = $(this).closest('tr').data('walkin-id'); // Make sure to add this to your table row HTML!
+          
+          if(!walkinId) return; 
 
+          $.ajax({
+              url: 'index.php?controller=User&action=getWalkinData',
+              type: 'GET',
+              data: { walkin_id: walkinId },
+              dataType: 'json',
+              success: function(response) {
+                  if (response.success) {
+                      let w = response.data;
+                      let html = `
+                          <div class="space-y-6">
+                              <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                                  <div>
+                                      <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Walk-in ID</p>
+                                      <p class="text-white font-mono text-lg tracking-wide">#${w.walkin_id}</p>
+                                  </div>
+                                  <span class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                      ${w.session_type.toUpperCase()}
+                                  </span>
+                              </div>
+
+                              <div class="bg-slate-700/20 rounded-xl p-5 border border-slate-700/50">
+                                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                      <div>
+                                          <p class="text-slate-500 text-xs mb-1">Full Name</p>
+                                          <p class="text-white font-medium text-lg">${w.first_name} ${w.middle_name ? w.middle_name + ' ' : ''}${w.last_name}</p>
+                                      </div>
+                                      <div>
+                                          <p class="text-slate-500 text-xs mb-1">Contact</p>
+                                          <p class="text-white font-medium">${w.contact_no}</p>
+                                          <p class="text-slate-400 text-xs">${w.email || 'No email'}</p>
+                                      </div>
+                                  </div>
+                                  <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
+                                      <div>
+                                          <p class="text-slate-500 text-xs mb-1">Visit Time</p>
+                                          <p class="text-white font-medium">${w.visit_time}</p>
+                                      </div>
+                                      <div>
+                                          <p class="text-slate-500 text-xs mb-1">Valid Until</p>
+                                          <p class="text-white font-medium">${w.end_date}</p>
+                                      </div>
+                                  </div>
+                                  <div class="mt-4 pt-4 border-t border-slate-700/50">
+                                      <p class="text-slate-500 text-xs mb-1">Payment</p>
+                                      <p class="text-white font-bold">₱${w.payment_amount} <span class="text-slate-400 font-normal text-xs">(${w.payment_method})</span></p>
+                                  </div>
+                              </div>
+                          </div>
+                      `;
+                      $('#walkinDetails').html(html);
+                      $('#btnEditWalkinFromView').data('walkin-id', w.walkin_id); // Store ID on edit button
+                      $('#viewWalkinModal').addClass('show');
+                  }
+              }
+          });
+      });
+
+      // Close View Modal
+      $('.view-walkin-close').click(function() {
+          $('#viewWalkinModal').removeClass('show');
+      });
+
+      // --- Edit Walk-in Details ---
+      
+      // Trigger from Table
+      $(document).on('click', '.btn-edit-walkin', function() {
+          let walkinId = $(this).closest('tr').data('walkin-id'); // Ensure TR has data-walkin-id
+          openEditWalkinModal(walkinId);
+      });
+
+      // Trigger from View Modal
+      $('#btnEditWalkinFromView').click(function() {
+          let walkinId = $(this).data('walkin-id');
+          $('#viewWalkinModal').removeClass('show');
+          openEditWalkinModal(walkinId);
+      });
+
+      function openEditWalkinModal(walkinId) {
+          if(!walkinId) return;
+          
+          $.ajax({
+              url: 'index.php?controller=User&action=getWalkinData',
+              type: 'GET',
+              data: { walkin_id: walkinId },
+              dataType: 'json',
+              success: function(response) {
+                  if (response.success) {
+                      let w = response.data;
+                      $('#edit_walkin_id').val(w.walkin_id);
+                      $('#edit_walkin_first_name').val(w.first_name);
+                      $('#edit_walkin_middle_name').val(w.middle_name);
+                      $('#edit_walkin_last_name').val(w.last_name);
+                      $('#edit_walkin_email').val(w.email);
+                      $('#edit_walkin_contact_no').val(w.contact_no);
+                      $('#edit_walkin_session_type').val(w.session_type);
+                      $('#edit_walkin_payment_amount').val(w.payment_amount);
+                      $('#edit_walkin_payment_method').val(w.payment_method);
+                      
+                      // Format datetime for datetime-local input (YYYY-MM-DDTHH:MM)
+                      let visitTime = w.visit_time ? w.visit_time.replace(' ', 'T') : '';
+                      let endDate = w.end_date ? w.end_date.replace(' ', 'T') : '';
+                      
+                      $('#edit_walkin_visit_time').val(visitTime.substring(0, 16)); 
+                      $('#edit_walkin_end_date').val(endDate.substring(0, 16));
+
+                      $('#editWalkinModal').addClass('show');
+                  }
+              }
+          });
+      }
+
+      // Close Edit Modal
+      $('.edit-walkin-close, .edit-walkin-cancel').click(function() {
+          $('#editWalkinModal').removeClass('show');
+      });
+
+      // Submit Edit Form
+      $('#editWalkinForm').submit(function(e) {
+          e.preventDefault();
+          
+          // Disable button to prevent double clicks
+          const $btn = $('#btnUpdateWalkin');
+          const originalText = $btn.html();
+          $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Updating...');
+
+          // Select the message container
+          const $msgBox = $('#editWalkinMessage');
+
+          $.ajax({
+              url: $(this).attr('action'),
+              type: 'POST',
+              data: $(this).serialize(),
+              dataType: 'json',
+              success: function(response) {
+                  if (response.success) {
+                      // 1. Show Success Message inside the modal (Green styling)
+                      $msgBox
+                          .removeClass('hidden text-red-400 bg-red-500/10') // Remove error styles
+                          .addClass('text-emerald-400 bg-emerald-500/10')   // Add success styles
+                          .html(`<i class="fas fa-check-circle mr-2"></i> ${response.message}`)
+                          .fadeIn();
+
+                      // 2. Wait 1.5 seconds, then close modal and reload
+                      setTimeout(function() {
+                          $('#editWalkinModal').removeClass('show'); // Close modal
+                          location.reload(); // Reload page to reflect changes
+                      }, 1500);
+
+                  } else {
+                      // Show Error Message inside the modal (Red styling)
+                      $msgBox
+                          .removeClass('hidden text-emerald-400 bg-emerald-500/10') // Remove success styles
+                          .addClass('text-red-400 bg-red-500/10')               // Add error styles
+                          .html(`<i class="fas fa-exclamation-triangle mr-2"></i> ${response.message}`)
+                          .fadeIn();
+                          
+                      // Re-enable button so they can try again
+                      $btn.prop('disabled', false).html(originalText);
+                  }
+              },
+              error: function() {
+                  // Generic Error
+                  $msgBox
+                      .removeClass('hidden text-emerald-400 bg-emerald-500/10')
+                      .addClass('text-red-400 bg-red-500/10')
+                      .html(`<i class="fas fa-times-circle mr-2"></i> An unexpected error occurred.`)
+                      .fadeIn();
+                      
+                  $btn.prop('disabled', false).html(originalText);
+              }
+          });
+      });
+  });
+
+  // Function to show Toast Notifications
+  function showNotification(type, message) {
+      const container = $('#alertContainer');
+      
+      // Define colors and icons based on type
+      let styles = '';
+      let icon = '';
+      
+      if (type === 'success') {
+          styles = 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400';
+          icon = '<i class="fa-solid fa-check-circle text-xl"></i>';
+      } else if (type === 'error') {
+          styles = 'bg-red-500/10 border-red-500/20 text-red-400';
+          icon = '<i class="fa-solid fa-circle-exclamation text-xl"></i>';
+      } else {
+          styles = 'bg-blue-500/10 border-blue-500/20 text-blue-400';
+          icon = '<i class="fa-solid fa-info-circle text-xl"></i>';
+      }
+
+      // Create the Toast HTML
+      const toastHtml = `
+          <div class="glass-panel p-4 rounded-lg border flex items-center shadow-lg transform transition-all duration-300 translate-x-full opacity-0 ${styles}">
+              <div class="mr-3">${icon}</div>
+              <div class="font-medium text-sm">${message}</div>
+          </div>
+      `;
+
+      // Append to container
+      const $toast = $(toastHtml).appendTo(container);
+
+      // Animate In (Slide from right)
+      setTimeout(() => {
+          $toast.removeClass('translate-x-full opacity-0');
+      }, 100);
+
+      // Remove after 3 seconds
+      setTimeout(() => {
+          $toast.addClass('translate-x-full opacity-0'); // Slide out
+          setTimeout(() => {
+              $toast.remove(); // Remove from DOM
+          }, 300);
+      }, 3000);
+  }
   // ===== ADD MEMBER FORM VALIDATION =====
   $("#addMemberForm").on("submit", function (e) {
     e.preventDefault();

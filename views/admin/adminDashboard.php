@@ -445,7 +445,7 @@
                                         $user_name = $walkin['name'];
                                         $user_initial = substr($user_name, 0, 1); 
                                     ?>
-                                        <tr class="table-row">
+                                        <tr class="table-row" data-walkin-id="<?= $walkin['walkin_id'] ?>">
                                             <td class="p-4">
                                                 <div class="flex items-center">
                                                     <div class="w-9 h-9 bg-emerald-600 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md mr-3">
@@ -463,7 +463,7 @@
                                             <td class="p-4 text-sm text-slate-400"><?= date('H:i', strtotime($walkin['end_date'])) ?></td>
                                             <td class="p-4 text-center">
                                                 <div class="flex items-center justify-center gap-2">
-                                                    <button class="btn-view-walkin p-1.5 text-blue-400 hover:text-blue-300"><i class="fas fa-eye"></i></button>
+                                                    <button id="" class="btn-view-walkin p-1.5 text-blue-400 hover:text-blue-300"><i class="fas fa-eye"></i></button>
                                                     <button class="btn-edit-walkin p-1.5 text-emerald-400 hover:text-emerald-300"><i class="fas fa-pen"></i></button>
                                                     <button class="btn-delete-walkin p-1.5 text-red-400 hover:text-red-300"><i class="fas fa-trash-alt"></i></button>
                                                 </div>
@@ -757,6 +757,113 @@
                     <div class="flex gap-4 pt-2">
                         <button type="button" class="walkin-cancel flex-1 py-3 px-4 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors">Cancel</button>
                         <button type="submit" id="btnSubmitWalkIn" class="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors shadow-lg shadow-emerald-900/20">Register Walk-in</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="viewWalkinModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300">
+        <div class="modal-content w-full max-w-lg bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 transform transition-all scale-100 overflow-hidden">
+            <div class="flex justify-between items-center px-6 py-5 border-b border-slate-700/50 bg-slate-800/50">
+                <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400">
+                        <i class="fa-solid fa-walking"></i>
+                    </span>
+                    Walk-in Details
+                </h3>
+                <button class="view-walkin-close w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-200">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                <div id="walkinDetails" class="space-y-4 text-slate-300 bg-slate-900/30 rounded-xl p-5 border border-slate-700/30">
+                    </div>
+                <div class="flex gap-4 mt-8 pt-2">
+                    <button type="button" class="view-walkin-close flex-1 py-2.5 px-4 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-200 font-medium transition-all duration-200">
+                        Close
+                    </button>
+                    <button type="button" id="btnEditWalkinFromView" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 rounded-lg text-white font-medium shadow-lg shadow-emerald-900/20 transition-all duration-200 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-pen text-sm"></i> Edit Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="editWalkinModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-content w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden max-h-[90vh] flex flex-col">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800">
+                <h3 class="text-xl font-bold text-white flex items-center"><i class="fas fa-edit mr-2 text-emerald-500"></i> Edit Walk-in</h3>
+                <button class="edit-walkin-close text-slate-400 hover:text-white transition-colors text-xl">&times;</button>
+            </div>
+            
+            <div class="p-6 overflow-y-auto custom-scrollbar">
+                <form id="editWalkinForm" method="POST" action="index.php?controller=User&action=updateWalkin" class="space-y-6">
+                    <input type="hidden" name="walkin_id" id="edit_walkin_id">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">First Name *</label>
+                                <input type="text" name="first_name" id="edit_walkin_first_name" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-emerald-500 focus:outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Middle Name</label>
+                                <input type="text" name="middle_name" id="edit_walkin_middle_name" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-emerald-500 focus:outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Last Name *</label>
+                                <input type="text" name="last_name" id="edit_walkin_last_name" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-emerald-500 focus:outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Contact Number *</label>
+                                <input type="tel" name="contact_no" id="edit_walkin_contact_no" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-emerald-500 focus:outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Email</label>
+                                <input type="email" name="email" id="edit_walkin_email" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-emerald-500 focus:outline-none transition-colors">
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Session Type *</label>
+                                <select name="session_type" id="edit_walkin_session_type" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-emerald-500 focus:outline-none transition-colors">
+                                    <option value="single">Session Day Pass</option>
+                                    <option value="day_pass">Basic Pass</option>
+                                    <option value="weekend">Premium Day Pass</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Payment Amount</label>
+                                <input type="number" name="payment_amount" id="edit_walkin_payment_amount" required class="w-full px-4 py-2 bg-slate-800 border border-slate-700 rounded-lg text-emerald-400 font-bold focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Visit Date *</label>
+                                <input type="datetime-local" name="visit_time" id="edit_walkin_visit_time" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-emerald-500 focus:outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">End Date/Time</label>
+                                <input type="datetime-local" name="end_date" id="edit_walkin_end_date" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-emerald-500 focus:outline-none transition-colors">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-medium text-slate-400 mb-1">Payment Method *</label>
+                                <select name="payment_method" id="edit_walkin_payment_method" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-emerald-500 focus:outline-none transition-colors">
+                                    <option value="cash">Cash</option>
+                                    <option value="card">Credit/Debit Card</option>
+                                    <option value="gcash">GCash</option>
+                                    <option value="paymaya">PayMaya</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="editWalkinMessage" class="hidden text-sm text-center py-2 rounded bg-red-500/10 text-red-400"></div>
+
+                    <div class="flex gap-4 pt-2">
+                        <button type="button" class="edit-walkin-cancel flex-1 py-3 px-4 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors">Cancel</button>
+                        <button type="submit" id="btnUpdateWalkin" class="flex-1 py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-lg transition-colors shadow-lg shadow-emerald-900/20">Update Walk-in</button>
                     </div>
                 </form>
             </div>
