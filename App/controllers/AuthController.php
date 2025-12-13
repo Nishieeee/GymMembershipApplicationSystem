@@ -21,8 +21,20 @@ class AuthController extends Controller {
     }
     
     public function Register() {
-        $register = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "date_of_birth" => "", "gender"=>"" , "password" => "", "cPassword" => ""];
-        $registerError = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "date_of_birth" => "", "gender"=>"" , "password" => "", "cPassword" => "", "register"=>""];
+        // Add address fields to the initialization arrays
+        $register = [
+            "first_name" => "", "last_name" => "", "middle_name" => "", 
+            "email" => "", "date_of_birth" => "", "gender" => "", 
+            "password" => "", "cPassword" => "",
+            "street_address" => "", "city" => "", "zip" => "" // <--- ADDED
+        ];
+        
+        $registerError = [
+            "first_name" => "", "last_name" => "", "middle_name" => "", 
+            "email" => "", "date_of_birth" => "", "gender" => "", 
+            "password" => "", "cPassword" => "", "register" => "",
+            "street_address" => "", "city" => "", "zip" => "" // <--- ADDED
+        ];
         
         $this->auth('register', [
             'register' => $register,
@@ -105,22 +117,41 @@ class AuthController extends Controller {
         header("Location: ../../public/index.php");
         exit();
     }
-    
+
     public function validateUserRegistration() {
         $user = new User();
 
-        $register = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "date_of_birth" => "", "gender"=>"" , "password" => "", "cPassword" => ""];
-        $registerError = ["first_name" => "", "last_name" => "", "middle_name" => "", "email" => "", "date_of_birth" => "", "gender"=>"" , "password" => "", "cPassword" => "", "register"=>""];
+        // Re-initialize arrays to ensure keys exist
+        $register = [
+            "first_name" => "", "last_name" => "", "middle_name" => "", 
+            "email" => "", "date_of_birth" => "", "gender" => "", 
+            "password" => "", "cPassword" => "",
+            "street_address" => "", "city" => "", "zip" => "" 
+        ];
+        
+        $registerError = [
+            "first_name" => "", "last_name" => "", "middle_name" => "", 
+            "email" => "", "date_of_birth" => "", "gender" => "", 
+            "password" => "", "cPassword" => "", "register" => "",
+            "street_address" => "", "city" => "", "zip" => "" 
+        ];
         
         if($_SERVER['REQUEST_METHOD'] == "POST") {
+            // --- 1. SANITIZATION ---
             $register["first_name"] = trim(htmlspecialchars($_POST['first_name']));
             $register["last_name"] = trim(htmlspecialchars($_POST['last_name']));
             $register["middle_name"] = isset($_POST['middle_name']) ? trim(htmlspecialchars($_POST['middle_name'])) : "";
             $register["email"] = trim(htmlspecialchars($_POST['email']));
             $register["date_of_birth"] = trim(htmlspecialchars($_POST['date_of_birth']));
-            $register["gender"] = trim(htmlspecialchars($_POST['gender']));
+            $register["gender"] = isset($_POST['gender']) ? trim(htmlspecialchars($_POST['gender'])) : "";
             $register["password"] = $_POST['password'];
             $register["cPassword"] = $_POST['cPassword'];
+
+            $register["street_address"] = isset($_POST['street_address']) ? trim(htmlspecialchars($_POST['street_address'])) : "";
+            $register["city"] = isset($_POST['city']) ? trim(htmlspecialchars($_POST['city'])) : "";
+            $register["zip"] = isset($_POST['zip']) ? trim(htmlspecialchars($_POST['zip'])) : "";
+
+            // --- 2. VALIDATION ---
 
             // Validate first name
             if(empty($register['first_name'])) {
@@ -139,7 +170,7 @@ class AuthController extends Controller {
                 $registerError['email'] = "Please provide a valid email address";
             }
 
-            // FIXED: Proper date of birth validation
+            // Validate Date of Birth (Age Check)
             if(empty($register['date_of_birth'])) {
                 $registerError['date_of_birth'] = "Please provide your birthdate";
             } else {
@@ -152,8 +183,20 @@ class AuthController extends Controller {
                 }
             }
             
+            // Validate Gender
             if(empty($register["gender"])) {
                 $registerError['gender'] = "Please select your gender";
+            }
+
+            // Validate Address Fields
+            if(empty($register['street_address'])) {
+                $registerError['street_address'] = "Street address is required";
+            }
+            if(empty($register['city'])) {
+                $registerError['city'] = "City is required";
+            }
+            if(empty($register['zip'])) {
+                $registerError['zip'] = "Zip code is required";
             }
             
             // Validate password
@@ -166,22 +209,28 @@ class AuthController extends Controller {
                 $registerError['cPassword'] = "Passwords do not match";
             }
 
+            // Validate Confirm Password
             if(empty($register['cPassword'])) {
                 $registerError['cPassword'] = "Please enter your password again.";
             }
             
+            // Validate Agreement
             if(!isset($_POST['agreement'])) {
                 $registerError['register'] = "You must agree to the terms and conditions";
             }
 
+            // --- 3. EXECUTION ---
             // If no errors, proceed with registration
             if(empty(array_filter($registerError))) {
                 if(!$user->findByEmail($register['email'])) {
+                    // Pass the FULL $register array (including address) to RegisterUser
                     if($this->RegisterUser($register)) {
+                        // Success! Send notification and redirect
                         NotificationHelper::newMemberRegistered(7, $register['first_name'] . ' ' . $register['last_name']);
                         header("Location: index.php?controller=auth&action=login"); 
                         exit();
                     } else {
+                        // Database Insertion Failed
                         $registerError['register'] = "Error registering user. Please try again";
                         $this->auth('register', [
                             'register' => $register,
@@ -189,6 +238,7 @@ class AuthController extends Controller {
                         ]);
                     }
                 } else {
+                    // Email Already Exists
                     $registerError['register'] = "Account already exists.";
                     $this->auth('register', [
                         'register' => $register,
@@ -196,6 +246,7 @@ class AuthController extends Controller {
                     ]);
                 } 
             } else {
+                // Validation Failed - Return to view with errors
                 $this->auth('register', [
                     'register' => $register,
                     'registerError' => $registerError
@@ -253,8 +304,51 @@ class AuthController extends Controller {
             </div>
         ";
         $mail->AltBody = "Welcome {$name}! Your account has been created successfully. Visit your dashboard to get started.";
+    }
 
+    public function forgotPasswordNotifier($email, $name) {
+        $mail = $this->mailer();
+        $mail->addAddress($email, $name);
+        $mail->Subject = "Forgot Password";
+        $mail->isHTML(true);
+        $mail->Body = "
+            <div style='font-family: Arial, sans-serif; padding: 20px; background-color: #f4f6f9;'>
+                <div style='max-width: 600px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px;'>
+                    
+                    <h2 style='color: #4CAF50;'>Password Reset Request 🔐</h2>
 
+                    <p>Hi <strong>{$name}</strong>,</p>
+                    <p>We received a request to reset your password. No worries—let’s get you back into your account.</p>
+
+                    <div style='margin: 20px 0; padding: 15px; background-color: #fff3cd; border-left: 4px solid #ffca28;'>
+                        <p style='margin: 0; font-size: 15px;'>
+                            Click the button below to reset your password. This link will expire in <strong>30 minutes</strong>.
+                        </p>
+                    </div>
+
+                    <a href='#' 
+                        style='display:inline-block; margin-top: 15px; background-color: #4CAF50; 
+                            color: white; padding: 10px 20px; text-decoration: none; 
+                            border-radius: 5px; font-weight: bold;'>
+                        Reset Password
+                    </a>
+
+                    <p style='margin-top: 20px; font-size: 14px; color: #555;'>
+                        If you didn’t request this password reset, you can safely ignore this email.
+                    </p>
+
+                    <hr style='margin-top: 30px;'>
+
+                    <p style='font-size: 12px; color: #777;'>Need help? Contact our support team anytime.</p>
+                    <p style='font-size: 12px; color: #777;'>&copy; " . date('Y') . " Gymazing!. All rights reserved.</p>
+
+                </div>
+            </div>
+        ";
+
+        $mail->AltBody = "Hi {$name}, you requested a password reset. Click this link to reset it: <a>Link</a>";
+
+        $mail->send();
     }
 }
 ?>

@@ -44,7 +44,7 @@
         }
 
         public function displayAllWalkInMembers() {
-            $sql = "SELECT CONCAT(first_name, ' ', last_name) as name, email, contact_no, session_type, payment_amount, visit_time, end_date FROM walk_ins";
+            $sql = "SELECT walkin_id, CONCAT(first_name, ' ', last_name) as name, email, contact_no, session_type, payment_amount, visit_time, end_date FROM walk_ins";
 
             $query = $this->connect()->prepare($sql);
 
@@ -72,7 +72,7 @@
         }
         public function getMember($user_id) {
             $sql = "SELECT 
-                    user_id, CONCAT(first_name, ' ', last_name) as name, first_name, email, role, created_at 
+                    user_id, CONCAT(first_name, ' ', last_name) as name, first_name, last_name, email, role, created_at 
                     FROM members 
                     WHERE user_id = :user_id";
 
@@ -102,33 +102,79 @@
                 return null;
             }
         }
-        public function addMember(array $UserData) {
-            $sql = "INSERT INTO 
-            `members`( `first_name`, `last_name`, `middle_name`, `email`, `date_of_birth` , `gender` , `password`, `role`, `created_at`) 
-            VALUES 
-            (:first_name , :last_name, :middle_name, :email, :date_of_birth, :gender, :password, 'member' , NOW())";
+
+        public function getMemberDetailsById($userId) {
+            $sql = "SELECT m.user_id, m.first_name, m.middle_name, m.last_name, m.email, m.role, m.status, m.created_at, p.plan_name FROM members m JOIN subscriptions s ON s.user_id = m.user_id JOIN membership_plans p ON p.plan_id = s.plan_id WHERE m.user_id = :user_id";
+
             $query = $this->connect()->prepare($sql);
-            $query->bindParam(":first_name", $UserData['first_name']);
-            $query->bindParam(":last_name", $UserData['last_name']);
-            $query->bindParam(":middle_name", $UserData['middle_name']);
-            $query->bindParam(":email", $UserData['email']);
-            $query->bindParam(":date_of_birth", $UserData['date_of_birth']);
-            $query->bindParam(":gender", $UserData['gender']);
-            $query->bindParam(":password", $UserData['password']);
-            
+            $query->bindParam(":user_id", $userId);
+
             if($query->execute()) {
-                $sql = "SELECT user_id FROM members WHERE email = :email";
-
-                $query = $this->connect()->prepare($sql);
-                $query->bindParam(":email", $UserData['email']);
-
-                if($query->execute()) {
-                    return $query->fetch();
-                } else {
-                    return null;
-                }
+                return $query->fetch();
             } else {
                 return null;
+            }
+        }
+        public function addMember(array $UserData) {
+            // 1. Get the database connection
+            $db = $this->connect();
+
+            try {
+                // 2. Start Transaction
+                $db->beginTransaction();
+
+                // --- A. INSERT INTO MEMBERS TABLE ---
+                $sql = "INSERT INTO `members` 
+                        (`first_name`, `last_name`, `middle_name`, `email`, `date_of_birth`, `gender`, `password`, `role`, `created_at`) 
+                        VALUES 
+                        (:first_name, :last_name, :middle_name, :email, :date_of_birth, :gender, :password, 'member', NOW())";
+                
+                $query = $db->prepare($sql);
+                $query->bindParam(":first_name", $UserData['first_name']);
+                $query->bindParam(":last_name", $UserData['last_name']);
+                $query->bindParam(":middle_name", $UserData['middle_name']);
+                $query->bindParam(":email", $UserData['email']);
+                $query->bindParam(":date_of_birth", $UserData['date_of_birth']);
+                $query->bindParam(":gender", $UserData['gender']);
+                $query->bindParam(":password", $UserData['password']);
+                
+                $query->execute();
+                
+                // Get the ID of the newly created user
+                $newUserId = $db->lastInsertId();
+
+                // --- B. INSERT INTO ADDRESS TABLE ---
+                // We use INSERT IGNORE because 'zip' is the Primary Key. 
+                // If the zip exists, we skip this and just link the user to the existing zip.
+                $sqlAddr = "INSERT IGNORE INTO `member_address` (`zip`, `street_address`, `city`) 
+                            VALUES (:zip, :street_address, :city)";
+                
+                $queryAddr = $db->prepare($sqlAddr);
+                $queryAddr->bindParam(":zip", $UserData['zip']);
+                $queryAddr->bindParam(":street_address", $UserData['street_address']);
+                $queryAddr->bindParam(":city", $UserData['city']);
+                
+                $queryAddr->execute();
+
+                // --- C. INSERT INTO LINK TABLE ---
+                $sqlLink = "INSERT INTO `member_address_link` (`user_id`, `zip`, `address_type`) 
+                            VALUES (:user_id, :zip, 'Home')";
+                
+                $queryLink = $db->prepare($sqlLink);
+                $queryLink->bindParam(":user_id", $newUserId);
+                $queryLink->bindParam(":zip", $UserData['zip']);
+                
+                $queryLink->execute();
+
+                // 3. Commit the Transaction (Save changes)
+                $db->commit();
+                return true;
+
+            } catch (Exception $e) {
+                // If anything fails, rollback changes
+                $db->rollBack();
+                // Optional: Log error $e->getMessage();
+                return false;
             }
         }
         public function addWalkinMember($userData) {
@@ -157,6 +203,48 @@
 
         } 
         
+        public function getWalkinById($walkin_id) {
+            $sql = "SELECT * FROM walk_ins WHERE walkin_id = :walkin_id";
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":walkin_id", $walkin_id);
+
+            if($query->execute()) {
+                return $query->fetch();
+            } else {
+                return null;
+            }
+        }
+
+        public function updateWalkinMember($data, $walkin_id) {
+            $sql = "UPDATE walk_ins SET 
+                    first_name = :first_name,
+                    last_name = :last_name,
+                    middle_name = :middle_name,
+                    email = :email,
+                    contact_no = :contact_no,
+                    session_type = :session_type,
+                    payment_method = :payment_method,
+                    payment_amount = :payment_amount,
+                    visit_time = :visit_time,
+                    end_date = :end_date
+                    WHERE walkin_id = :walkin_id";
+
+            $query = $this->connect()->prepare($sql);
+            
+            $query->bindParam(":first_name", $data['first_name']);
+            $query->bindParam(":last_name", $data['last_name']);
+            $query->bindParam(":middle_name", $data['middle_name']);
+            $query->bindParam(":email", $data['email']);
+            $query->bindParam(":contact_no", $data['contact_no']);
+            $query->bindParam(":session_type", $data['session_type']);
+            $query->bindParam(":payment_method", $data['payment_method']);
+            $query->bindParam(":payment_amount", $data['payment_amount']);
+            $query->bindParam(":visit_time", $data['visit_time']);
+            $query->bindParam(":end_date", $data['end_date']);
+            $query->bindParam(":walkin_id", $walkin_id);
+
+            return $query->execute();
+        }
         public function getMemberData() {
             $user_id = $_GET['user_id'];
 
@@ -348,6 +436,22 @@
                 return $query->fetchAll(PDO::FETCH_ASSOC);
             }
             return [];
+        }
+
+        public function getMemberAddress($user_id) {
+            $sql = "SELECT ma.street_address, ma.city, ma.zip 
+                    FROM member_address_link mal 
+                    JOIN member_address ma ON mal.zip = ma.zip 
+                    WHERE mal.user_id = :user_id 
+                    LIMIT 1";
+                    
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":user_id", $user_id);
+            
+            if($query->execute()) {
+                return $query->fetch();
+            }
+            return null;
         }
     }
 

@@ -4,636 +4,429 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Reports | Gymazing</title>
-    <script src= "../public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
     <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
-    <link rel="stylesheet" href="../public/assets/icons/fontawesome/css/all.min.css"></link>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
+        /* Base Theme */
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            color: #e2e8f0;
+            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                              radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                              radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background-attachment: fixed;
         }
 
-        * {
+        /* Glassmorphism Components */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7); /* Slate 800 with opacity */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
-        ::-webkit-scrollbar {
-            width: 10px;
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.15);
         }
 
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
+        /* Form Elements */
+        .glass-input {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            transition: all 0.2s;
+        }
+        
+        .glass-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            background: rgba(15, 23, 42, 0.9);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #1e3a8a;
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #1e40af;
-        }
-
+        /* KPI Cards */
         .stat-card {
-            background: linear-gradient(135deg, rgba(29, 78, 216, 0.1) 0%, rgba(30, 58, 138, 0.2) 100%);
-            border: 1px solid rgba(29, 78, 216, 0.3);
+            position: relative;
+            overflow: hidden;
+            background: rgba(30, 41, 59, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
             transition: all 0.3s ease;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(29, 78, 216, 0.2);
-            border-color: #1e40af;
-        }
-
-        .table-row {
-            transition: all 0.3s ease;
-        }
-
-        .table-row:hover {
-            background-color: rgba(29, 78, 216, 0.1);
-        }
-
-        .modal-backdrop {
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .modal-backdrop.show {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .modal-content {
-            transform: scale(0.8);
-            opacity: 0;
-            transition: all 0.3s ease;
-        }
-
-        .modal-backdrop.show .modal-content {
-            transform: scale(1);
-            opacity: 1;
-        }
-
-        .tab-button {
-            transition: all 0.3s ease;
-        }
-
-        .tab-button.active {
-            border-bottom: 2px solid #3b82f6;
-            color: #3b82f6;
-        }
-
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-            animation: fadeIn 0.3s ease;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            background: rgba(30, 41, 59, 0.8);
         }
         
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .stat-card:hover::before {
+            opacity: 1;
         }
 
-        .badge {
-            transition: all 0.3s ease;
+        /* Icon Backgrounds */
+        .icon-bg {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            font-size: 1.25rem;
         }
 
-        .badge:hover {
-            transform: scale(1.05);
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
         }
 
-        .status-badge {
-            display: inline-block;
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
+        /* Table Styling */
+        .glass-table th {
+            background-color: rgba(15, 23, 42, 0.8);
+            text-transform: uppercase;
             font-size: 0.75rem;
-            font-weight: 600;
+            letter-spacing: 0.05em;
+            color: #94a3b8;
+        }
+        .glass-table tr {
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            transition: background 0.2s;
+        }
+        .glass-table tr:last-child {
+            border-bottom: none;
+        }
+        .glass-table tr:hover {
+            background-color: rgba(255, 255, 255, 0.03);
         }
 
-        .status-active {
-            background-color: rgba(34, 197, 94, 0.2);
-            color: #22c55e;
-        }
-
-        .status-inactive {
-            background-color: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-        }
-
-        .status-pending {
-            background-color: rgba(251, 146, 60, 0.2);
-            color: #fb923c;
-        }
-
-        .plan-card {
-            background: linear-gradient(135deg, rgba(29, 78, 216, 0.1), rgba(30, 58, 138, 0.2));
-            border: 1px solid rgba(29, 78, 216, 0.3);
-            transition: all 0.3s ease;
-        }
-
-        .plan-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(29, 78, 216, 0.2);
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255, 255, 255, 0.3);
+        /* Loading Spinner */
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(59, 130, 246, 0.1);
+            border-left-color: #3b82f6;
             border-radius: 50%;
-            border-top-color: white;
             animation: spin 1s linear infinite;
         }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
+        /* Print Styles - Preserved & Optimized */
+        @media print {
+            .no-print, button, select, input, nav, .modal-backdrop, #alertContainer { display: none !important; }
+            body { background: white !important; color: black !important; background-image: none !important; }
+            .glass-panel, .stat-card { background: white !important; border: 1px solid #ccc !important; box-shadow: none !important; color: black !important; break-inside: avoid; }
+            .text-white, h2, h3, p { color: black !important; }
+            canvas { max-width: 100% !important; }
+            .grid { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 20px; }
+            .print-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid black; }
+            .text-green-400 { color: #16a34a !important; }
+            .text-red-400 { color: #dc2626 !important; }
         }
-
-        .alert {
-            animation: slideIn 0.3s ease;
-        }
-
-        @keyframes slideIn {
-            from {
-                transform: translateX(-100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-        /* Print Styles */
-        /* Print Styles - FIXED VERSION */
-    @media print {
-        /* Hide elements that shouldn't be printed */
-        .no-print,
-        button,
-        select,
-        input,
-        nav,
-        .modal-backdrop,
-        #alertContainer {
-            display: none !important;
-        }
-        
-        /* Reset body background */
-        body {
-            background: darkblue !important;
-            color: black !important;
-        }
-        
-        /* Fix all card backgrounds */
-        .stat-card, 
-        .bg-gray-800, 
-        .bg-gray-900,
-        .bg-neutral-900,
-        /* .gradient-bg {
-            background: white !important;
-            border: 1px solid #ccc !important;
-            color: black !important;
-        } */
-        
-        /* Fix all text colors */
-        .text-white,
-        .text-gray-400,
-        .text-gray-300,
-        .text-gray-500,
-        h1, h2, h3, h4, h5, h6,
-        p, span, div, td, th {
-            color: black !important;
-        }
-        
-        /* Keep colored text visible */
-        .text-green-400,
-        .text-green-500 {
-            color: #22c55e !important;
-        }
-        
-        .text-red-400,
-        .text-red-500 {
-            color: #ef4444 !important;
-        }
-        
-        .text-blue-400,
-        .text-blue-500 {
-            color: #3b82f6 !important;
-        }
-        
-        .text-orange-400,
-        .text-orange-500 {
-            color: #fb923c !important;
-        }
-        
-        .text-purple-400,
-        .text-purple-500 {
-            color: #a855f7 !important;
-        }
-        
-        .text-yellow-400,
-        .text-yellow-500 {
-            color: #eab308 !important;
-        }
-        
-        .text-cyan-400,
-        .text-cyan-500 {
-            color: #06b6d4 !important;
-        }
-        
-        
-        table {
-            border-collapse: collapse !important;
-            width: 100% !important;
-        }
-        
-        thead {
-            background: #f3f4f6 !important;
-            border-bottom: 2px solid #000 !important;
-        }
-        
-        th, td {
-            border: 1px solid #ccc !important;
-            padding: 8px !important;
-            color: black !important;
-        }
-        
-        
-        .border-gray-700,
-        .border-gray-600 {
-            border-color: #ccc !important;
-        }
-        
-        canvas {
-            max-width: 100% !important;
-            height: auto !important;
-            page-break-inside: avoid !important;
-        }
-       
-        .grid {
-            display: grid !important;
-            grid-template-columns: 2;
-            gap: 2rem;
-        }
-        
-        .grid > div {
-            display: block !important;
-            width: 100% !important;
-            margin-bottom: 20px !important;
-            page-break-inside: avoid !important;
-        }
-        
-        /* Page break control */
-        .stat-card,
-        .bg-gray-800 {
-            page-break-inside: avoid !important;
-            margin-bottom: 15px !important;
-        }
-        
-        /* Add print header */
-        @page {
-            margin: 1cm;
-        }
-        
-        /* Fix rounded corners for print */
-        .rounded-xl,
-        .rounded-lg {
-            border-radius: 8px !important;
-        }
-        
-        /* Status badges */
-        .status-badge {
-            border: 1px solid !important;
-            padding: 4px 12px !important;
-        }
-        
-        .status-active {
-            background-color: #d1fae5 !important;
-            color: #065f46 !important;
-            border-color: #22c55e !important;
-        }
-        
-        .status-inactive {
-            background-color: #fee2e2 !important;
-            color: #991b1b !important;
-            border-color: #ef4444 !important;
-        }
-        
-        .status-pending {
-            background-color: #fed7aa !important;
-            color: #92400e !important;
-            border-color: #fb923c !important;
-        }
-    }
-
-    /* Print-specific classes you can add */
-    .print-header {
-        display: none;
-    }
-
-    @media print {
-        .print-header {
-            display: block !important;
-            text-align: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #000;
-        }
-        
-        .print-header h1 {
-            font-size: 24px;
-            margin: 0;
-            color: black !important;
-        }
-        
-        .print-header p {
-            font-size: 12px;
-            margin: 5px 0;
-            color: #666 !important;
-        }
-    }
+        .print-header { display: none; }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
-     <!-- Admin Navbar -->
+<body class="min-h-screen">
+    
     <?php include __DIR__ . "/layouts/adminnavbar.php" ?> 
-    <!--  Alerts Container -->
-    <div id="alertContainer" class="fixed top-24 right-4 z-40 space-y-4"></div>
+    
+    <div id="alertContainer" class="fixed top-6 right-4 z-50 space-y-4 max-w-sm"></div>
 
-    <main class="pb-12 mt-20">
-        <div class="p-6">
-                <div class="mb-6 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4">
-                    <div>
-                        <h2 class="text-2xl font-bold text-white">Reports & Analytics</h2>
-                        <p class="text-gray-400 text-sm mt-1">Filter and analyze your gym's performance data</p>
-                    </div>
-                    <div class="flex flex-wrap gap-3 no-print">
-                        <!-- Date Range Filter -->
-                        <div class="flex items-center gap-2">
-                            <label class="text-white text-sm font-semibold">Date Range:</label>
-                            <select id="dateRangeFilter" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                                <option value="7">Last 7 Days</option>
-                                <option value="30" selected>Last 30 Days</option>
-                                <option value="90">Last 3 Months</option>
-                                <option value="180">Last 6 Months</option>
-                                <option value="365">Last 12 Months</option>
-                                <option value="custom">Custom Range</option>
-                            </select>
-                        </div>
+    <main class="pb-12 pt-6 md:ml-64 transition-all duration-300">
+        <div class="p-6 lg:p-8">
+            
+            <div class="print-header">
+                <h1>Gymazing Report</h1>
+                <p>Generated on <?= date('Y-m-d H:i') ?></p>
+            </div>
 
-                        <!-- Custom Date Range -->
-                        <div id="customDateRange" class="hidden flex items-center gap-2">
-                            <input type="date" id="startDate" class="px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                            <span class="text-white">to</span>
-                            <input type="date" id="endDate" class="px-3 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm">
-                        </div>
+            <div class="mb-8 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6">
+                <div>
+                    <h2 class="text-3xl font-bold text-white tracking-tight">Reports & Analytics</h2>
+                    <p class="text-slate-400 text-sm mt-1">Deep dive into your gym's financial and operational performance.</p>
+                </div>
 
-                        <!-- Chart Type Filter -->
-                        <select id="chartTypeFilter" class="px-4 py-2 bg-gray-800 text-white border border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option value="all">All Charts</option>
-                            <option value="revenue">Revenue Only</option>
-                            <option value="members">Members Only</option>
-                            <option value="payments">Payments Only</option>
+                <div class="glass-panel p-2 rounded-xl flex flex-wrap gap-2 items-center no-print w-full xl:w-auto">
+                    
+                    <div class="flex items-center gap-2 px-2">
+                        <span class="text-slate-400 text-xs font-semibold uppercase tracking-wider"><i class="far fa-calendar-alt mr-1"></i> Period</span>
+                        <select id="dateRangeFilter" class="glass-input px-3 py-2 rounded-lg text-sm min-w-[140px]">
+                            <option value="7">Last 7 Days</option>
+                            <option value="30" selected>Last 30 Days</option>
+                            <option value="90">Last 3 Months</option>
+                            <option value="180">Last 6 Months</option>
+                            <option value="365">Last 12 Months</option>
+                            <option value="custom">Custom Range</option>
                         </select>
-
-                        <!-- Apply Filter Button -->
-                        <button id="btnApplyFilter" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
-                            <i class="fas fa-filter mr-2"></i>Apply Filter
-                        </button>
-
-                        <!-- Reset Filter Button -->
-                        <button id="btnResetFilter" class="px-6 py-2 bg-gray-600 hover:bg-gray-700 text-white font-semibold rounded-lg transition-colors">
-                            <i class="fas fa-redo mr-2"></i>Reset
-                        </button>
-
-                        <!-- Export Button -->
-                        <button onclick="window.print()" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg transition-colors">
-                            <i class="fas fa-file-pdf mr-2"></i>Export PDF
-                        </button>
                     </div>
-                </div>
 
-                <!-- Loading Indicator -->
-                <div id="loadingIndicator" class="hidden text-center py-8">
-                    <div class="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-                    <p class="text-white mt-4">Loading chart data...</p>
-                </div>
+                    <div id="customDateRange" class="hidden flex items-center gap-2 border-l border-white/10 pl-2">
+                        <input type="date" id="startDate" class="glass-input px-3 py-2 rounded-lg text-sm">
+                        <span class="text-slate-500">-</span>
+                        <input type="date" id="endDate" class="glass-input px-3 py-2 rounded-lg text-sm">
+                    </div>
 
-                <!-- Filter Summary -->
-                <div id="filterSummary" class="mb-6 bg-blue-900 bg-opacity-30 border border-blue-600 rounded-lg p-4 hidden">
-                    <div class="flex items-center justify-between">
-                        <div>
-                            <p class="text-blue-200 text-sm">
-                                <i class="fas fa-info-circle mr-2"></i>
-                                <strong>Active Filter:</strong> 
-                                <span id="filterSummaryText">Last 30 Days</span>
-                            </p>
-                        </div>
-                        <button onclick="$('#btnResetFilter').click()" class="text-blue-300 hover:text-blue-100 text-sm underline">
-                            Clear Filter
+                    <div class="border-l border-white/10 pl-2 pr-2">
+                         <select id="chartTypeFilter" class="glass-input px-3 py-2 rounded-lg text-sm">
+                            <option value="all">All Charts</option>
+                            <option value="revenue">Revenue</option>
+                            <option value="members">Members</option>
+                            <option value="payments">Payments</option>
+                        </select>
+                    </div>
+
+                    <div class="flex gap-2 ml-auto xl:ml-0">
+                        <button id="btnApplyFilter" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white text-sm font-semibold rounded-lg transition-colors shadow-lg shadow-blue-900/20">
+                            Apply
+                        </button>
+                        <button id="btnResetFilter" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors">
+                            <i class="fas fa-redo"></i>
+                        </button>
+                        <button onclick="window.print()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors shadow-lg shadow-emerald-900/20">
+                            <i class="fas fa-print"></i>
                         </button>
                     </div>
                 </div>
+            </div>
 
-                <!-- Enhanced KPI Cards -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <!-- Total Revenue -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl"><i class="fa-regular fa-money-bill-1 text-green-400 text-3xl"></i></div>
-                            <span class="text-green-400 text-sm font-semibold">+<?= number_format((($paymentStats['total_paid'] ?? 0) / max(($totalEarned['total_earned'] ?? 1), 1) * 100), 1) ?>%</span>
-                        </div>
-                        <p class="text-gray-400 text-sm font-medium mb-1">Total Revenue</p>
-                        <p class="text-3xl font-bold text-white">₱<?= number_format($paymentStats['total_paid'] ?? 0, 2) ?></p>
-                        <p class="text-gray-500 text-xs mt-2"><?= $paymentStats['paid_count'] ?? 0 ?> successful transactions</p>
-                    </div>
+            <div id="loadingIndicator" class="hidden flex flex-col items-center justify-center py-12">
+                <div class="spinner mb-4"></div>
+                <p class="text-slate-400 text-sm animate-pulse">Crunching numbers...</p>
+            </div>
 
-                    <!-- Pending Payments -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl"><i class="fa-regular fa-hourglass text-yellow-400 text-3xl"></i></div>
-                            <span class="text-yellow-400 text-sm font-semibold"><?= $pendingPayments['pending_count'] ?> pending</span>
-                        </div>
-                        <p class="text-gray-400 text-sm font-medium mb-1">Pending Revenue</p>
-                        <p class="text-3xl font-bold text-white">₱<?= number_format($pendingPayments['pending_amount'] ?? 0, 2) ?></p>
-                        <p class="text-gray-500 text-xs mt-2">Expected this month</p>
+            <div id="filterSummary" class="mb-8 hidden">
+                <div class="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 flex items-center justify-between">
+                    <div class="flex items-center text-blue-300">
+                        <i class="fas fa-filter mr-3"></i>
+                        <span class="text-sm">Viewing data for: <strong id="filterSummaryText" class="text-white">Last 30 Days</strong></span>
                     </div>
+                    <button onclick="$('#btnResetFilter').click()" class="text-xs text-blue-400 hover:text-white transition-colors">Clear</button>
+                </div>
+            </div>
 
-                    <!-- Active Members -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl">
-                                <i class="fa-solid fa-user text-blue-500 text-3xl"></i>
-                            </div>
-                            <span class="text-blue-400 text-sm font-semibold"><?= round(($activeInactiveCount['active_count'] / max(($memberCount['active_member_count'] ?? 1), 1)) * 100, 1) ?>%</span>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                
+                <div class="stat-card rounded-2xl p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="icon-bg bg-emerald-500/10 text-emerald-400">
+                            <i class="fa-regular fa-money-bill-1"></i>
                         </div>
-                        <p class="text-gray-400 text-sm font-medium mb-1">Active Members</p>
-                        <p class="text-3xl font-bold text-white"><?= $activeInactiveCount['active_count'] ?? 0 ?></p>
-                        <p class="text-gray-500 text-xs mt-2"><?= $activeInactiveCount['inactive_count'] ?? 0 ?> inactive</p>
+                        <span class="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
+                            +<?= number_format((($paymentStats['total_paid'] ?? 0) / max(($totalEarned['total_earned'] ?? 1), 1) * 100), 1) ?>%
+                        </span>
                     </div>
-
-                    <!-- Retention Rate -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl"><i class="fa-regular fa-chart-bar text-purple-400 text-3xl"></i></div>
-                            <span class="text-purple-400 text-sm font-semibold">Retention</span>
-                        </div>
-                        <p class="text-gray-400 text-sm font-medium mb-1">Retention Rate</p>
-                        <p class="text-3xl font-bold text-white"><?= $retentionRate['rate'] ?>%</p>
-                        <p class="text-gray-500 text-xs mt-2"><?= $retentionRate['active'] ?> of <?= $retentionRate['total'] ?> members</p>
-                    </div>
-
-                    <!-- Expiring Subscriptions -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl"><i class="fa-regular fa-alarm-clock text-orange-500"></i></div>
-                            <span class="text-orange-400 text-sm font-semibold">Urgent</span>
-                        </div>
-                        <p class="text-gray-400 text-sm font-medium mb-1">Expiring Soon</p>
-                        <p class="text-3xl font-bold text-white"><?= $expiringSubscriptions['expiring_count'] ?? 0 ?></p>
-                        <p class="text-gray-500 text-xs mt-2">Next 7 days</p>
-                    </div>
-
-                    <!-- Average Transaction -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl"><i class="fa-regular fa-credit-card text-cyan-400 text-3xl"></i></div>
-                            <span class="text-cyan-400 text-sm font-semibold">Avg</span>
-                        </div>
-                        <p class="text-gray-400 text-sm font-medium mb-1">Avg Transaction</p>
-                        <p class="text-3xl font-bold text-white">₱<?= number_format(($paymentStats['total_paid'] ?? 0) / max(($paymentStats['paid_count'] ?? 1), 1), 2) ?></p>
-                        <p class="text-gray-500 text-xs mt-2">Per transaction</p>
-                    </div>
-
-                    <!-- Total Plans -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="text-4xl"><i class="fa-regular fa-clipboard text-yellow-400 text-3xl"></i></div>
-                            <span class="text-yellow-400 text-sm font-semibold"><?= count($activePlans) ?> active</span>
-                        </div>
-                        <p class="text-gray-400 text-sm font-medium mb-1">Membership Plans</p>
-                        <p class="text-3xl font-bold text-white"><?= count($plans) ?></p>
-                        <p class="text-gray-500 text-xs mt-2">Total available</p>
-                    </div>
-
-                    <!-- Payment Success Rate -->
-                    <div class="stat-card rounded-xl p-6">
-                        <div class="flex items-center justify-between mb-4">
-                               <div class="text-4xl"><i class="fa-regular fa-circle-check text-green-400 text-3xl"></i></div>
-                            <span class="text-green-400 text-sm font-semibold">Success</span>
-                        </div>
-                        <p class="text-gray-400 text-sm font-medium mb-1">Success Rate</p>
-                        <p class="text-3xl font-bold text-white"><?= round((($paymentStats['paid_count'] ?? 0) / max(($paymentStats['total_transactions'] ?? 1), 1)) * 100, 1) ?>%</p>
-                        <p class="text-gray-500 text-xs mt-2"><?= $paymentStats['failed_count'] ?? 0 ?> failed</p>
-                    </div>
+                    <h3 class="text-3xl font-bold text-white mb-1">₱<?= number_format($paymentStats['total_paid'] ?? 0, 2) ?></h3>
+                    <p class="text-slate-400 text-sm mb-1">Total Revenue</p>
+                    <p class="text-slate-500 text-xs"><?= $paymentStats['paid_count'] ?? 0 ?> successful transactions</p>
                 </div>
 
-                <!-- Charts Row 1 -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    <!-- Revenue Trend Chart -->
-                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Revenue Trend (Last 12 Months)</h3>
+                <div class="stat-card rounded-2xl p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="icon-bg bg-yellow-500/10 text-yellow-400">
+                            <i class="fa-regular fa-hourglass"></i>
+                        </div>
+                        <span class="px-2 py-1 rounded bg-yellow-500/10 text-yellow-400 text-xs font-bold border border-yellow-500/20">
+                            <?= $pendingPayments['pending_count'] ?> pending
+                        </span>
+                    </div>
+                    <h3 class="text-3xl font-bold text-white mb-1">₱<?= number_format($pendingPayments['pending_amount'] ?? 0, 2) ?></h3>
+                    <p class="text-slate-400 text-sm mb-1">Pending Revenue</p>
+                    <p class="text-slate-500 text-xs">Expected receivable</p>
+                </div>
+
+                <div class="stat-card rounded-2xl p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="icon-bg bg-blue-500/10 text-blue-400">
+                            <i class="fa-solid fa-user"></i>
+                        </div>
+                        <span class="px-2 py-1 rounded bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/20">
+                            <?= round(($activeInactiveCount['active_count'] / max(($memberCount['active_member_count'] ?? 1), 1)) * 100, 1) ?>%
+                        </span>
+                    </div>
+                    <h3 class="text-3xl font-bold text-white mb-1"><?= $activeInactiveCount['active_count'] ?? 0 ?></h3>
+                    <p class="text-slate-400 text-sm mb-1">Active Members</p>
+                    <p class="text-slate-500 text-xs"><?= $activeInactiveCount['inactive_count'] ?? 0 ?> currently inactive</p>
+                </div>
+
+                <div class="stat-card rounded-2xl p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="icon-bg bg-purple-500/10 text-purple-400">
+                            <i class="fa-regular fa-chart-bar"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl font-bold text-white mb-1"><?= $retentionRate['rate'] ?>%</h3>
+                    <p class="text-slate-400 text-sm mb-1">Retention Rate</p>
+                    <p class="text-slate-500 text-xs"><?= $retentionRate['active'] ?> of <?= $retentionRate['total'] ?> retained</p>
+                </div>
+
+                <div class="stat-card rounded-2xl p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="icon-bg bg-orange-500/10 text-orange-400">
+                            <i class="fa-regular fa-clock"></i>
+                        </div>
+                        <span class="px-2 py-1 rounded bg-orange-500/10 text-orange-400 text-xs font-bold border border-orange-500/20">Urgent</span>
+                    </div>
+                    <h3 class="text-3xl font-bold text-white mb-1"><?= $expiringSubscriptions['expiring_count'] ?? 0 ?></h3>
+                    <p class="text-slate-400 text-sm mb-1">Expiring Soon</p>
+                    <p class="text-slate-500 text-xs">Within next 7 days</p>
+                </div>
+
+                <div class="stat-card rounded-2xl p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="icon-bg bg-cyan-500/10 text-cyan-400">
+                            <i class="fa-regular fa-credit-card"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl font-bold text-white mb-1">₱<?= number_format(($paymentStats['total_paid'] ?? 0) / max(($paymentStats['paid_count'] ?? 1), 1), 2) ?></h3>
+                    <p class="text-slate-400 text-sm mb-1">Avg Transaction</p>
+                    <p class="text-slate-500 text-xs">Per successful payment</p>
+                </div>
+
+                 <div class="stat-card rounded-2xl p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="icon-bg bg-pink-500/10 text-pink-400">
+                            <i class="fa-regular fa-clipboard"></i>
+                        </div>
+                        <span class="px-2 py-1 rounded bg-pink-500/10 text-pink-400 text-xs font-bold border border-pink-500/20">
+                            <?= count($activePlans) ?> active
+                        </span>
+                    </div>
+                    <h3 class="text-3xl font-bold text-white mb-1"><?= count($plans) ?></h3>
+                    <p class="text-slate-400 text-sm mb-1">Total Plans</p>
+                    <p class="text-slate-500 text-xs">Available for purchase</p>
+                </div>
+
+                <div class="stat-card rounded-2xl p-6">
+                    <div class="flex justify-between items-start mb-4">
+                        <div class="icon-bg bg-teal-500/10 text-teal-400">
+                            <i class="fa-regular fa-circle-check"></i>
+                        </div>
+                    </div>
+                    <h3 class="text-3xl font-bold text-white mb-1"><?= round((($paymentStats['paid_count'] ?? 0) / max(($paymentStats['total_transactions'] ?? 1), 1)) * 100, 1) ?>%</h3>
+                    <p class="text-slate-400 text-sm mb-1">Success Rate</p>
+                    <p class="text-slate-500 text-xs"><?= $paymentStats['failed_count'] ?? 0 ?> failed attempts</p>
+                </div>
+            </div>
+
+            <div class="space-y-6">
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h3 class="text-lg font-bold text-white mb-6 pl-2 border-l-4 border-blue-500">Revenue Trend (12 Months)</h3>
                         <div style="position: relative; height: 300px;">
                             <canvas id="revenueTrendChart"></canvas>
                         </div>
                     </div>
-
-                    <!-- Daily Revenue Chart -->
-                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Daily Revenue (Last 30 Days)</h3>
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h3 class="text-lg font-bold text-white mb-6 pl-2 border-l-4 border-emerald-500">Daily Revenue (30 Days)</h3>
                         <div style="position: relative; height: 300px;">
                             <canvas id="dailyRevenueChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Charts Row 2 -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    <!-- Revenue by Plan Chart -->
-                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Revenue by Membership Plan</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h3 class="text-lg font-bold text-white mb-6 pl-2 border-l-4 border-purple-500">Revenue by Plan</h3>
                         <div style="position: relative; height: 300px;">
-                            <canvas id="revenueByPlanChart" height="300"></canvas>
+                            <canvas id="revenueByPlanChart"></canvas>
                         </div>
                     </div>
-
-                    <!-- Members by Plan Chart -->
-                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Members by Plan</h3>
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h3 class="text-lg font-bold text-white mb-6 pl-2 border-l-4 border-pink-500">Members by Plan</h3>
                         <div style="position: relative; height: 300px;">
-                            <canvas id="membersByPlanChart" height="300"></canvas>
+                            <canvas id="membersByPlanChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Charts Row 3 -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    <!-- Member Growth Chart -->
-                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Member Growth (Last 12 Months)</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h3 class="text-lg font-bold text-white mb-6 pl-2 border-l-4 border-green-500">Member Growth</h3>
                         <div style="position: relative; height: 300px;">
-                            <canvas id="memberGrowthChart" height="300"></canvas>
+                            <canvas id="memberGrowthChart"></canvas>
                         </div>
                     </div>
-
-                        <!-- Payment Method Distribution -->
-                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Payment Methods</h3>
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h3 class="text-lg font-bold text-white mb-6 pl-2 border-l-4 border-cyan-500">Payment Methods</h3>
                         <div style="position: relative; height: 300px;">
-                            <canvas id="paymentMethodChart" height="300"></canvas>
+                            <canvas id="paymentMethodChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Charts Row 4 -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-                    <!-- Active vs Inactive Members -->
-                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Member Status Distribution</h3>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h3 class="text-lg font-bold text-white mb-6 pl-2 border-l-4 border-red-500">Member Status</h3>
                         <div style="position: relative; height: 300px;">
-                            <canvas id="memberStatusChart" height="300"></canvas>
+                            <canvas id="memberStatusChart"></canvas>
                         </div>
-                     </div>
-
-                    <!-- Subscription Status -->
-                    <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                        <h3 class="text-xl font-bold text-white mb-4">Subscription Status</h3>
+                    </div>
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h3 class="text-lg font-bold text-white mb-6 pl-2 border-l-4 border-yellow-500">Subscription Status</h3>
                         <div style="position: relative; height: 300px;">
-                            <canvas id="subscriptionStatusChart" height="300"></canvas>
+                            <canvas id="subscriptionStatusChart"></canvas>
                         </div>
                     </div>
                 </div>
 
-                <!-- Top Performers Table -->
-                <div class="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                    <h3 class="text-xl font-bold text-white mb-4">Top Performing Plans</h3>
+                <div class="glass-panel rounded-2xl p-6 overflow-hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <h3 class="text-lg font-bold text-white pl-2 border-l-4 border-indigo-500">Top Performing Plans</h3>
+                        <button class="text-xs text-blue-400 hover:text-white transition-colors">View All Details</button>
+                    </div>
                     <div class="overflow-x-auto">
-                        <table class="w-full text-white">
-                        <thead class="border-b border-gray-700">
+                        <table class="w-full text-left glass-table rounded-lg overflow-hidden">
+                            <thead>
                                 <tr>
-                                    <th class="text-left px-4 py-3 font-semibold">Plan Name</th>
-                                    <th class="text-right px-4 py-3 font-semibold">Total Revenue</th>
-                                    <th class="text-right px-4 py-3 font-semibold">Transactions</th>
-                                    <th class="text-right px-4 py-3 font-semibold">Avg per Transaction</th>
+                                    <th class="px-6 py-4">Plan Name</th>
+                                    <th class="px-6 py-4 text-right">Total Revenue</th>
+                                    <th class="px-6 py-4 text-right">Transactions</th>
+                                    <th class="px-6 py-4 text-right">Avg / Transaction</th>
                                 </tr>
-                        </thead>
-                            <tbody>
+                            </thead>
+                            <tbody class="text-sm text-slate-300">
                                 <?php foreach($revenueByPlan as $plan): ?>
-                                <tr class="border-b border-gray-700 hover:bg-gray-750">
-                                    <td class="px-4 py-3"><?= htmlspecialchars($plan['plan_name']) ?></td>
-                                    <td class="px-4 py-3 text-right text-green-400 font-semibold">₱<?= number_format($plan['total_revenue'], 2) ?></td>
-                                    <td class="px-4 py-3 text-right"><?= $plan['payment_count'] ?></td>
-                                    <td class="px-4 py-3 text-right">₱<?= number_format($plan['total_revenue'] / $plan['payment_count'], 2) ?></td>
+                                <tr class="group">
+                                    <td class="px-6 py-4 font-medium text-white group-hover:text-blue-300 transition-colors">
+                                        <?= htmlspecialchars($plan['plan_name']) ?>
+                                    </td>
+                                    <td class="px-6 py-4 text-right font-bold text-emerald-400">
+                                        ₱<?= number_format($plan['total_revenue'], 2) ?>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <span class="px-2 py-1 bg-slate-700 rounded text-xs"><?= $plan['payment_count'] ?></span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right text-slate-400">
+                                        ₱<?= number_format($plan['total_revenue'] / $plan['payment_count'], 2) ?>
+                                    </td>
                                 </tr>
                                 <?php endforeach; ?>
                             </tbody>
@@ -641,9 +434,11 @@
                     </div>
                 </div>
             </div>
+
+        </div>
     </main>
+    
     <script src="../public/assets/js/admin/admin.js"></script>
-    <!-- Add Chart.js -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 
     <script>
@@ -669,11 +464,13 @@
                 },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
                     padding: 12,
                     bodySpacing: 4,
                     mode: 'index',
-                    intersect: false
+                    intersect: false,
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    borderWidth: 1
                 }
             },
             scales: {
@@ -684,7 +481,7 @@
                         font: { size: 11 }
                     },
                     grid: { 
-                        color: 'rgba(255, 255, 255, 0.1)',
+                        color: 'rgba(255, 255, 255, 0.05)',
                         drawBorder: false
                     }
                 },
@@ -696,7 +493,7 @@
                         minRotation: 0
                     },
                     grid: { 
-                        color: 'rgba(255, 255, 255, 0.1)',
+                        color: 'rgba(255, 255, 255, 0.05)',
                         drawBorder: false
                     }
                 }
@@ -722,8 +519,10 @@
                 },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12
+                    backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                    padding: 12,
+                    borderColor: 'rgba(255,255,255,0.1)',
+                    borderWidth: 1
                 }
             },
             animation: {
@@ -794,7 +593,7 @@
                             'rgba(236, 72, 153, 0.8)'
                         ],
                         borderWidth: 2,
-                        borderColor: '#1f2937',
+                        borderColor: '#1e293b',
                         hoverOffset: 4
                     }]
                 },
@@ -865,7 +664,7 @@
                             'rgba(236, 72, 153, 0.8)'
                         ],
                         borderWidth: 2,
-                        borderColor: '#1f2937',
+                        borderColor: '#1e293b',
                         hoverOffset: 4
                     }]
                 },
@@ -888,7 +687,7 @@
                             'rgba(239, 68, 68, 0.8)'
                         ],
                         borderWidth: 2,
-                        borderColor: '#1f2937',
+                        borderColor: '#1e293b',
                         hoverOffset: 4
                     }]
                 },
@@ -931,8 +730,10 @@
                         },
                         tooltip: {
                             enabled: true,
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            padding: 12
+                            backgroundColor: 'rgba(15, 23, 42, 0.9)',
+                            padding: 12,
+                            borderColor: 'rgba(255,255,255,0.1)',
+                            borderWidth: 1
                         }
                     }
                 }
