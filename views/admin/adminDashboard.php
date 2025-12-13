@@ -1062,8 +1062,6 @@
             </div>
         </div>
     </div>
-
-    <?php include '../views/layouts/footer.php' ?>
     <script src="../public/assets/js/admin/admin.js"></script>
 </body>
 </html>
