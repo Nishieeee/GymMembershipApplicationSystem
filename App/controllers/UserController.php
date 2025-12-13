@@ -20,6 +20,29 @@
                 return null;
             }
         }
+
+        public function getMemberData() {
+            if (!isset($_GET['user_id'])) {
+                echo json_encode(['success' => false, 'message' => 'User ID is required']);
+                return;
+            }
+            $userModel = new User();
+            $userId = $_GET['user_id'];
+
+            $memberData = $userModel->getMemberDetailsById($userId);
+
+            if ($memberData) {
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'data' => $memberData
+                ]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Member not found']);
+            }
+            exit;
+        }
+
         public function validateWalkin() {
             $userModel = new User();
             header('Content-Type: application/json');

@@ -322,7 +322,6 @@ $(document).ready(function () {
       );
       return;
     }
-
     // Fetch member data
     $.ajax({
       type: "GET",

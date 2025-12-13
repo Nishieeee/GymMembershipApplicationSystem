@@ -102,6 +102,19 @@
                 return null;
             }
         }
+
+        public function getMemberDetailsById($userId) {
+            $sql = "SELECT m.user_id, m.first_name, m.middle_name, m.last_name, m.email, m.role, m.status, m.created_at, p.plan_name FROM members m JOIN subscriptions s ON s.user_id = m.user_id JOIN membership_plans p ON p.plan_id = s.plan_id WHERE m.user_id = :user_id";
+
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":user_id", $userId);
+
+            if($query->execute()) {
+                return $query->fetch();
+            } else {
+                return null;
+            }
+        }
         public function addMember(array $UserData) {
             $sql = "INSERT INTO 
             `members`( `first_name`, `last_name`, `middle_name`, `email`, `date_of_birth` , `gender` , `password`, `role`, `created_at`) 
