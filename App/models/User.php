@@ -116,32 +116,65 @@
             }
         }
         public function addMember(array $UserData) {
-            $sql = "INSERT INTO 
-            `members`( `first_name`, `last_name`, `middle_name`, `email`, `date_of_birth` , `gender` , `password`, `role`, `created_at`) 
-            VALUES 
-            (:first_name , :last_name, :middle_name, :email, :date_of_birth, :gender, :password, 'member' , NOW())";
-            $query = $this->connect()->prepare($sql);
-            $query->bindParam(":first_name", $UserData['first_name']);
-            $query->bindParam(":last_name", $UserData['last_name']);
-            $query->bindParam(":middle_name", $UserData['middle_name']);
-            $query->bindParam(":email", $UserData['email']);
-            $query->bindParam(":date_of_birth", $UserData['date_of_birth']);
-            $query->bindParam(":gender", $UserData['gender']);
-            $query->bindParam(":password", $UserData['password']);
-            
-            if($query->execute()) {
-                $sql = "SELECT user_id FROM members WHERE email = :email";
+            // 1. Get the database connection
+            $db = $this->connect();
 
-                $query = $this->connect()->prepare($sql);
+            try {
+                // 2. Start Transaction
+                $db->beginTransaction();
+
+                // --- A. INSERT INTO MEMBERS TABLE ---
+                $sql = "INSERT INTO `members` 
+                        (`first_name`, `last_name`, `middle_name`, `email`, `date_of_birth`, `gender`, `password`, `role`, `created_at`) 
+                        VALUES 
+                        (:first_name, :last_name, :middle_name, :email, :date_of_birth, :gender, :password, 'member', NOW())";
+                
+                $query = $db->prepare($sql);
+                $query->bindParam(":first_name", $UserData['first_name']);
+                $query->bindParam(":last_name", $UserData['last_name']);
+                $query->bindParam(":middle_name", $UserData['middle_name']);
                 $query->bindParam(":email", $UserData['email']);
+                $query->bindParam(":date_of_birth", $UserData['date_of_birth']);
+                $query->bindParam(":gender", $UserData['gender']);
+                $query->bindParam(":password", $UserData['password']);
+                
+                $query->execute();
+                
+                // Get the ID of the newly created user
+                $newUserId = $db->lastInsertId();
 
-                if($query->execute()) {
-                    return $query->fetch();
-                } else {
-                    return null;
-                }
-            } else {
-                return null;
+                // --- B. INSERT INTO ADDRESS TABLE ---
+                // We use INSERT IGNORE because 'zip' is the Primary Key. 
+                // If the zip exists, we skip this and just link the user to the existing zip.
+                $sqlAddr = "INSERT IGNORE INTO `member_address` (`zip`, `street_address`, `city`) 
+                            VALUES (:zip, :street_address, :city)";
+                
+                $queryAddr = $db->prepare($sqlAddr);
+                $queryAddr->bindParam(":zip", $UserData['zip']);
+                $queryAddr->bindParam(":street_address", $UserData['street_address']);
+                $queryAddr->bindParam(":city", $UserData['city']);
+                
+                $queryAddr->execute();
+
+                // --- C. INSERT INTO LINK TABLE ---
+                $sqlLink = "INSERT INTO `member_address_link` (`user_id`, `zip`, `address_type`) 
+                            VALUES (:user_id, :zip, 'Home')";
+                
+                $queryLink = $db->prepare($sqlLink);
+                $queryLink->bindParam(":user_id", $newUserId);
+                $queryLink->bindParam(":zip", $UserData['zip']);
+                
+                $queryLink->execute();
+
+                // 3. Commit the Transaction (Save changes)
+                $db->commit();
+                return true;
+
+            } catch (Exception $e) {
+                // If anything fails, rollback changes
+                $db->rollBack();
+                // Optional: Log error $e->getMessage();
+                return false;
             }
         }
         public function addWalkinMember($userData) {
