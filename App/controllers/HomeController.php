@@ -8,6 +8,7 @@
 
 
         public function index() {
+            session_start();
             $planModel = new Plan();
             $plans = $planModel->getAllPlans();
             $this->view('landingpage', [

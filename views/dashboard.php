@@ -1,5 +1,4 @@
 <?php 
-     
     $user = [
         "name" => "",
         "created_at" => "",
@@ -8,7 +7,6 @@
         "status" => "",
     ];
     
-
     $user['name'] = $userInfo['name'];
     $user['created_at'] = $userInfo['created_at'];
     $user['plan_name'] = isset($userPlan['plan_name']) ? $userPlan['plan_name'] : "";
@@ -34,277 +32,326 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gymazing! | Dashboard</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
     <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <link rel="stylesheet" href="../public/assets/icons/fontawesome/css/all.min.css"></link>
+    
     <style>
-        .gradient-bg {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f172a; /* Slate 900 */
+            background-image: 
+                radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), 
+                radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), 
+                radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
+            background-attachment: fixed;
+            color: #e2e8f0;
         }
 
-        * {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        /* Glassmorphism Panel */
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
         }
 
-        ::-webkit-scrollbar {
-            width: 10px;
+        .glass-panel:hover {
+            border-color: rgba(255, 255, 255, 0.2);
         }
 
-        ::-webkit-scrollbar-track {
-            background: #1a1a1a;
+        /* Animations */
+        * { transition: transform 0.2s ease, box-shadow 0.2s ease; }
+        
+        .hover-lift:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #1e3a8a;
-            border-radius: 5px;
-        }
+        .fade-in { animation: fadeIn 0.6s ease-out forwards; opacity: 0; }
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #1e40af;
-        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #3b82f6; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #2563eb; }
 
-        .stat-card {
-            background: linear-gradient(135deg, rgba(29, 78, 216, 0.1) 0%, rgba(30, 58, 138, 0.2) 100%);
-            border: 1px solid rgba(29, 78, 216, 0.3);
+        /* Button Glows */
+        .btn-glow {
             transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-glow:hover {
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+            transform: translateY(-1px);
         }
 
-        .stat-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 35px rgba(29, 78, 216, 0.2);
-            border-color: #1e40af;
-        }
-
-        .class-card {
-            background: linear-gradient(to right, rgba(29, 78, 216, 0.05), rgba(30, 58, 138, 0.1));
-            border-left: 4px solid #3b82f6;
-            transition: all 0.3s ease;
-        }
-
-        .class-card:hover {
-            transform: translateX(8px);
-            box-shadow: 0 10px 25px rgba(29, 78, 216, 0.15);
-        }
-
-        .dashboard-section {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* Adjust main content for sidebar */
-        .main-content {
-            margin-left: 0;
-        }
-
-        @media (min-width: 768px) {
-            .main-content {
-                margin-left: 16rem; /* 64 * 0.25rem = 16rem */
-            }
-        }
+        /* Adjust content for sidebar */
+        .main-content { margin-left: 0; }
+        @media (min-width: 768px) { .main-content { margin-left: 16rem; } }
     </style>
 </head>
-<body class="gradient-bg min-h-screen">
+<body class="min-h-screen">
     
     <?php include __DIR__ . "/layouts/navbar.php" ?>
 
-    <!-- Main Content -->
-    <main class="main-content pt-20 md:pt-6 pb-12">
+    <main class="main-content pt-20 md:pt-8 pb-12 fade-in" style="animation-delay: 0.1s;">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- Hero Section -->
-            <div id="dashboard" class="dashboard-section mb-12">
-                <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 lg:p-12 text-white shadow-xl">
-                    <h1 class="text-3xl lg:text-4xl font-bold mb-2">Welcome back, <?= $user['name'] ?>!</h1>
-                    <p class="text-blue-100 text-lg">
-                        <span class="font-semibold">Status:</span> 
-                        <span class="inline-block px-3 py-1 <?=  $userPlan['status'] == 'active' ? 'bg-green-500' : 'bg-red-500' ?>  rounded-full text-sm font-bold ml-2">
-                            <?= isset($userPlan) ? $user['status'] : "No Active Plan"; ?></span> 
-                    </p>
-                    <?php if(isset($userPlan)) {?>
-                        <p class="text-blue-100 text-lg mt-2">Your <?= $user['plan_name'] ?> expires in <span class="font-bold">30 days</span></p>
-                    <?php }?>
+            
+            <div id="dashboard" class="mb-10 relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-indigo-900 shadow-2xl">
+                <div class="absolute top-0 right-0 -mr-20 -mt-20 w-64 h-64 rounded-full bg-white opacity-5"></div>
+                
+                <div class="relative p-8 lg:p-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <h1 class="text-3xl lg:text-5xl font-extrabold text-white mb-2 tracking-tight">
+                            Welcome, <?= explode(' ', $user['name'])[0] ?>! 👋
+                        </h1>
+                        <p class="text-blue-200 text-lg">Ready to crush your goals today?</p>
+                    </div>
+                    
+                    <div class="flex flex-col items-end">
+                        <div class="glass-panel px-4 py-2 rounded-xl flex items-center gap-3 bg-white/10 border-0">
+                            <span class="text-blue-100 text-sm font-medium uppercase tracking-wider">Status</span>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider shadow-sm
+                                <?= $userPlan['status'] == 'active' ? 'bg-emerald-500 text-white' : 'bg-rose-500 text-white' ?>">
+                                <?= isset($userPlan) ? $user['status'] : "Inactive"; ?>
+                            </span>
+                        </div>
+                        <?php if(isset($userPlan)) {?>
+                            <p class="text-blue-200 text-sm mt-3 flex items-center gap-2">
+                                <i class="far fa-clock"></i> <?= $user['plan_name'] ?> expires in <span class="font-bold text-white">30 days</span>
+                            </p>
+                        <?php }?>
+                    </div>
                 </div>
             </div>
 
-            <!-- Statistics Cards -->
-            <div class="dashboard-section grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10 fade-in" style="animation-delay: 0.2s;">
                 <?php foreach ($stats as $stat) { ?>
-                    <div class="stat-card rounded-xl p-6 text-center cursor-pointer">
-                        <div class="text-4xl mb-3"><?= $stat['icon'] ?></div>
-                        <p class="text-gray-400 text-sm font-medium mb-1"><?= $stat['label'] ?></p>
-                        <p class="text-3xl font-bold text-white"><?= $stat['value'] ?></p>
+                    <div class="glass-panel rounded-2xl p-6 hover-lift cursor-pointer group">
+                        <div class="flex justify-between items-start mb-4">
+                            <div class="p-3 rounded-xl bg-slate-800/50 group-hover:bg-slate-700/50 transition-colors text-2xl">
+                                <?= $stat['icon'] ?>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-bold text-white mb-1"><?= $stat['value'] ?></p>
+                        <p class="text-slate-400 text-sm font-medium"><?= $stat['label'] ?></p>
                     </div>
                 <?php } ?>
             </div>
 
-            <!-- Main Content Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 fade-in" style="animation-delay: 0.3s;">
                 
-                <!-- Left Column - Membership & Classes -->
                 <div class="lg:col-span-2 space-y-8">
                     
-                    <!-- Membership Info -->
-                    <div class="dashboard-section bg-neutral-900 rounded-xl p-8 border border-gray-700 shadow-lg">
-                        <h2 class="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
-                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Your Membership</span>
+                    <div class="glass-panel rounded-2xl p-8 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 p-4 opacity-5">
+                            <i class="fas fa-id-card text-9xl"></i>
+                        </div>
+                        
+                        <h2 class="text-xl font-bold text-white mb-6 flex items-center gap-3">
+                            <span class="w-1 h-6 bg-blue-500 rounded-full"></span>
+                            Your Membership
                         </h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                            <div class="bg-gray-800 rounded-lg p-6">
-                                <?php
-                                    if(isset($userPlan)) {
 
-                                ?>
-                                    <p class="text-gray-400 text-sm mb-1">Plan Type</p>
-                                    <p class="text-2xl font-bold text-white"><?= $user['plan_name'] ?></p>
-                                    <p class="<?= $userPlan['status'] == 'active' ? 'text-green-500' : 'text-red-500' ?> text-lg mt-2"><?= $userPlan['status'] ?></p>
-                                <?php } else {?>
-                                    <p class="text-gray-400 text-sm mb-1">No Active Plan</p>   
-                                <?php }?>
-
-                            </div>
-                            <div class="bg-gray-800 rounded-lg p-6">                             
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
+                            <div class="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50">
                                 <?php if(isset($userPlan)) { ?>
-                                    <p class="text-gray-400 text-sm mb-1">Expiry Date</p>
-                                    <p class="text-2xl font-bold text-white"><?= date('M d, Y', strtotime($user['end_date'])) ?></p>
-                                    <p class="text-blue-400 text-sm mt-2">Renew before expiry</p>
-                                <?php } else {?>
-                                    <p class="text-gray-400 text-sm mb-1">No Active Plan</p>   
-                                <?php }?>
+                                    <p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Current Plan</p>
+                                    <p class="text-2xl font-bold text-white mb-1"><?= $user['plan_name'] ?></p>
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-2 h-2 rounded-full <?= $userPlan['status'] == 'active' ? 'bg-emerald-500' : 'bg-rose-500' ?>"></div>
+                                        <span class="text-sm text-slate-300 capitalize"><?= $userPlan['status'] ?></span>
+                                    </div>
+                                <?php } else { ?>
+                                    <p class="text-slate-400 text-sm">No Active Plan</p> 
+                                <?php } ?>
                             </div>
-                            <div class="bg-gray-800 rounded-lg p-6">
-                                <p class="text-gray-400 text-sm mb-1">Member Since</p>
-                                <p class="text-2xl font-bold text-white"><?= date('M d, Y', strtotime($user['created_at'])) ?></p>
-                                <p class="text-yellow-400 text-sm mt-2">Great job staying with us!</p>
-                            </div>
-                            <div class="bg-gray-800 rounded-lg p-6">
-                                
-                                <?php if(isset($userPlan)) { ?>
-                                    <p class="text-gray-400 text-sm mb-1">Next Billing</p>
-                                    <p class="text-2xl font-bold text-white"><?= date('M d, Y', strtotime('+30 days')) ?></p>
-                                    <a href="#" class="text-blue-400 text-sm mt-2 hover:text-blue-300">Manage Billing</a>
-                                <?php } else {?>
-                                    <p class="text-gray-400 text-sm mb-1">No Active Plan</p>   
-                                <?php }?>
 
+                            <div class="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50">
+                                <?php if(isset($userPlan)) { ?>
+                                    <p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Renewal Date</p>
+                                    <p class="text-2xl font-bold text-white mb-1"><?= date('M d, Y', strtotime($user['end_date'])) ?></p>
+                                    <p class="text-blue-400 text-xs mt-1">Auto-renew enabled</p>
+                                <?php } else { ?>
+                                    <p class="text-slate-400 text-sm">-- / -- / ----</p> 
+                                <?php } ?>
+                            </div>
+
+                            <div class="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50">
+                                <p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Member Since</p>
+                                <p class="text-xl font-bold text-white"><?= date('M d, Y', strtotime($user['created_at'])) ?></p>
+                            </div>
+
+                            <div class="bg-slate-800/50 rounded-xl p-5 border border-slate-700/50">
+                                <?php if(isset($userPlan)) { ?>
+                                    <p class="text-slate-400 text-xs uppercase tracking-wider mb-2">Next Billing</p>
+                                    <p class="text-xl font-bold text-white"><?= date('M d, Y', strtotime('+30 days')) ?></p>
+                                    <a href="#" class="text-blue-400 text-xs hover:text-blue-300 mt-1 inline-block">Update Method</a>
+                                <?php } else { ?>
+                                    <p class="text-slate-400 text-sm">--</p> 
+                                <?php } ?>
                             </div>
                         </div>
-                        <button class="mt-6 w-full px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300">
-                            <a href="index.php?controller=Plan&action=viewPlans"><?= isset($userPlan['status']) ? "Upgrade Plan" : "Subscribe" ?></a>
-                        </button>
-                        <button class="mt-2 w-full px-6 py-3 bg-gray-500/50 hover:bg-gray-700 text-white font-semibold rounded-lg transition-all duration-300">
-                            <a href="index.php?controller=Subscribe&action=CancelSubscription">Cancel Plan</a>
-                        </button>
-                        
+
+                        <div class="mt-8 flex flex-col sm:flex-row gap-4 relative z-10">
+                            <a href="index.php?controller=Plan&action=viewPlans" 
+                               class="flex-1 text-center px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold rounded-xl btn-glow">
+                                <?= isset($userPlan['status']) ? "Upgrade Plan" : "Subscribe Now" ?>
+                            </a>
+                            
+                            <a href="index.php?controller=Subscribe&action=CancelSubscription" 
+                               class="flex-1 text-center px-6 py-3 bg-transparent border border-rose-500/50 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 font-semibold rounded-xl transition-all">
+                                Cancel Plan
+                            </a>
+                        </div>
                     </div>
 
-                    <!-- Upcoming Classes -->
-                    <div class="dashboard-section bg-neutral-900 rounded-xl p-8 border border-gray-700 shadow-lg">
-                        <h2 class="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
-                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                            <span>Upcoming Classes Today</span>
-                        </h2>
+                    <div class="glass-panel rounded-2xl p-8">
+                        <div class="flex items-center justify-between mb-6">
+                            <h2 class="text-xl font-bold text-white flex items-center gap-3">
+                                <span class="w-1 h-6 bg-purple-500 rounded-full"></span>
+                                Upcoming Classes
+                            </h2>
+                            <?php if(isset($userPlan)) { ?>
+                                <a href="#" class="text-xs text-purple-400 hover:text-purple-300 font-semibold uppercase tracking-wide">View All</a>
+                            <?php } ?>
+                        </div>
+
                         <div class="space-y-4">
                             <?php if(isset($userPlan)) { foreach ($mySessions as $session) { ?>
-                                <div class="class-card rounded-lg p-6">
-                                    <div class="flex items-start justify-between">
-                                        <div class="flex-1">
-                                            <h3 class="text-lg font-bold text-white mb-2"><?= $user['name'] ?></h3>
-                                            <div class="space-y-1 text-sm text-gray-400">
-                                                <p><i class="fa-regular fa-alarm-clock text-red-400"></i> <?= $session['session_date'] ?></p>
-                                                <p><i class="fa-regular fa-user text-blue-400"></i> Trainer: <?= $session['trainer_name'] ?></p>
-                                              
-                                            </div>
+                                <div class="bg-slate-800/40 hover:bg-slate-800/80 border border-slate-700/50 rounded-xl p-5 transition-all flex items-center gap-4 group">
+                                    <div class="bg-slate-900 rounded-lg p-3 text-center min-w-[70px] border border-slate-700">
+                                        <p class="text-xs text-slate-400 uppercase"><?= date('M', strtotime($session['session_date'])) ?></p>
+                                        <p class="text-xl font-bold text-white"><?= date('d', strtotime($session['session_date'])) ?></p>
+                                    </div>
+                                    
+                                    <div class="flex-1">
+                                        <h3 class="text-lg font-bold text-white group-hover:text-blue-400 transition-colors"><?= $user['name'] ?></h3>
+                                        <div class="flex items-center gap-4 mt-1 text-sm text-slate-400">
+                                            <span><i class="far fa-clock text-blue-500 mr-1"></i> <?= date('h:i A', strtotime($session['session_date'])) ?></span>
+                                            <span><i class="far fa-user text-purple-500 mr-1"></i> <?= $session['trainer_name'] ?></span>
                                         </div>
                                     </div>
+                                    
+                                    <div class="hidden sm:block">
+                                        <span class="px-3 py-1 rounded-full bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/20">Confirmed</span>
+                                    </div>
                                 </div>
-                            <?php } } else {?>
-                                <div class="p-3">
-                                    <h2 class="text-lg text-gray-500">No Upcoming Classes</h2>
-                                    <p class="text-lg text-gray-500">Subscribe to a plan first</p>
-                                    <a href="" class="inline-block mt-6 text-lg text-blue-400 hover:text-blue-300 font-semibold">Plans →</a>
+                            <?php } } else { ?>
+                                <div class="text-center py-10 bg-slate-800/30 rounded-xl border border-dashed border-slate-700">
+                                    <div class="inline-block p-4 rounded-full bg-slate-800 mb-3 text-slate-500">
+                                        <i class="fas fa-calendar-times text-2xl"></i>
+                                    </div>
+                                    <h2 class="text-lg text-white font-medium">No Upcoming Classes</h2>
+                                    <p class="text-slate-400 text-sm mb-4">You need an active plan to book classes.</p>
+                                    <a href="#" class="text-blue-400 hover:text-blue-300 text-sm font-semibold">Browse Plans &rarr;</a>
                                 </div>
-                            <?php }?>
+                            <?php } ?>
                         </div>
-                        <?php 
-                            if(isset($userPlan)) {
-                        ?>
-                        <a href="#" class="inline-block mt-6 text-blue-400 hover:text-blue-300 font-semibold">View All Classes →</a>
-                        <?php } ?>
                     </div>
                 </div>
 
-                <!-- Right Column - Quick Actions & Support -->
                 <div class="space-y-8">
-
-                    <!-- Quick Actions -->
-                    <div class="dashboard-section bg-neutral-900 rounded-xl p-8 border border-gray-700 shadow-lg">
-                        <h2 class="text-2xl font-bold text-white mb-6 flex items-center space-x-2">
-                            <svg class="w-6 h-6 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                            </svg>
-                            <span>Quick Actions</span>
+                    
+                    <div class="glass-panel rounded-2xl p-6">
+                        <h2 class="text-lg font-bold text-white mb-5 flex items-center gap-3">
+                            <span class="w-1 h-6 bg-emerald-500 rounded-full"></span>
+                            Quick Actions
                         </h2>
-                        <div class="space-y-3">
-                            <a href="profile.php" class="block px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300 text-center">
-                                Edit Profile
+                        <div class="grid grid-cols-1 gap-3">
+                            <a href="profile.php" class="p-4 rounded-xl bg-slate-800/50 hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-900/40 border border-slate-700/50 hover:border-blue-500 transition-all group flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:bg-white group-hover:text-blue-600 transition-colors">
+                                    <i class="fas fa-user-edit"></i>
+                                </div>
+                                <span class="font-semibold text-slate-200 group-hover:text-white">Edit Profile</span>
                             </a>
-                            <button id="openRequestTrainer" class="w-full px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300 text-center">
-                                Request a Trainer
+
+                            <button id="openRequestTrainer" class="p-4 rounded-xl bg-slate-800/50 hover:bg-purple-600 hover:shadow-lg hover:shadow-purple-900/40 border border-slate-700/50 hover:border-purple-500 transition-all group flex items-center gap-4 w-full text-left">
+                                <div class="w-10 h-10 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center group-hover:bg-white group-hover:text-purple-600 transition-colors">
+                                    <i class="fas fa-dumbbell"></i>
+                                </div>
+                                <span class="font-semibold text-slate-200 group-hover:text-white">Request Trainer</span>
                             </button>
-                            <a href="#" class="block px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300 text-center">
-                                View Progress
+
+                            <a href="#" class="p-4 rounded-xl bg-slate-800/50 hover:bg-emerald-600 hover:shadow-lg hover:shadow-emerald-900/40 border border-slate-700/50 hover:border-emerald-500 transition-all group flex items-center gap-4">
+                                <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center group-hover:bg-white group-hover:text-emerald-600 transition-colors">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <span class="font-semibold text-slate-200 group-hover:text-white">View Progress</span>
                             </a>
                         </div>
                     </div>
 
-                    <!-- Contact Support -->
-                    <div class="dashboard-section bg-gradient-to-br from-blue-600 to-blue-800 rounded-xl p-8 border border-blue-500 shadow-lg">
-                        <h3 class="text-lg font-bold text-white mb-3">Need Help?</h3>
-                        <p class="text-blue-100 text-sm mb-4">Contact our support team for any assistance</p>
-                        <div class="space-y-2 text-sm text-blue-100">
-                            <p><i class="fa-regular fa-comment-dots text-red-400"></i> +63 123 456 7890</p>
-                            <p><i class="fa-regular fa-envelope text-blue-400"></i> support@gymazing.com</p>
-                            <p><i class="fa-regular fa-alarm-clock text-yellow-400"></i> Available 24/7</p>
+                    <div class="rounded-2xl p-6 bg-gradient-to-br from-indigo-900 to-slate-900 border border-indigo-500/30 relative overflow-hidden">
+                        <div class="absolute -right-6 -bottom-6 text-indigo-800/20 text-9xl transform rotate-12">
+                            <i class="fas fa-headset"></i>
+                        </div>
+                        
+                        <h3 class="text-lg font-bold text-white mb-2 relative z-10">Need Assistance?</h3>
+                        <p class="text-indigo-200 text-sm mb-4 relative z-10">Our support team is available 24/7 to help you.</p>
+                        
+                        <div class="space-y-3 relative z-10">
+                            <div class="flex items-center gap-3 text-sm text-indigo-100">
+                                <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                                    <i class="fas fa-phone-alt"></i>
+                                </div>
+                                +63 123 456 7890
+                            </div>
+                            <div class="flex items-center gap-3 text-sm text-indigo-100">
+                                <div class="w-8 h-8 rounded-full bg-indigo-500/20 flex items-center justify-center text-indigo-400">
+                                    <i class="fas fa-envelope"></i>
+                                </div>
+                                support@gymazing.com
+                            </div>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
     </main>
-                               
-    
-    <!-- Request Trainer Modal -->
-    <div id="bookTrainerModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50">
-        <div class="bg-neutral-900 border border-gray-700 rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6 relative">
-            <button id="closeBookTrainer" class="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl">&times;</button>
-            <h3 class="text-2xl font-bold text-white mb-4">Request a Trainer</h3>
-            <div class="space-y-4">
+
+    <div id="bookTrainerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 transition-opacity opacity-0" style="transition: opacity 0.3s ease;">
+        <div class="bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl w-full max-w-lg mx-4 p-0 relative transform scale-95 transition-transform" style="transition: transform 0.3s ease;">
+            
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800/50 rounded-t-2xl">
+                <h3 class="text-xl font-bold text-white">Request a Trainer</h3>
+                <button id="closeBookTrainer" class="text-slate-400 hover:text-white transition-colors">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            
+            <div class="p-6 space-y-5">
                 <div>
-                    <label class="block text-sm text-gray-300 mb-1">Trainer</label>
-                    <select id="trainerSelect" class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg p-3 focus:border-blue-500">
-                        <option value="">Loading...</option>
-                    </select>
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Select Trainer</label>
+                    <div class="relative">
+                        <select id="trainerSelect" class="w-full bg-slate-800 text-white border border-slate-600 rounded-xl p-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 appearance-none outline-none transition-all">
+                            <option value="">Loading...</option>
+                        </select>
+                        <div class="absolute right-4 top-4 text-slate-400 pointer-events-none">
+                            <i class="fas fa-chevron-down"></i>
+                        </div>
+                    </div>
                 </div>
+                
                 <div>
-                    <label class="block text-sm text-gray-300 mb-1">Notes (optional)</label>
-                    <textarea id="sessionNotes" rows="3" class="w-full bg-gray-800 text-white border border-gray-700 rounded-lg p-3 focus:border-blue-500" placeholder="Any preferences or goals"></textarea>
+                    <label class="block text-xs uppercase tracking-wider text-slate-400 font-semibold mb-2">Session Notes</label>
+                    <textarea id="sessionNotes" rows="3" class="w-full bg-slate-800 text-white border border-slate-600 rounded-xl p-3 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all resize-none" placeholder="E.g., Focus on cardio, leg day, injury recovery..."></textarea>
                 </div>
-                <div id="bookTrainerMessage" class="text-sm"></div>
-                <button id="submitBookTrainer" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg py-3 transition">Send Request</button>
+                
+                <div id="bookTrainerMessage" class="text-sm font-medium text-center min-h-[20px]"></div>
+                
+                <button id="submitBookTrainer" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl py-3.5 shadow-lg shadow-blue-900/20 btn-glow transition-all">
+                    Send Request
+                </button>
             </div>
         </div>
     </div>
@@ -313,6 +360,9 @@
     <script>
         $(function() {
             const $modal = $('#bookTrainerModal');
+            // Added animation classes for smoother open/close
+            const $modalContent = $modal.find('> div'); 
+
             const $trainerSelect = $('#trainerSelect');
             const $sessionNotes = $('#sessionNotes');
             const $submitBtn = $('#submitBookTrainer');
@@ -320,12 +370,22 @@
 
             function showModal() {
                 $modal.removeClass('hidden').addClass('flex');
+                // Small delay to allow display:flex to apply before opacity transition
+                setTimeout(() => {
+                    $modal.removeClass('opacity-0');
+                    $modalContent.removeClass('scale-95').addClass('scale-100');
+                }, 10);
+                
                 $messageBox.text('').removeClass('text-green-400 text-red-400');
                 loadTrainers();
             }
 
             function hideModal() {
-                $modal.addClass('hidden').removeClass('flex');
+                $modal.addClass('opacity-0');
+                $modalContent.removeClass('scale-100').addClass('scale-95');
+                setTimeout(() => {
+                    $modal.addClass('hidden').removeClass('flex');
+                }, 300);
             }
 
             function loadTrainers() {
@@ -365,7 +425,7 @@
                     setMessage('Please select a trainer.');
                     return;
                 }
-                $submitBtn.prop('disabled', true);
+                $submitBtn.prop('disabled', true).addClass('opacity-75 cursor-not-allowed');
                 setMessage('');
 
                 const formData = new FormData();
@@ -384,8 +444,8 @@
                             setMessage(data.message || 'Unable to send request.');
                             return;
                         }
-                        setMessage('Request sent!', true);
-                        setTimeout(hideModal, 800);
+                        setMessage('Request sent successfully!', true);
+                        setTimeout(hideModal, 1500);
                     },
                     error: function(xhr) {
                         let msg = 'Network error, please try again.';
@@ -395,7 +455,7 @@
                         setMessage(msg);
                     },
                     complete: function() {
-                        $submitBtn.prop('disabled', false);
+                        $submitBtn.prop('disabled', false).removeClass('opacity-75 cursor-not-allowed');
                     }
                 });
             }

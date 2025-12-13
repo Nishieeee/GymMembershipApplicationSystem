@@ -6,6 +6,7 @@
     class PlanController extends Controller {
 
         public function viewPlans() {
+            session_start();
             $planModel = new Plan();
             $plans = $planModel->getAllActivePlans();
             
