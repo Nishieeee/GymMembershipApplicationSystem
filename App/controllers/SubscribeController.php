@@ -13,109 +13,115 @@
         
         public function Subscribe() {
             $this->requireLogin();
-            session_start();
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
+            
             $subscribe = new Subscription();
             $planModel = new Plan();
             $paymentModel = new Payment();
             $userModel = new User();
-            $notificationModel = new Notification();
-
+            
             $user_id = $_SESSION['user_id'];
             
-
-            //subscription details
+            // Initialize details arrays
             $subscriptionDetails = [
-                "subscription_id" => "",
-                "user_id" => "",
-                "plan_id" => "",
-                "start_date" => "",
-                "end_date" => "",
+                "subscription_id" => "", "user_id" => "", "plan_id" => "",
+                "start_date" => "", "end_date" => ""
             ];
-            $subscriptionError = [
-                "user_id" => "",
-                "plan_id" => "",
-                "start_date" => "",
-                "end_date" => "",
-            ];
-
-            //payment details
+            $subscriptionError = []; 
+            
             $paymentDetails = [
-                "subscription_id" => "",
-                "amount" => "",
-                "payment_date" => "",
-                "status" => "",
+                "subscription_id" => "", "amount" => "", 
+                "payment_date" => "", "status" => ""
             ];
-            $paymentError = "";
 
-            if($_SERVER['REQUEST_METHOD'] == 'POST') {
+            if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                 $subscriptionDetails['user_id'] = $user_id;
                 $subscriptionDetails['plan_id'] = trim(htmlspecialchars($_POST['plan_id']) ?? "");
                 $subscriptionDetails['start_date'] = date("Y-m-d");
+                $subscriptionDetails['end_date'] = date('Y-m-d', strtotime('+30 days'));
 
-                $subscriptionDetails['end_date'] =  date('y-m-d', strtotime('+30 days'));
-                if(empty($subscriptionDetails['user_id'])) {
-                    $subscriptionError['user_id'] = "User not logged in.";
-                }
-                if(empty($subscriptionDetails['plan_id'])) {
-                    $subscriptionError['plan_id'] = "Please Select a plan.";
+                // 1. Basic Validation
+                if (empty($subscriptionDetails['user_id'])) $subscriptionError[] = "User not logged in.";
+                if (empty($subscriptionDetails['plan_id'])) $subscriptionError[] = "Please Select a plan.";
+
+                // If basic validation fails, stop here
+                if (!empty($subscriptionError)) {
+                    $this->view('subscription_failed', ['error_message' => implode(', ', $subscriptionError)]);
+                    return;
                 }
 
-                //check if user is already subscribe to a plan
-                $userCurrentPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']) ?? "";
+                // ============================================================
+                // 2. NEW: Check for Pending Payments
+                // ============================================================
+                $pendingResult = $paymentModel->getUserPendingPayments($user_id);
                 
-                if($userCurrentPlan) {
-                    //show modal to user saying that if he agrees his old plan will be overwritten                
-                    if(empty(array_filter($subscriptionError))) {
-                        if($subscribe->subscripePlan($subscriptionDetails)) {
+                // Since your function uses fetch(), it returns an array (e.g., [0 => '3'])
+                // We need to extract the actual number from the first column
+                $pendingCount = 0;
+                if (is_array($pendingResult)) {
+                    $pendingCount = $pendingResult[0] ?? 0;
+                }
 
-                            //cancell old plan
-                            if($subscribe->cancelPlan($subscriptionDetails['subscription_id'])) {
-                                $userCurrentPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']);
-                                $userPlan = $planModel->getUserPlan($subscriptionDetails['user_id']);
+                if ($pendingCount > 0) {
+                    // Stop execution and show failure page
+                    $this->view('subscription_failed', [
+                        'error_message' => "You have pending payments. Please settle your outstanding balance before subscribing to a new plan."
+                    ]);
+                    return;
+                }
+                // ============================================================
 
-                                //fill up payment details
-                                $paymentDetails['subscription_id'] = $userCurrentPlan['subscription_id'];
-                                $paymentDetails['amount'] = $userPlan['price'];
-                                $paymentDetails['payment_date'] = $userPlan['end_date'];
-                                $paymentDetails['status'] = "pending";
-                                if($paymentModel->openPayment($paymentDetails)) {
-                                    NotificationHelper::membershipRenewed($user_id, $subscriptionDetails['end_date']);
-                                    header("location: index.php?controller=Dashboard&action=member");
-                                    //also success pages
-                                } else {
-                                    $paymentError = "Error with setting up payment";
-                                    //create error pages
-                                }
+                // 3. Proceed with Subscription Logic
+                $userCurrentPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']);
+                
+                if ($userCurrentPlan) {
+                    // --- SCENARIO A: Upgrade/Change Plan (Overwrite old plan) ---
+                    if ($subscribe->subscripePlan($subscriptionDetails)) {
+                        
+                        if ($subscribe->cancelPlan($userCurrentPlan['subscription_id'])) { 
+                            $newUserPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']); 
+                            $planInfo = $planModel->getPlanById($subscriptionDetails['plan_id']); 
+
+                            // Setup Payment
+                            $paymentDetails['subscription_id'] = $newUserPlan['subscription_id'];
+                            $paymentDetails['amount'] = $planInfo['price']; 
+                            $paymentDetails['payment_date'] = date('Y-m-d'); 
+                            $paymentDetails['status'] = "pending";
+
+                            if ($paymentModel->openPayment($paymentDetails)) {
+                                NotificationHelper::membershipRenewed($user_id, $subscriptionDetails['end_date']);
+                                $this->view('subscription_success');
+                            } else {
+                                $this->view('subscription_failed', ['error_message' => "Error setting up payment."]);
                             }
-                            // handle case if cancelling of old plan doesn't work       
+                        } else {
+                            $this->view('subscription_failed', ['error_message' => "Could not cancel previous plan."]);
                         }
                     } else {
-                        //create error pages
+                        $this->view('subscription_failed', ['error_message' => "Database error while subscribing."]);
                     }
-                } else {
-                    if(empty(array_filter($subscriptionError))) {
-                        if($subscribe->subscripePlan($subscriptionDetails)) {
-                            $userCurrentPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']);
-                            $userPlan = $planModel->getUserPlan($subscriptionDetails['user_id']);
-                            
-                            //fill up payment details
-                            $paymentDetails['subscription_id'] = $userCurrentPlan['subscription_id'];
-                            $paymentDetails['amount'] = $userPlan['price'];
-                            $paymentDetails['payment_date'] = $userPlan['end_date'];
-                            $paymentDetails['status'] = "pending";
-                            if($paymentModel->openPayment($paymentDetails)) {
-                                $user = $userModel->getMember($user_id);
-                                $this->notifySubscription($user['email'], $user['name']);
-                                header("location: index.php?controller=Dashboard&action=member");
-                                //also success pages
-                            } else {
-                                echo "Error With Payment";
-                                //create error pages
-                            }
 
-                        }   
+                } else {
+                    // --- SCENARIO B: New Subscription ---
+                    if ($subscribe->subscripePlan($subscriptionDetails)) {
+                        $newUserPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']);
+                        $planInfo = $planModel->getPlanById($subscriptionDetails['plan_id']);
+
+                        $paymentDetails['subscription_id'] = $newUserPlan['subscription_id'];
+                        $paymentDetails['amount'] = $planInfo['price'];
+                        $paymentDetails['payment_date'] = date('Y-m-d');
+                        $paymentDetails['status'] = "pending";
+
+                        if ($paymentModel->openPayment($paymentDetails)) {
+                            // $this->notifySubscription($user['email'], $user['name']); 
+                            $this->view('subscription_success');
+                        } else {
+                            $this->view('subscription_failed', ['error_message' => "Error setting up payment."]);
+                        }
                     } else {
-                        //create error pages
+                        $this->view('subscription_failed', ['error_message' => "Database error while subscribing."]);
                     }
                 }
             }
