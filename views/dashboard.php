@@ -86,40 +86,6 @@
             box-shadow: 0 10px 25px rgba(29, 78, 216, 0.15);
         }
 
-        .achievement-badge {
-            transition: all 0.3s ease;
-        }
-
-        .achievement-badge:hover {
-            transform: scale(1.1) rotate(5deg);
-        }
-
-        .sidebar {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-in-out;
-        }
-
-        .sidebar.active {
-            max-height: 500px;
-        }
-
-        .hamburger span {
-            transition: all 0.3s ease-in-out;
-        }
-
-        .hamburger.active span:nth-child(1) {
-            transform: rotate(45deg) translate(5px, 5px);
-        }
-
-        .hamburger.active span:nth-child(2) {
-            opacity: 0;
-        }
-
-        .hamburger.active span:nth-child(3) {
-            transform: rotate(-45deg) translate(7px, -6px);
-        }
-
         .dashboard-section {
             animation: fadeIn 0.5s ease-in;
         }
@@ -134,6 +100,17 @@
                 transform: translateY(0);
             }
         }
+
+        /* Adjust main content for sidebar */
+        .main-content {
+            margin-left: 0;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                margin-left: 16rem; /* 64 * 0.25rem = 16rem */
+            }
+        }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
@@ -141,9 +118,9 @@
     <?php include __DIR__ . "/layouts/navbar.php" ?>
 
     <!-- Main Content -->
-    <main class="pt-24 pb-12">
+    <main class="main-content pt-20 md:pt-6 pb-12">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
-            <!-- hero Section -->
+            <!-- Hero Section -->
             <div id="dashboard" class="dashboard-section mb-12">
                 <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-xl p-8 lg:p-12 text-white shadow-xl">
                     <h1 class="text-3xl lg:text-4xl font-bold mb-2">Welcome back, <?= $user['name'] ?>!</h1>
@@ -252,9 +229,6 @@
                                               
                                             </div>
                                         </div>
-                                        <!-- <button class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-all duration-300">
-                                            Book
-                                        </button> -->
                                     </div>
                                 </div>
                             <?php } } else {?>
@@ -273,7 +247,7 @@
                     </div>
                 </div>
 
-                <!-- Right Column - Achievements & Quick Links -->
+                <!-- Right Column - Quick Actions & Support -->
                 <div class="space-y-8">
 
                     <!-- Quick Actions -->
@@ -294,9 +268,6 @@
                             <a href="#" class="block px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300 text-center">
                                 View Progress
                             </a>
-                            <!-- <a href="" class="block px-4 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-all duration-300 text-center">
-                                Download Receipt
-                            </a> -->
                         </div>
                     </div>
 
@@ -314,11 +285,12 @@
             </div>
         </div>
     </main>
-    <?php include_once __DIR__ . "/layouts/footer.php" ?>                            
+                               
+    
     <!-- Request Trainer Modal -->
     <div id="bookTrainerModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50">
         <div class="bg-neutral-900 border border-gray-700 rounded-xl shadow-2xl w-full max-w-lg mx-4 p-6 relative">
-            <button id="closeBookTrainer" class="absolute top-3 right-3 text-gray-400 hover:text-white">&times;</button>
+            <button id="closeBookTrainer" class="absolute top-3 right-3 text-gray-400 hover:text-white text-2xl">&times;</button>
             <h3 class="text-2xl font-bold text-white mb-4">Request a Trainer</h3>
             <div class="space-y-4">
                 <div>
@@ -357,24 +329,24 @@
             }
 
             function loadTrainers() {
-                $trainerSelect.html('<option value=\"\">Loading...</option>');
+                $trainerSelect.html('<option value="">Loading...</option>');
                 $.ajax({
                     url: 'index.php?controller=Dashboard&action=listTrainers',
                     method: 'GET',
                     dataType: 'json',
                     success: function(data) {
                         if (!data.success || !data.trainers) {
-                            $trainerSelect.html('<option value=\"\">No trainers available</option>');
+                            $trainerSelect.html('<option value="">No trainers available</option>');
                             return;
                         }
-                        let opts = '<option value=\"\">Select a trainer</option>';
+                        let opts = '<option value="">Select a trainer</option>';
                         data.trainers.forEach(t => {
-                            opts += `<option value=\"${t.trainer_id}\">${t.name} (${t.specialization ?? 'Trainer'})</option>`;
+                            opts += `<option value="${t.trainer_id}">${t.name} (${t.specialization ?? 'Trainer'})</option>`;
                         });
                         $trainerSelect.html(opts);
                     },
                     error: function() {
-                        $trainerSelect.html('<option value=\"\">Error loading trainers</option>');
+                        $trainerSelect.html('<option value="">Error loading trainers</option>');
                     }
                 });
             }

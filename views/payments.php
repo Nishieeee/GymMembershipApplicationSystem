@@ -125,17 +125,28 @@
                 transform: translateY(0);
             }
         }
+
+        /* Adjust main content for sidebar */
+        .main-content {
+            margin-left: 0;
+        }
+
+        @media (min-width: 768px) {
+            .main-content {
+                margin-left: 16rem; /* 64 * 0.25rem = 16rem */
+            }
+        }
     </style>
 </head>
 <body class="gradient-bg min-h-screen">
     
-    <!-- Sidebar/Header -->
+    <!-- Sidebar -->
     <?php include_once '../views/layouts/navbar.php'?>
 
     <!-- Alerts Container -->
-    <div id="alertContainer" class="fixed top-24 right-4 z-40 space-y-4"></div>
+    <div id="alertContainer" class="fixed top-24 md:top-4 right-4 z-40 space-y-4"></div>
 
-    <main class="min-h-screen pt-24 pb-12">
+    <main class="main-content min-h-screen pt-20 md:pt-6 pb-12">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
             
             <!-- Header Section -->
@@ -155,41 +166,41 @@
                 
                 <?php if ($currentPlan): ?>
                     <div class="bg-gradient-to-r from-blue-600 to-blue-800 rounded-2xl p-8 lg:p-10 shadow-2xl border border-blue-500">
-                        <div class="flex items-start justify-between mb-6">
+                        <div class="flex flex-col lg:flex-row items-start justify-between mb-6 gap-4">
                             <div>
                                 <span class="status-badge status-pending pulse-animation mb-3 inline-block">Payment Due</span>
-                                <h2 class="text-3xl font-bold text-white mb-2">Current Plan: <?= $currentPlan['plan_name'] ?></h2>
-                                <p class="text-blue-100">Subscription ID: <?= $currentPlan['subscription_id'] ?></p>
+                                <h2 class="text-2xl lg:text-3xl font-bold text-white mb-2">Current Plan: <?= $currentPlan['plan_name'] ?></h2>
+                                <p class="text-blue-100 text-sm lg:text-base">Subscription ID: <?= $currentPlan['subscription_id'] ?></p>
                             </div>
-                            <div class="text-right">
+                            <div class="text-left lg:text-right w-full lg:w-auto">
                                 <p class="text-blue-100 text-sm mb-1">Amount Due</p>
-                                <p class="text-5xl font-bold text-white">₱<?= number_format($currentPlan['amount']) ?></p>
+                                <p class="text-4xl lg:text-5xl font-bold text-white">₱<?= number_format($currentPlan['amount']) ?></p>
                             </div>
                         </div>
 
-                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 mb-6">
                             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
-                                <p class="text-blue-600 text-sm mb-1"><i class="fa-regular fa-calendar-check mr-2"></i>Start Date</p>
-                                <p class="text-blue-600 font-semibold"><?= date('M d, Y', strtotime($currentPlan['start_date'])) ?></p>
+                                <p class="text-blue-100 text-sm mb-1"><i class="fa-regular fa-calendar-check mr-2"></i>Start Date</p>
+                                <p class="text-white font-semibold"><?= date('M d, Y', strtotime($currentPlan['start_date'])) ?></p>
                             </div>
                             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
-                                <p class="text-blue-600 text-sm mb-1"><i class="fa-regular fa-calendar-xmark mr-2"></i>End Date</p>
-                                <p class="text-blue-600 font-semibold"><?= date('M d, Y', strtotime($currentPlan['end_date'])) ?></p>
+                                <p class="text-blue-100 text-sm mb-1"><i class="fa-regular fa-calendar-xmark mr-2"></i>End Date</p>
+                                <p class="text-white font-semibold"><?= date('M d, Y', strtotime($currentPlan['end_date'])) ?></p>
                             </div>
                             <div class="bg-white bg-opacity-10 backdrop-blur-sm rounded-lg p-4">
-                                <p class="text-blue-600 text-sm mb-1"><i class="fa-regular fa-money-bill-1 mr-2"></i>Payment Due Date</p>
-                                <p class="text-blue-600 font-semibold"><?= date('M d, Y', strtotime($currentPlan['payment_date'])) ?></p>
+                                <p class="text-blue-100 text-sm mb-1"><i class="fa-regular fa-money-bill-1 mr-2"></i>Payment Due Date</p>
+                                <p class="text-white font-semibold"><?= date('M d, Y', strtotime($currentPlan['payment_date'])) ?></p>
                             </div>
                         </div>
 
                         <div class="flex flex-col sm:flex-row gap-4">
                             <button id="btnPayNow" data-subscription-id="<?= $currentPlan['subscription_id'] ?>" data-amount="<?= $currentPlan['amount'] ?>" data-plan="<?= $currentPlan['plan_name'] ?>"
-                                    class="flex-1 px-8 py-4 bg-white hover:bg-gray-100 text-blue-600 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
-                                <i class="fa-regular fa-credit-card text-yellow-400"></i> Pay Now
+                                    class="flex-1 px-6 lg:px-8 py-3 lg:py-4 bg-white hover:bg-gray-100 text-blue-600 font-bold rounded-xl transition-all duration-300 transform hover:scale-105 shadow-lg">
+                                <i class="fa-regular fa-credit-card mr-2"></i> Pay Now
                             </button>
                             <button onclick="window.open('index.php?controller=Invoice&action=downloadInvoice&subscription_id=<?= $currentPlan['subscription_id'] ?>', '_blank')" 
-                                    class="flex-1 px-8 py-4 border-2 border-white hover:bg-white hover:text-blue-600 text-white font-bold rounded-xl transition-all duration-300">
-                                <i class="fa-regular fa-file-lines"></i> Download Invoice
+                                    class="flex-1 px-6 lg:px-8 py-3 lg:py-4 border-2 border-white hover:bg-white hover:text-blue-600 text-white font-bold rounded-xl transition-all duration-300">
+                                <i class="fa-regular fa-file-lines mr-2"></i> Download Invoice
                             </button>
                         </div>
                     </div>
@@ -204,9 +215,9 @@
 
             <!-- Payment Methods Section -->
             <section class="mb-12 fadeIn">
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-white">Payment Methods</h2>
-                    <button id="btnAddPaymentMethod" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
+                    <button id="btnAddPaymentMethod" class="w-full sm:w-auto px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors">
                         + Add Payment Method
                     </button>
                 </div>
@@ -252,10 +263,10 @@
 
             <!-- Transaction History Section -->
             <section id="transaction_history" class="fadeIn">
-                <div class="flex items-center justify-between mb-6">
+                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-white">Transaction History</h2>
-                    <button class="px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
-                        <i class="fa-regular fa-share-from-square"></i> Export History
+                    <button class="w-full sm:w-auto px-6 py-2 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-lg transition-colors">
+                        <i class="fa-regular fa-share-from-square mr-2"></i> Export History
                     </button>
                 </div>
 

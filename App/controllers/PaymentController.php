@@ -14,7 +14,6 @@
 
         public function planPayment() {
             $this->requireLogin();
-            session_start();
             $paymentModel = new Payment();
 
             $user_id = $_SESSION['user_id'];

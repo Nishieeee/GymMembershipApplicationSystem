@@ -9,7 +9,6 @@ class InvoiceController extends Controller {
     
     public function downloadInvoice() {
         $this->requireLogin();
-        session_start();
         $user_id = $_SESSION['user_id'];
         $subscription_id = $_GET['subscription_id'] ?? null;
 
