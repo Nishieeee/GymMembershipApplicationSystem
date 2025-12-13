@@ -763,16 +763,36 @@
         </div>
     </div>
 
-    <div id="memberModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="modal-content w-full max-w-lg rounded-2xl shadow-2xl p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-white">Member Details</h3>
-                <button class="member-modal-close text-slate-400 hover:text-white transition-colors text-xl">&times;</button>
+    <div id="memberModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300">
+    
+        <div class="modal-content w-full max-w-lg bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 transform transition-all scale-100 overflow-hidden">
+            
+            <div class="flex justify-between items-center px-6 py-5 border-b border-slate-700/50 bg-slate-800/50">
+                <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400">
+                        <i class="fa-solid fa-user"></i>
+                    </span>
+                    Member Details
+                </h3>
+                
+                <button class="member-modal-close w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-200">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
             </div>
-            <div id="memberDetails" class="space-y-4 text-slate-300"></div>
-            <div class="flex gap-4 mt-6">
-                <button type="button" class="member-modal-close flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-colors">Close</button>
-                <button type="button" id="btnEditMemberFromView" class="flex-1 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg text-white transition-colors">Edit Member</button>
+
+            <div class="p-6">
+                <div id="memberDetails" class="space-y-4 text-slate-300 bg-slate-900/30 rounded-xl p-5 border border-slate-700/30">
+                    </div>
+
+                <div class="flex gap-4 mt-8 pt-2">
+                    <button type="button" class="member-modal-close flex-1 py-2.5 px-4 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-200 font-medium transition-all duration-200 focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-800">
+                        Close
+                    </button>
+                    
+                    <button type="button" id="btnEditMemberFromView" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-400 rounded-lg text-white font-medium shadow-lg shadow-blue-900/20 transition-all duration-200 flex items-center justify-center gap-2 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-800">
+                        <i class="fa-solid fa-user-pen text-sm"></i> Edit Member
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -950,16 +970,36 @@
         </div>
     </div>
 
-    <div id="viewTrainerModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
-        <div class="modal-content w-full max-w-lg rounded-2xl shadow-2xl p-6">
-            <div class="flex justify-between items-center mb-6">
-                <h3 class="text-xl font-bold text-white">Trainer Details</h3>
-                <button class="view-trainer-close text-slate-400 hover:text-white transition-colors text-xl">&times;</button>
+    <div id="viewTrainerModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300">
+    
+        <div class="modal-content w-full max-w-lg bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 transform transition-all scale-100 overflow-hidden">
+            
+            <div class="flex justify-between items-center px-6 py-5 border-b border-slate-700/50 bg-slate-800/50">
+                <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400">
+                        <i class="fa-solid fa-id-card"></i>
+                    </span>
+                    Trainer Details
+                </h3>
+                
+                <button class="view-trainer-close w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-200">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
             </div>
-            <div id="trainerDetails" class="space-y-4 text-slate-300"></div>
-            <div class="flex gap-4 mt-6">
-                <button type="button" class="view-trainer-close flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white transition-colors">Close</button>
-                <button type="button" id="btnEditTrainer" class="flex-1 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-white transition-colors">Edit Trainer</button>
+
+            <div class="p-6">
+                <div id="trainerDetails" class="space-y-4 text-slate-300 bg-slate-900/30 rounded-xl p-5 border border-slate-700/30">
+                    </div>
+
+                <div class="flex gap-4 mt-8 pt-2">
+                    <button type="button" class="view-trainer-close flex-1 py-2.5 px-4 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-200 font-medium transition-all duration-200 focus:ring-2 focus:ring-slate-500 focus:ring-offset-2 focus:ring-offset-slate-800">
+                        Close
+                    </button>
+                    
+                    <button type="button" id="btnEditTrainer" class="flex-1 py-2.5 px-4 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 rounded-lg text-white font-medium shadow-lg shadow-purple-900/20 transition-all duration-200 flex items-center justify-center gap-2 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 focus:ring-offset-slate-800">
+                        <i class="fa-solid fa-pen-to-square text-sm"></i> Edit Trainer
+                    </button>
+                </div>
             </div>
         </div>
     </div>

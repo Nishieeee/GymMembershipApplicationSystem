@@ -333,85 +333,84 @@ $(document).ready(function () {
 
           // Build HTML content
           let detailsHTML = `
-                        <div class="bg-gray-800 rounded-lg p-4 mb-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-gray-400 text-sm mb-1">User ID</p>
-                                    <p class="text-white font-semibold">${
-                                      member.user_id
-                                    }</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-sm mb-1">Role</p>
-                                    <span class="px-2 py-1 ${
-                                      member.role === "admin"
-                                        ? "bg-red-600"
-                                        : member.role === "trainer"
-                                        ? "bg-purple-600"
-                                        : "bg-blue-600"
-                                    } text-white text-xs font-bold rounded">${
-            member.role || "user"
-          }</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gray-800 rounded-lg p-4 mb-4">
-                            <h4 class="text-white font-semibold mb-3">Personal Information</h4>
-                            <div class="space-y-3">
-                                <div>
-                                    <p class="text-gray-400 text-sm">First Name</p>
-                                    <p class="text-white font-semibold">${
-                                      member.first_name
-                                    }</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-sm">Middle Name</p>
-                                    <p class="text-white font-semibold">${
-                                      member.middle_name || "N/A"
-                                    }</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-sm">Last Name</p>
-                                    <p class="text-white font-semibold">${
-                                      member.last_name
-                                    }</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-sm">Email</p>
-                                    <p class="text-white font-semibold">${
-                                      member.email
-                                    }</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-sm">Member Since</p>
-                                    <p class="text-white font-semibold">${
-                                      member.created_at
-                                    }</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gray-800 rounded-lg p-4">
-                            <h4 class="text-white font-semibold mb-3">Membership</h4>
-                            <div class="space-y-3">
-                                <div>
-                                    <p class="text-gray-400 text-sm">Current Plan</p>
-                                    <p class="text-white font-semibold">${
-                                      member.plan_name || "No Active Plan"
-                                    }</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-sm">Status</p>
-                                    <span class="status-badge ${
-                                      member.status === "active"
-                                        ? "status-active"
-                                        : "status-inactive"
-                                    }">${member.status || "inactive"}</span>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+              <div class="space-y-6">
+                  
+                  <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                      <div>
+                          <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">User ID</p>
+                          <p class="text-white font-mono text-lg tracking-wide">#${member.user_id}</p>
+                      </div>
+                      <div>
+                          <span class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border border-opacity-20 shadow-sm ${
+                              member.role === 'admin' ? 'bg-red-500/10 text-red-400 border-red-500' :
+                              member.role === 'trainer' ? 'bg-purple-500/10 text-purple-400 border-purple-500' :
+                              'bg-blue-500/10 text-blue-400 border-blue-500'
+                          }">
+                              ${member.role || 'user'}
+                          </span>
+                      </div>
+                  </div>
+
+                  <div>
+                      <h4 class="text-slate-200 font-semibold mb-3 flex items-center gap-2">
+                          <i class="fa-regular fa-address-card text-blue-500"></i> Personal Information
+                      </h4>
+                      
+                      <div class="bg-slate-700/20 rounded-xl p-5 border border-slate-700/50">
+                          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5 pb-5 border-b border-slate-700/50">
+                              <div>
+                                  <p class="text-slate-500 text-xs mb-1">First Name</p>
+                                  <p class="text-white font-medium truncate">${member.first_name}</p>
+                              </div>
+                              <div>
+                                  <p class="text-slate-500 text-xs mb-1">Middle Name</p>
+                                  <p class="text-white font-medium truncate">${member.middle_name || '<span class="text-slate-600">-</span>'}</p>
+                              </div>
+                              <div>
+                                  <p class="text-slate-500 text-xs mb-1">Last Name</p>
+                                  <p class="text-white font-medium truncate">${member.last_name}</p>
+                              </div>
+                          </div>
+
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                  <p class="text-slate-500 text-xs mb-1">Email Address</p>
+                                  <div class="flex items-center gap-2 text-white font-medium">
+                                      <i class="fa-regular fa-envelope text-slate-500 text-xs"></i>
+                                      <span class="truncate">${member.email}</span>
+                                  </div>
+                              </div>
+                              <div>
+                                  <p class="text-slate-500 text-xs mb-1">Member Since</p>
+                                  <div class="flex items-center gap-2 text-white font-medium">
+                                      <i class="fa-regular fa-calendar text-slate-500 text-xs"></i>
+                                      <span>${member.created_at}</span>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div>
+                      <h4 class="text-slate-200 font-semibold mb-3 flex items-center gap-2">
+                          <i class="fa-solid fa-medal text-yellow-500"></i> Membership Details
+                      </h4>
+                      <div class="grid grid-cols-2 gap-4">
+                          <div class="bg-slate-700/20 p-4 rounded-xl border border-slate-700/50">
+                              <p class="text-slate-500 text-xs mb-1">Current Plan</p>
+                              <p class="text-white font-bold text-lg tracking-tight">${member.plan_name || 'No Active Plan'}</p>
+                          </div>
+                          <div class="bg-slate-700/20 p-4 rounded-xl border border-slate-700/50">
+                              <p class="text-slate-500 text-xs mb-1">Account Status</p>
+                              <div class="flex items-center gap-2 mt-1">
+                                  <span class="w-2.5 h-2.5 rounded-full ${member.status === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-500'}"></span>
+                                  <span class="text-white font-medium capitalize">${member.status || 'inactive'}</span>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          `;
 
           $("#memberDetails").html(detailsHTML);
           $("#memberModal").data("user-id", userId);
@@ -741,71 +740,85 @@ $(document).ready(function () {
           const trainer = response.data;
 
           let detailsHTML = `
-                        <div class="bg-gray-800 rounded-lg p-4 mb-4">
-                            <div class="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p class="text-gray-400 text-sm mb-1">Trainer ID</p>
-                                    <p class="text-white font-semibold">${
-                                      trainer.trainer_id
-                                    }</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-sm mb-1">Status</p>
-                                    <span class="status-badge status-${
-                                      trainer.status
-                                    }">${trainer.status}</span>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gray-800 rounded-lg p-4 mb-4">
-                            <h4 class="text-white font-semibold mb-3">Personal Information</h4>
-                            <div class="space-y-3">
-                                <div>
-                                    <p class="text-gray-400 text-sm">Full Name</p>
-                                    <p class="text-white font-semibold">${
-                                      trainer.name
-                                    }</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-sm">Email</p>
-                                    <p class="text-white font-semibold">${
-                                      trainer.email
-                                    }</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-sm">Contact Number</p>
-                                    <p class="text-white font-semibold">${
-                                      trainer.contact_no || "N/A"
-                                    }</p>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="bg-gray-800 rounded-lg p-4">
-                            <h4 class="text-white font-semibold mb-3">Trainer Details</h4>
-                            <div class="space-y-3">
-                                <div>
-                                    <p class="text-gray-400 text-sm">Specialization</p>
-                                    <p class="text-white font-semibold">${
-                                      trainer.specialization
-                                    }</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-sm">Experience</p>
-                                    <p class="text-white font-semibold">${
-                                      trainer.experience_years
-                                    } years</p>
-                                </div>
-                                <div>
-                                    <p class="text-gray-400 text-sm">Join Date</p>
-                                    <p class="text-white font-semibold">${
-                                      trainer.join_date
-                                    }</p>
-                                </div>
-                            </div>
-                        </div>
-                    `;
+              <div class="space-y-6">
+                  
+                  <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
+                      <div>
+                          <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Trainer ID</p>
+                          <p class="text-white font-mono text-lg tracking-wide">#${trainer.trainer_id}</p>
+                      </div>
+                      <div>
+                          <span class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border border-opacity-20 shadow-sm ${
+                              trainer.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500' : 
+                              'bg-slate-500/10 text-slate-400 border-slate-500'
+                          }">
+                              ${trainer.status}
+                          </span>
+                      </div>
+                  </div>
+
+                  <div>
+                      <h4 class="text-slate-200 font-semibold mb-3 flex items-center gap-2">
+                          <i class="fa-solid fa-user-tie text-blue-500"></i> Personal Information
+                      </h4>
+                      
+                      <div class="bg-slate-700/20 rounded-xl p-5 border border-slate-700/50">
+                          <div class="mb-5 pb-5 border-b border-slate-700/50">
+                              <p class="text-slate-500 text-xs mb-1">Full Name</p>
+                              <p class="text-white font-medium text-lg">${trainer.name}</p>
+                          </div>
+
+                          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                  <p class="text-slate-500 text-xs mb-1">Email Address</p>
+                                  <div class="flex items-center gap-2 text-white font-medium">
+                                      <i class="fa-regular fa-envelope text-slate-500 text-xs"></i>
+                                      <span class="truncate">${trainer.email}</span>
+                                  </div>
+                              </div>
+                              <div>
+                                  <p class="text-slate-500 text-xs mb-1">Contact Number</p>
+                                  <div class="flex items-center gap-2 text-white font-medium">
+                                      <i class="fa-solid fa-phone text-slate-500 text-xs"></i>
+                                      <span>${trainer.contact_no || '<span class="text-slate-600 italic">N/A</span>'}</span>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+
+                  <div>
+                      <h4 class="text-slate-200 font-semibold mb-3 flex items-center gap-2">
+                          <i class="fa-solid fa-briefcase text-purple-500"></i> Professional Profile
+                      </h4>
+                      <div class="bg-slate-700/20 rounded-xl p-5 border border-slate-700/50">
+                          
+                          <div class="mb-4">
+                              <p class="text-slate-500 text-xs mb-1">Specialization</p>
+                              <div class="flex flex-wrap gap-2">
+                                  <span class="inline-flex items-center px-2.5 py-0.5 rounded-md bg-blue-500/10 text-blue-400 text-sm font-medium border border-blue-500/20">
+                                      ${trainer.specialization}
+                                  </span>
+                              </div>
+                          </div>
+
+                          <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
+                              <div>
+                                  <p class="text-slate-500 text-xs mb-1">Experience</p>
+                                  <p class="text-white font-bold text-lg">${trainer.experience_years} <span class="text-sm font-normal text-slate-400">Years</span></p>
+                              </div>
+                              <div>
+                                  <p class="text-slate-500 text-xs mb-1">Joined Team</p>
+                                  <div class="flex items-center gap-2 text-white font-medium">
+                                      <i class="fa-regular fa-calendar-check text-slate-500 text-xs"></i>
+                                      <span>${trainer.join_date}</span>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+           `;
 
           $("#trainerDetails").html(detailsHTML);
           $("#viewTrainerModal").data("trainer-id", trainerId);
