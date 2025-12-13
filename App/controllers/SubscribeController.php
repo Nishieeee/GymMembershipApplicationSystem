@@ -129,20 +129,64 @@
 
         public function CancelSubscription() {
             $this->requireLogin();
-            session_start();
+            if (session_status() == PHP_SESSION_NONE) {
+                session_start();
+            }
 
             $subscriptionModel = new Subscription();
             $notificationModel = new Notification();
 
-            $userPlan = $subscriptionModel->checkUserCurrentPlan($_SESSION['user_id']);
-            $subscription_id = $userPlan['subscription_id'];
-            echo $subscription_id;
-            if($subscriptionModel->cancelPlan($subscription_id)) {
-                $notificationModel->create($_SESSION['user_id'], "Plan cancellation", "Your Current Plan has been Cancelled", "warning", "membership");
-
+            $user_id = $_SESSION['user_id'];
+            
+            // Check if user actually has a plan
+            $userPlan = $subscriptionModel->checkUserCurrentPlan($user_id);
+            
+            if (!$userPlan) {
+                // Redirect to dashboard if they don't have a plan to cancel
+                // Or show a specific "No plan active" error page
                 header("location: index.php?controller=Dashboard&action=member");
+                exit();
+            }
+
+            // --- LOGIC SPLIT: GET vs POST ---
+
+            if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+                // 1. Process the Cancellation
+                if (isset($_POST['confirm_cancel']) && $_POST['confirm_cancel'] === 'true') {
+                    
+                    $subscription_id = $userPlan['subscription_id'];
+
+                    if ($subscriptionModel->cancelPlan($subscription_id)) {
+                        
+                        // Create Notification
+                        $notificationModel->create(
+                            $user_id, 
+                            "Plan Cancellation", 
+                            "Your Current Plan has been Cancelled.", 
+                            "warning", 
+                            "membership"
+                        );
+
+                        // Show Success View
+                        $this->view('cancel_success');
+
+                    } else {
+                        // Show Failure View
+                        $this->view('cancel_failed', ['error_message' => "Database error occurred while cancelling."]);
+                    }
+                } else {
+                    // Invalid POST request (missing confirmation token)
+                    header("location: index.php?controller=Dashboard&action=member");
+                }
+
             } else {
-                //show error
+                // 2. Show the "Are you sure?" Page (GET Request)
+                
+                // Pass plan details to the view so user knows what they are cancelling
+                $this->view('cancel_confirmation', [
+                    'plan_name' => $userPlan['plan_name'] ?? 'Membership', // Adjust key based on your DB
+                    'subscription_id' => $userPlan['subscription_id']
+                ]);
             }
         }
 
