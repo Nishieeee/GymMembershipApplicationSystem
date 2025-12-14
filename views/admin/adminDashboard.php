@@ -513,8 +513,8 @@
                                     </div>
 
                                     <div class="flex gap-2 relative z-10 pt-4 border-t border-slate-700/50">
-                                        <button class="btn-edit-plan flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium rounded transition-colors">Edit</button>
-                                        <button class="btn-delete-plan flex-1 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-600/30 hover:border-red-500 text-sm font-medium rounded transition-colors">Delete</button>
+                                        <button class="btn-edit-plan flex-1 py-2 bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium rounded transition-colors" data-plan-id="<?= $plan['plan_id'] ?>">Edit</button>
+                                        <button class="btn-delete-plan flex-1 py-2 bg-red-600/20 hover:bg-red-600/30 text-red-400 border border-red-600/30 hover:border-red-500 text-sm font-medium rounded transition-colors" data-plan-id="<?= $plan['plan_id'] ?>">Delete</button>
                                     </div>
                                 </div>    
                             <?php } ?>
@@ -1204,6 +1204,98 @@
                     <div class="flex gap-3">
                         <button type="button" class="delete-trainer-cancel flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white">Cancel</button>
                         <button type="submit" id="deleteTrainerBtn" class="flex-1 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="addPlanModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-content w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800">
+                <h3 class="text-xl font-bold text-white flex items-center"><i class="fas fa-plus-circle mr-2 text-blue-500"></i> Add New Plan</h3>
+                <button class="add-plan-close text-slate-400 hover:text-white transition-colors text-xl">&times;</button>
+            </div>
+            
+            <div class="p-6">
+                <form id="addPlanForm" method="POST" action="index.php?controller=Plan&action=addPlan" class="space-y-5">
+                    
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Plan Name *</label>
+                        <input type="text" name="plan_name" required placeholder="e.g. Gold Membership" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Price (₱) *</label>
+                            <input type="number" step="0.01" name="price" required placeholder="0.00" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Duration (Months) *</label>
+                            <input type="number" name="duration_months" required placeholder="1" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Description</label>
+                        <textarea name="description" rows="3" placeholder="Plan details..." class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors resize-none"></textarea>
+                    </div>
+
+                    <div id="addPlanMessage" class="hidden text-sm text-center py-2 rounded bg-red-500/10 text-red-400"></div>
+
+                    <div class="flex gap-4 pt-2">
+                        <button type="button" class="add-plan-cancel flex-1 py-3 px-4 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors">Cancel</button>
+                        <button type="submit" id="btnAddPlanSubmit" class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-lg shadow-blue-900/20">Create Plan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="editPlanModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-content w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden flex flex-col">
+            <div class="p-6 border-b border-slate-700 flex justify-between items-center bg-slate-800">
+                <h3 class="text-xl font-bold text-white flex items-center"><i class="fas fa-edit mr-2 text-blue-500"></i> Edit Plan</h3>
+                <button class="edit-plan-close text-slate-400 hover:text-white transition-colors text-xl">&times;</button>
+            </div>
+            
+            <div class="p-6">
+                <form id="editPlanForm" method="POST" action="index.php?controller=Plan&action=updatePlan" class="space-y-5">
+                    <input type="hidden" name="plan_id" id="edit_plan_id">
+                    
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Plan Name *</label>
+                        <input type="text" name="plan_name" id="edit_plan_name" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Price (₱) *</label>
+                            <input type="number" step="0.01" name="price" id="edit_plan_price" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-400 mb-1">Duration (Months) *</label>
+                            <input type="number" name="duration_months" id="edit_plan_duration" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Description</label>
+                        <textarea name="description" id="edit_plan_description" rows="3" class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors resize-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-400 mb-1">Status</label>
+                        <select name="status" id="edit_plan_status" required class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:border-blue-500 focus:outline-none transition-colors">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="removed">Removed</option>
+                        </select>
+                    </div>
+
+                    <div id="editPlanMessage" class="hidden text-sm text-center py-2 rounded bg-red-500/10 text-red-400"></div>
+
+                    <div class="flex gap-4 pt-2">
+                        <button type="button" class="edit-plan-cancel flex-1 py-3 px-4 bg-slate-700 hover:bg-slate-600 text-white font-medium rounded-lg transition-colors">Cancel</button>
+                        <button type="submit" id="btnUpdatePlan" class="flex-1 py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors shadow-lg shadow-blue-900/20">Update Plan</button>
                     </div>
                 </form>
             </div>

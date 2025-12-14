@@ -66,7 +66,7 @@
 
                 if ($pendingCount > 0) {
                     // Stop execution and show failure page
-                    $this->view('subscription_failed', [
+                    $this->feedback('subscription_failed', [
                         'error_message' => "You have pending payments. Please settle your outstanding balance before subscribing to a new plan."
                     ]);
                     return;
@@ -92,15 +92,15 @@
 
                             if ($paymentModel->openPayment($paymentDetails)) {
                                 NotificationHelper::membershipRenewed($user_id, $subscriptionDetails['end_date']);
-                                $this->view('subscription_success');
+                                $this->feedback('subscription_success');
                             } else {
-                                $this->view('subscription_failed', ['error_message' => "Error setting up payment."]);
+                                $this->feedback('subscription_failed', ['error_message' => "Error setting up payment."]);
                             }
                         } else {
-                            $this->view('subscription_failed', ['error_message' => "Could not cancel previous plan."]);
+                            $this->feedback('subscription_failed', ['error_message' => "Could not cancel previous plan."]);
                         }
                     } else {
-                        $this->view('subscription_failed', ['error_message' => "Database error while subscribing."]);
+                        $this->feedback('subscription_failed', ['error_message' => "Database error while subscribing."]);
                     }
 
                 } else {
@@ -116,12 +116,12 @@
 
                         if ($paymentModel->openPayment($paymentDetails)) {
                             // $this->notifySubscription($user['email'], $user['name']); 
-                            $this->view('subscription_success');
+                            $this->feedback('subscription_success');
                         } else {
-                            $this->view('subscription_failed', ['error_message' => "Error setting up payment."]);
+                            $this->feedback('subscription_failed', ['error_message' => "Error setting up payment."]);
                         }
                     } else {
-                        $this->view('subscription_failed', ['error_message' => "Database error while subscribing."]);
+                        $this->feedback('subscription_failed', ['error_message' => "Database error while subscribing."]);
                     }
                 }
             }
@@ -142,8 +142,7 @@
             $userPlan = $subscriptionModel->checkUserCurrentPlan($user_id);
             
             if (!$userPlan) {
-                // Redirect to dashboard if they don't have a plan to cancel
-                // Or show a specific "No plan active" error page
+                $this->feedback('cancel_failed', ['error_message' => "Cancel failed, No active plan."]);
                 header("location: index.php?controller=Dashboard&action=member");
                 exit();
             }
@@ -168,11 +167,11 @@
                         );
 
                         // Show Success View
-                        $this->view('cancel_success');
+                        $this->feedback('cancel_success');
 
                     } else {
                         // Show Failure View
-                        $this->view('cancel_failed', ['error_message' => "Database error occurred while cancelling."]);
+                        $this->feedback('cancel_failed', ['error_message' => "Database error occurred while cancelling."]);
                     }
                 } else {
                     // Invalid POST request (missing confirmation token)
@@ -182,8 +181,8 @@
             } else {
                 // 2. Show the "Are you sure?" Page (GET Request)
                 
-                // Pass plan details to the view so user knows what they are cancelling
-                $this->view('cancel_confirmation', [
+                // Pass plan details to the feedback so user knows what they are cancelling
+                $this->feedback('cancel_confirmation', [
                     'plan_name' => $userPlan['plan_name'] ?? 'Membership', // Adjust key based on your DB
                     'subscription_id' => $userPlan['subscription_id']
                 ]);
