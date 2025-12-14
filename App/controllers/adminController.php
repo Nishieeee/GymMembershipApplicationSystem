@@ -31,6 +31,9 @@
             $walk_ins = $user->displayAllWalkInMembers();
             $plans = $plan->getAllPlans();
             $activePlans = $plan->getAllActivePlans();
+            
+            // Get pending freeze requests
+            $freezeRequests = $subscription->getPendingFreezeRequests();
 
             $this->adminView('dashboard', [
                 'memberCount' => $memberCount,
@@ -42,6 +45,7 @@
                 'members' => $members,
                 'plans' => $plans,
                 'activePlans' => $activePlans,
+                'freezeRequests' => $freezeRequests
             ]);
         } 
         public function reports() {

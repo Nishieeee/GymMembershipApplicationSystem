@@ -233,6 +233,74 @@
                 </div>
             </div>
 
+            <!-- Freeze Requests Section -->
+            <?php if(count($freezeRequests) > 0): ?>
+            <div class="glass-panel rounded-xl p-6 border border-amber-500/30 bg-amber-500/5">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-snowflake text-amber-400"></i>
+                        Membership Freeze Requests
+                    </h3>
+                    <span class="bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-sm font-semibold">
+                        <?= count($freezeRequests) ?> Pending
+                    </span>
+                </div>
+                
+                <div class="space-y-3 max-h-96 overflow-y-auto">
+                    <?php foreach($freezeRequests as $request): ?>
+                    <div class="bg-slate-900/50 border border-slate-700 rounded-lg p-4 hover:border-amber-500/50 transition">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex-1 min-w-0">
+                                <div class="flex items-center gap-3 mb-2">
+                                    <h4 class="font-semibold text-white truncate"><?= htmlspecialchars($request['member_name']) ?></h4>
+                                    <span class="text-xs bg-blue-500/20 text-blue-400 px-2 py-1 rounded whitespace-nowrap">
+                                        <?= htmlspecialchars($request['plan_name']) ?>
+                                    </span>
+                                </div>
+                                <p class="text-sm text-slate-400 mb-2 truncate"><?= htmlspecialchars($request['email']) ?></p>
+                                
+                                <div class="grid grid-cols-2 gap-3 mb-2">
+                                    <div class="text-sm">
+                                        <i class="fas fa-calendar-alt text-slate-500 mr-2"></i>
+                                        <span class="text-slate-400">Start:</span>
+                                        <span class="text-white font-medium"><?= date('M d', strtotime($request['freeze_start'])) ?></span>
+                                    </div>
+                                    <div class="text-sm">
+                                        <i class="fas fa-calendar-check text-slate-500 mr-2"></i>
+                                        <span class="text-slate-400">End:</span>
+                                        <span class="text-white font-medium"><?= date('M d', strtotime($request['freeze_end'])) ?></span>
+                                    </div>
+                                </div>
+                                
+                                <?php if (!empty($request['reason'])): ?>
+                                <div class="text-sm bg-slate-800 border border-slate-700 rounded p-2">
+                                    <i class="fas fa-comment text-slate-500 mr-2"></i>
+                                    <span class="text-slate-300"><?= htmlspecialchars($request['reason']) ?></span>
+                                </div>
+                                <?php endif; ?>
+                                
+                                <p class="text-xs text-slate-500 mt-2">
+                                    Requested: <?= date('M d, Y g:i A', strtotime($request['requested_at'])) ?>
+                                </p>
+                            </div>
+                            
+                            <div class="flex flex-col gap-2">
+                                <button onclick="approveFreeze(<?= $request['freeze_id'] ?>)"
+                                        class="px-4 py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold rounded-lg transition whitespace-nowrap">
+                                    <i class="fas fa-check mr-1"></i> Approve
+                                </button>
+                                <button onclick="rejectFreeze(<?= $request['freeze_id'] ?>)"
+                                        class="px-4 py-2 bg-red-600 hover:bg-red-500 text-white text-sm font-semibold rounded-lg transition whitespace-nowrap">
+                                    <i class="fas fa-times mr-1"></i> Reject
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
+            </div>
+            <?php endif; ?>
+
             <div class="glass-panel rounded-xl border-0 overflow-hidden">
                 <div class="glass-header px-4 pt-2 flex overflow-x-auto space-x-1 no-scrollbar">
                     <button class="tab-button active px-6 py-4 text-sm font-medium text-slate-300 whitespace-nowrap focus:outline-none" data-tab="members">
@@ -1452,6 +1520,177 @@
                 </div>
             </div>
         </div>
+        </div>
+    
+    <!-- Freeze Action Modals -->
+    <div id="freezeConfirmModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full shadow-2xl border border-slate-700">
+            <div class="p-6 border-b border-slate-700">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i id="freezeConfirmIcon" class="fas fa-check-circle text-green-400"></i>
+                    <span id="freezeConfirmTitle">Confirm Action</span>
+                </h3>
+            </div>
+            <div class="p-6">
+                <p id="freezeConfirmMessage" class="text-slate-300 mb-4"></p>
+                <div id="freezeRejectReasonContainer" class="hidden mb-4">
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Rejection Reason (Optional)</label>
+                    <textarea id="freezeRejectReason" rows="3" 
+                              class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                              placeholder="Enter reason for rejection..."></textarea>
+                </div>
+                <div class="flex gap-3">
+                    <button id="freezeConfirmCancel" class="flex-1 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition">
+                        Cancel
+                    </button>
+                    <button id="freezeConfirmOk" class="flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition">
+                        Confirm
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
+
+    <div id="freezeResultModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full shadow-2xl border border-slate-700">
+            <div class="p-6 border-b border-slate-700">
+                <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i id="freezeResultIcon" class="fas fa-info-circle text-blue-400"></i>
+                    <span id="freezeResultTitle">Result</span>
+                </h3>
+            </div>
+            <div class="p-6">
+                <p id="freezeResultMessage" class="text-slate-300 mb-4"></p>
+                <button id="freezeResultClose" class="w-full px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg transition">
+                    OK
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+    // Modal Helper Functions
+    function showFreezeConfirmModal(title, message, onConfirm, showReasonInput = false) {
+        const modal = $('#freezeConfirmModal');
+        const reasonContainer = $('#freezeRejectReasonContainer');
+        const reasonInput = $('#freezeRejectReason');
+        
+        $('#freezeConfirmTitle').text(title);
+        $('#freezeConfirmMessage').text(message);
+        $('#freezeConfirmIcon').attr('class', showReasonInput ? 'fas fa-times-circle text-red-400' : 'fas fa-check-circle text-green-400');
+        $('#freezeConfirmOk').attr('class', showReasonInput ? 
+            'flex-1 px-4 py-2 bg-red-600 hover:bg-red-500 text-white rounded-lg transition' :
+            'flex-1 px-4 py-2 bg-green-600 hover:bg-green-500 text-white rounded-lg transition'
+        );
+        
+        if (showReasonInput) {
+            reasonContainer.removeClass('hidden');
+            reasonInput.val('');
+        } else {
+            reasonContainer.addClass('hidden');
+        }
+        
+        modal.removeClass('hidden');
+        
+        $('#freezeConfirmOk').off('click').on('click', function() {
+            modal.addClass('hidden');
+            const reason = showReasonInput ? reasonInput.val() : null;
+            onConfirm(reason);
+        });
+        
+        $('#freezeConfirmCancel').off('click').on('click', function() {
+            modal.addClass('hidden');
+        });
+        
+        modal.off('click').on('click', function(e) {
+            if ($(e.target).is(modal)) {
+                modal.addClass('hidden');
+            }
+        });
+    }
+
+    function showFreezeResultModal(title, message, isSuccess = true) {
+        const modal = $('#freezeResultModal');
+        
+        $('#freezeResultTitle').text(title);
+        $('#freezeResultMessage').text(message);
+        $('#freezeResultIcon').attr('class', isSuccess ? 
+            'fas fa-check-circle text-green-400' : 
+            'fas fa-exclamation-circle text-red-400'
+        );
+        
+        modal.removeClass('hidden');
+        
+        $('#freezeResultClose').off('click').on('click', function() {
+            modal.addClass('hidden');
+            if (isSuccess) {
+                location.reload();
+            }
+        });
+        
+        modal.off('click').on('click', function(e) {
+            if ($(e.target).is(modal)) {
+                modal.addClass('hidden');
+                if (isSuccess) {
+                    location.reload();
+                }
+            }
+        });
+    }
+
+    // Freeze Request Approval Functions
+    function approveFreeze(freezeId) {
+        showFreezeConfirmModal(
+            'Approve Freeze Request',
+            'Are you sure you want to approve this freeze request?',
+            function() {
+                $.ajax({
+                    url: 'index.php?controller=Subscribe&action=ApproveFreezeRequest',
+                    method: 'POST',
+                    data: { freeze_id: freezeId },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            showFreezeResultModal('Success', 'Freeze request approved successfully!', true);
+                        } else {
+                            showFreezeResultModal('Error', response.message, false);
+                        }
+                    },
+                    error: function(xhr) {
+                        showFreezeResultModal('Error', 'Failed to process request. Please try again.', false);
+                        console.error(xhr.responseText);
+                    }
+                });
+            }
+        );
+    }
+
+    function rejectFreeze(freezeId) {
+        showFreezeConfirmModal(
+            'Reject Freeze Request',
+            'Are you sure you want to reject this freeze request?',
+            function(notes) {
+                $.ajax({
+                    url: 'index.php?controller=Subscribe&action=RejectFreezeRequest',
+                    method: 'POST',
+                    data: { freeze_id: freezeId, admin_notes: notes || '' },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            showFreezeResultModal('Success', 'Freeze request rejected', true);
+                        } else {
+                            showFreezeResultModal('Error', response.message, false);
+                        }
+                    },
+                    error: function(xhr) {
+                        showFreezeResultModal('Error', 'Failed to process request. Please try again.', false);
+                        console.error(xhr.responseText);
+                    }
+                });
+            },
+            true // Show reason input
+        );
+    }
+    </script>
 </body>
 </html>

@@ -1,6 +1,7 @@
 <?php 
 require_once __DIR__ . "/../Controller.php";
 require_once __DIR__ . "/../models/User.php";
+require_once __DIR__ . "/../models/PasswordReset.php";
 require_once __DIR__ . "/../helpers/notificationHelper.php";
 
 session_set_cookie_params(['path' => '/']);
@@ -360,6 +361,223 @@ class AuthController extends Controller {
         $mail->send();
     }
 
+    /**
+     * Display forgot password form
+     */
+    public function ForgotPassword() {
+        $this->auth('forgotPassword', [
+            'email' => '',
+            'error' => '',
+            'success' => ''
+        ]);
+    }
+    
+    /**
+     * Handle forgot password request
+     */
+    public function RequestPasswordReset() {
+        header('Content-Type: application/json');
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+            return;
+        }
+        
+        $email = trim($_POST['email'] ?? '');
+        
+        // Validate email
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo json_encode(['success' => false, 'message' => 'Please provide a valid email address']);
+            return;
+        }
+        
+        $userModel = new User();
+        $user = $userModel->findByEmail($email);
+        
+        // Always return success even if email doesn't exist (security)
+        if (!$user) {
+            echo json_encode([
+                'success' => true, 
+                'message' => 'If that email exists, a password reset link has been sent.'
+            ]);
+            return;
+        }
+        
+        // Create reset token
+        $passwordReset = new PasswordReset();
+        $token = $passwordReset->createToken($user['user_id'], $email);
+        
+        if ($token) {
+            // Send email with reset link
+            $resetLink = "http://" . $_SERVER['HTTP_HOST'] . dirname($_SERVER['REQUEST_URI']) . "/index.php?controller=Auth&action=ResetPassword&token=" . $token;
+            $this->sendPasswordResetEmail($email, $user['first_name'] ?? 'Member', $resetLink);
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Password reset instructions have been sent to your email.'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'An error occurred. Please try again later.'
+            ]);
+        }
+    }
+    
+    /**
+     * Display reset password form
+     */
+    public function ResetPassword() {
+        $token = $_GET['token'] ?? '';
+        
+        if (empty($token)) {
+            header('Location: index.php?controller=Auth&action=Login');
+            exit();
+        }
+        
+        // Verify token is valid
+        $passwordReset = new PasswordReset();
+        $tokenData = $passwordReset->verifyToken($token);
+        
+        if (!$tokenData) {
+            $this->auth('resetPassword', [
+                'token' => '',
+                'error' => 'This password reset link is invalid or has expired.',
+                'tokenValid' => false
+            ]);
+            return;
+        }
+        
+        $this->auth('resetPassword', [
+            'token' => $token,
+            'email' => $tokenData['email'],
+            'error' => '',
+            'tokenValid' => true
+        ]);
+    }
+    
+    /**
+     * Handle password update
+     */
+    public function UpdatePassword() {
+        header('Content-Type: application/json');
+        
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+            return;
+        }
+        
+        $token = $_POST['token'] ?? '';
+        $password = $_POST['password'] ?? '';
+        $confirmPassword = $_POST['confirm_password'] ?? '';
+        
+        // Validate inputs
+        if (empty($token) || empty($password) || empty($confirmPassword)) {
+            echo json_encode(['success' => false, 'message' => 'All fields are required']);
+            return;
+        }
+        
+        if ($password !== $confirmPassword) {
+            echo json_encode(['success' => false, 'message' => 'Passwords do not match']);
+            return;
+        }
+        
+        if (strlen($password) < 6) {
+            echo json_encode(['success' => false, 'message' => 'Password must be at least 6 characters']);
+            return;
+        }
+        
+        // Verify token
+        $passwordReset = new PasswordReset();
+        $tokenData = $passwordReset->verifyToken($token);
+        
+        if (!$tokenData) {
+            echo json_encode(['success' => false, 'message' => 'Invalid or expired reset link']);
+            return;
+        }
+        
+        // Update password
+        $userModel = new User();
+        $db = $userModel->connect();
+        
+        // TODO: Hash password properly (security issue - currently storing plain text)
+        // For now, matching existing system behavior
+        $sql = "UPDATE members SET password = :password WHERE user_id = :user_id";
+        $query = $db->prepare($sql);
+        $query->bindParam(':password', $password);
+        $query->bindParam(':user_id', $tokenData['user_id']);
+        
+        if ($query->execute()) {
+            // Mark token as used
+            $passwordReset->markTokenUsed($token);
+            
+            // Invalidate all other tokens for this user
+            $passwordReset->invalidateUserTokens($tokenData['user_id']);
+            
+            echo json_encode([
+                'success' => true,
+                'message' => 'Password updated successfully! You can now log in.'
+            ]);
+        } else {
+            echo json_encode([
+                'success' => false,
+                'message' => 'Failed to update password. Please try again.'
+            ]);
+        }
+    }
+    
+    /**
+     * Send password reset email
+     */
+    private function sendPasswordResetEmail($email, $name, $resetLink) {
+        try {
+            $mail = $this->mailer();
+            $mail->addAddress($email, $name);
+            $mail->Subject = "Reset Your Gymazing Password";
+            $mail->isHTML(true);
+            
+            $mail->Body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4;'>
+                <div style='background-color: white; padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);'>
+                    <h2 style='color: #3b82f6; margin-bottom: 20px;'>Reset Your Password</h2>
+                    <p style='color: #333; font-size: 16px; line-height: 1.6;'>Hi {$name},</p>
+                    <p style='color: #333; font-size: 16px; line-height: 1.6;'>
+                        We received a request to reset your password for your Gymazing account. 
+                        Click the button below to create a new password:
+                    </p>
+                    <div style='text-align: center; margin: 30px 0;'>
+                        <a href='{$resetLink}' 
+                           style='background-color: #3b82f6; color: white; padding: 14px 30px; 
+                                  text-decoration: none; border-radius: 5px; font-weight: bold; 
+                                  display: inline-block;'>Reset Password</a>
+                    </div>
+                    <p style='color: #666; font-size: 14px; line-height: 1.6;'>
+                        This link will expire in 1 hour for security reasons.
+                    </p>
+                    <p style='color: #666; font-size: 14px; line-height: 1.6;'>
+                        If you didn't request a password reset, please ignore this email or contact support if you have concerns.
+                    </p>
+                    <hr style='border: none; border-top: 1px solid #eee; margin: 20px 0;'>
+                    <p style='color: #999; font-size: 12px;'>
+                        If the button doesn't work, copy and paste this link into your browser:<br>
+                        <span style='color: #3b82f6;'>{$resetLink}</span>
+                    </p>
+                    <p style='color: #333; font-size: 16px; margin-top: 20px;'>
+                        Best regards,<br>
+                        <strong>The Gymazing Team</strong>
+                    </p>
+                </div>
+            </div>
+            ";
+            
+            $mail->send();
+        } catch (Exception $e) {
+            error_log("Failed to send password reset email: " . $mail->ErrorInfo);
+        }
+    }
+    
     public function forgotPasswordNotifier($email, $name) {
         $mail = $this->mailer();
         $mail->addAddress($email, $name);

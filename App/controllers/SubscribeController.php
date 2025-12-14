@@ -304,6 +304,251 @@
             $mail->AltBody = "Hi {$name}, your plan has been upgraded to {$newPlanName}.";
             $mail->send();
         }
+        
+        /**
+         * Member requests a freeze
+         */
+        public function RequestFreeze() {
+            session_start(); // Ensure session is started
+            header('Content-Type: application/json');
+            
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+                return;
+            }
+            
+            $userId = $_SESSION['user_id'] ?? null;
+            if (!$userId) {
+                echo json_encode(['success' => false, 'message' => 'Not logged in. Please refresh and try again.']);
+                return;
+            }
+            
+            $freezeStart = $_POST['freeze_start'] ?? '';
+            $freezeEnd = $_POST['freeze_end'] ?? '';
+            $reason = $_POST['reason'] ?? '';
+            
+            // Validate inputs
+            if (empty($freezeStart) || empty($freezeEnd)) {
+                echo json_encode(['success' => false, 'message' => 'Please provide freeze dates']);
+                return;
+            }
+            
+            $subscriptionModel = new Subscription();
+            
+            // Check eligibility first
+            $eligibility = $subscriptionModel->canRequestFreeze($userId);
+            if (!$eligibility['can_request']) {
+                echo json_encode(['success' => false, 'message' => $eligibility['message']]);
+                return;
+            }
+            
+            // Get active subscription
+            $activeSubscription = $subscriptionModel->checkUserCurrentPlan($userId);
+            
+            // Debug: Check if subscription exists
+            if (!$activeSubscription) {
+                echo json_encode([
+                    'success' => false, 
+                    'message' => 'No active subscription found. Please ensure you have an active membership plan.',
+                    'debug' => 'User ID: ' . $userId
+                ]);
+                return;
+            }
+            
+            // Request freeze
+            $result = $subscriptionModel->requestFreeze(
+                $activeSubscription['subscription_id'],
+                $userId,
+                $freezeStart,
+                $freezeEnd,
+                $reason
+            );
+            
+            echo json_encode($result);
+        }
+        
+        /**
+         * Admin approves freeze request
+         */
+        public function ApproveFreezeRequest() {
+            session_start();
+            header('Content-Type: application/json');
+            
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+                return;
+            }
+            
+            $adminId = $_SESSION['user_id'] ?? null;
+            // if (!$adminId) {
+            //     echo json_encode(['success' => false, 'message' => 'Not logged in']);
+            //     return;
+            // }
+            
+            $freezeId = $_POST['freeze_id'] ?? null;
+            
+            if (!$freezeId) {
+                echo json_encode(['success' => false, 'message' => 'Invalid freeze ID']);
+                return;
+            }
+            
+            $subscriptionModel = new Subscription();
+            
+            // Get freeze request details before approving
+            $sql = "SELECT mfh.*, CONCAT(m.first_name, ' ', m.last_name) as member_name, m.email
+                    FROM membership_freeze_history mfh
+                    JOIN members m ON mfh.user_id = m.user_id
+                    WHERE mfh.freeze_id = :freeze_id";
+            $query = $subscriptionModel->connect()->prepare($sql);
+            $query->bindParam(':freeze_id', $freezeId);
+            $query->execute();
+            $freezeDetails = $query->fetch(PDO::FETCH_ASSOC);
+            
+            if ($subscriptionModel->approveFreeze($freezeId, $adminId)) {
+                // Send approval email
+                if ($freezeDetails) {
+                    $this->notifyFreezeApproved(
+                        $freezeDetails['email'],
+                        $freezeDetails['member_name'],
+                        $freezeDetails['freeze_start'],
+                        $freezeDetails['freeze_end']
+                    );
+                }
+                echo json_encode(['success' => true, 'message' => 'Freeze request approved']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to approve freeze request']);
+            }
+        }
+        
+        /**
+         * Admin rejects freeze request
+         */
+        public function RejectFreezeRequest() {
+            session_start();
+            header('Content-Type: application/json');
+            
+            if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                echo json_encode(['success' => false, 'message' => 'Invalid request method']);
+                return;
+            }
+            
+            $adminId = $_SESSION['user_id'] ?? null;
+            // if (!$adminId) {
+            //     echo json_encode(['success' => false, 'message' => 'Not logged in']);
+            //     return;
+            // }
+            
+            $freezeId = $_POST['freeze_id'] ?? null;
+            $notes = $_POST['admin_notes'] ?? '';
+            
+            if (!$freezeId) {
+                echo json_encode(['success' => false, 'message' => 'Invalid freeze ID']);
+                return;
+            }
+            
+            $subscriptionModel = new Subscription();
+            
+            // Get freeze request details before rejecting
+            $sql = "SELECT mfh.*, CONCAT(m.first_name, ' ', m.last_name) as member_name, m.email
+                    FROM membership_freeze_history mfh
+                    JOIN members m ON mfh.user_id = m.user_id
+                    WHERE mfh.freeze_id = :freeze_id";
+            $query = $subscriptionModel->connect()->prepare($sql);
+            $query->bindParam(':freeze_id', $freezeId);
+            $query->execute();
+            $freezeDetails = $query->fetch(PDO::FETCH_ASSOC);
+            
+            if ($subscriptionModel->rejectFreeze($freezeId, $adminId, $notes)) {
+                // Send rejection email
+                if ($freezeDetails) {
+                    $this->notifyFreezeRejected(
+                        $freezeDetails['email'],
+                        $freezeDetails['member_name'],
+                        $notes
+                    );
+                }
+                echo json_encode(['success' => true, 'message' => 'Freeze request rejected']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to reject freeze request']);
+            }
+        }
+        
+        /**
+         * Notify user of freeze approval
+         */
+        private function notifyFreezeApproved($email, $name, $freezeStart, $freezeEnd) {
+            $mail = $this->mailer();
+            $mail->addAddress($email, $name);
+            $mail->Subject = 'Membership Freeze Request Approved - Gymazing';
+            $mail->isHTML(true);
+            
+            $startDate = date('F d, Y', strtotime($freezeStart));
+            $endDate = date('F d, Y', strtotime($freezeEnd));
+            
+            $mail->Body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f4f4f4; padding: 20px;'>
+                <div style='background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;'>
+                    <h1 style='color: white; margin: 0; font-size: 28px;'>✅ Freeze Request Approved</h1>
+                </div>
+                <div style='background-color: white; padding: 30px; border-radius: 0 0 10px 10px;'>
+                    <p style='font-size: 16px; color: #333; margin-bottom: 20px;'>Hi <strong>{$name}</strong>,</p>
+                    <p style='font-size: 16px; color: #333; line-height: 1.6;'>
+                        Great news! Your membership freeze request has been <strong style='color: #10b981;'>approved</strong>.
+                    </p>
+                    <div style='background-color: #f0fdf4; border-left: 4px solid #10b981; padding: 15px; margin: 20px 0;'>
+                        <p style='margin: 5px 0; color: #166534;'><strong>Freeze Period:</strong></p>
+                        <p style='margin: 5px 0; color: #166534;'>📅 <strong>Start:</strong> {$startDate}</p>
+                        <p style='margin: 5px 0; color: #166534;'>📅 <strong>End:</strong> {$endDate}</p>
+                    </div>
+                    <p style='font-size: 14px; color: #666; line-height: 1.6;'>
+                        During this period, your membership will be paused and you will not be charged. Your membership will automatically resume after the freeze period ends.
+                    </p>
+                    <hr style='border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;'>
+                    <p style='font-size: 14px; color: #666;'>If you have any questions, please contact us.</p>
+                    <p style='font-size: 14px; color: #666; margin-top: 20px;'>Best regards,<br><strong>Gymazing Team</strong></p>
+                </div>
+            </div>";
+            
+            $mail->AltBody = "Hi {$name}, your membership freeze request has been approved from {$startDate} to {$endDate}.";
+            $mail->send();
+        }
+        
+        /**
+         * Notify user of freeze rejection
+         */
+        private function notifyFreezeRejected($email, $name, $reason = '') {
+            $mail = $this->mailer();
+            $mail->addAddress($email, $name);
+            $mail->Subject = 'Membership Freeze Request Update - Gymazing';
+            $mail->isHTML(true);
+            
+            $reasonText = $reason ? "<div style='background-color: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0;'>
+                        <p style='margin: 0; color: #991b1b;'><strong>Reason:</strong> {$reason}</p>
+                    </div>" : '';
+            
+            $mail->Body = "
+            <div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #f4f4f4; padding: 20px;'>
+                <div style='background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%); padding: 30px; border-radius: 10px 10px 0 0; text-align: center;'>
+                    <h1 style='color: white; margin: 0; font-size: 28px;'>Freeze Request Update</h1>
+                </div>
+                <div style='background-color: white; padding: 30px; border-radius: 0 0 10px 10px;'>
+                    <p style='font-size: 16px; color: #333; margin-bottom: 20px;'>Hi <strong>{$name}</strong>,</p>
+                    <p style='font-size: 16px; color: #333; line-height: 1.6;'>
+                        We've reviewed your membership freeze request, and unfortunately, we're unable to approve it at this time.
+                    </p>
+                    {$reasonText}
+                    <p style='font-size: 14px; color: #666; line-height: 1.6;'>
+                        If you have any questions or would like to discuss alternative options, please don't hesitate to contact us. We're here to help!
+                    </p>
+                    <hr style='border: none; border-top: 1px solid #e5e7eb; margin: 20px 0;'>
+                    <p style='font-size: 14px; color: #666;'>Thank you for your understanding.</p>
+                    <p style='font-size: 14px; color: #666; margin-top: 20px;'>Best regards,<br><strong>Gymazing Team</strong></p>
+                </div>
+            </div>";
+            
+            $mail->AltBody = "Hi {$name}, unfortunately your membership freeze request could not be approved. " . ($reason ? "Reason: {$reason}" : '');
+            $mail->send();
+        }
     }
 
 ?>

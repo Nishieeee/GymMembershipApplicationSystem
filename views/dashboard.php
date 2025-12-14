@@ -229,6 +229,13 @@
                                 <?= isset($userPlan['status']) ? "Upgrade Plan" : "Subscribe Now" ?>
                             </a>
                             
+                            <?php if(isset($userPlan) && $userPlan['status'] === 'active'): ?>
+                            <button id="btnFreezeMembership"
+                               class="flex-1 text-center px-6 py-3 bg-transparent border border-amber-500/50 text-amber-400 hover:bg-amber-500/10 hover:text-amber-300 font-semibold rounded-xl transition-all">
+                                <i class="fas fa-snowflake mr-2"></i>Freeze Membership
+                            </button>
+                            <?php endif; ?>
+                            
                             <a href="index.php?controller=Subscribe&action=CancelSubscription" 
                                class="flex-1 text-center px-6 py-3 bg-transparent border border-rose-500/50 text-rose-400 hover:bg-rose-500/10 hover:text-rose-300 font-semibold rounded-xl transition-all">
                                 Cancel Plan
@@ -488,6 +495,153 @@
                 if (e.target === this) hideModal();
             });
             $submitBtn.on('click', submitRequest);
+        });
+    </script>
+    
+    <!-- Freeze Membership Modal -->
+    <div id="freezeModal" class="hidden fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-slate-800 rounded-2xl max-w-md w-full shadow-2xl border border-slate-700">
+            <div class="p-6 border-b border-slate-700">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-bold text-white flex items-center gap-2">
+                        <i class="fas fa-snowflake text-amber-400"></i>
+                        Freeze Membership
+                    </h3>
+                    <button id="closeFreezeModal" class="text-slate-400 hover:text-white transition">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <form id="freezeRequestForm" class="p-6 space-y-4">
+                <div id="freezeAlert" class="hidden"></div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">
+                        <i class="fas fa-calendar-alt mr-2"></i>Freeze Start Date
+                    </label>
+                    <input type="date" id="freezeStart" name="freeze_start" required
+                           min="<?= date('Y-m-d') ?>"
+                           class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">
+                        <i class="fas fa-calendar-check mr-2"></i>Freeze End Date
+                    </label>
+                    <input type="date" id="freezeEnd" name="freeze_end" required
+                           min="<?= date('Y-m-d', strtotime('+1 day')) ?>"
+                           class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white focus:ring-2 focus:ring-amber-500 focus:border-transparent">
+                    <p class="text-xs text-slate-500 mt-1">Maximum 90 days</p>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">
+                        <i class="fas fa-comment mr-2"></i>Reason (Optional)
+                    </label>
+                    <textarea id="freezeReason" name="reason" rows="3"
+                              placeholder="E.g., Traveling, Medical reasons, etc."
+                              class="w-full px-4 py-2 bg-slate-900 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:ring-2 focus:ring-amber-500 focus:border-transparent"></textarea>
+                </div>
+                
+                <div class="bg-blue-900/20 border border-blue-500/30 rounded-lg p-4">
+                    <p class="text-xs text-blue-300">
+                        <i class="fas fa-info-circle mr-2"></i>
+                        Your freeze request will be submitted for admin approval. Once approved, you won't be charged during the freeze period.
+                    </p>
+                </div>
+                
+                <button type="submit" id="submitFreeze"
+                        class="w-full px-6 py-3 bg-amber-600 hover:bg-amber-500 text-white font-semibold rounded-lg transition">
+                    <i class="fas fa-paper-plane mr-2"></i>Submit Request
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        $(document).ready(function() {
+            const $freezeModal = $('#freezeModal');
+            const $freezeForm = $('#freezeRequestForm');
+            const $freezeAlert = $('#freezeAlert');
+            const $submitBtn = $('#submitFreeze');
+            
+            $('#btnFreezeMembership').on('click', function() {
+                $freezeModal.removeClass('hidden');
+            });
+            
+            $('#closeFreezeModal').on('click', function() {
+                $freezeModal.addClass('hidden');
+                $freezeForm[0].reset();
+                $freezeAlert.addClass('hidden');
+            });
+            
+            $freezeModal.on('click', function(e) {
+                if ($(e.target).is($freezeModal)) {
+                    $('#closeFreezeModal').click();
+                }
+            });
+            
+            $freezeForm.on('submit', function(e) {
+                e.preventDefault();
+                
+                const freezeStart = $('#freezeStart').val();
+                const freezeEnd = $('#freezeEnd').val();
+                const reason = $('#freezeReason').val();
+                
+                const start = new Date(freezeStart);
+                const end = new Date(freezeEnd);
+                const daysDiff = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+                
+                if (daysDiff <= 0) {
+                    showFreezeAlert('End date must be after start date', 'error');
+                    return;
+                }
+                
+                if (daysDiff > 90) {
+                    showFreezeAlert('Freeze period cannot exceed 90 days', 'error');
+                    return;
+                }
+                
+                $submitBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin mr-2"></i>Submitting...');
+                
+                $.ajax({
+                    url: 'index.php?controller=Subscribe&action=RequestFreeze',
+                    method: 'POST',
+                    data: { freeze_start: freezeStart, freeze_end: freezeEnd, reason: reason },
+                    dataType: 'json',
+                    success: function(response) {
+                        if (response.success) {
+                            showFreezeAlert(response.message, 'success');
+                            setTimeout(() => location.reload(), 2000);
+                        } else {
+                            showFreezeAlert(response.message, 'error');
+                        }
+                    },
+                    error: function(xhr) {
+                        let msg = 'An error occurred. Please try again.';
+                        if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                        showFreezeAlert(msg, 'error');
+                    },
+                    complete: function() {
+                        $submitBtn.prop('disabled', false).html('<i class="fas fa-paper-plane mr-2"></i>Submit Request');
+                    }
+                });
+            });
+            
+            function showFreezeAlert(message, type) {
+                const bgColor = type === 'success' ? 'bg-green-500/10 border-green-500 text-green-400' : 'bg-red-500/10 border-red-500 text-red-400';
+                const icon = type === 'success' ? 'fa-check-circle' : 'fa-exclamation-circle';
+                
+                $freezeAlert
+                    .removeClass('hidden')
+                    .attr('class', `border ${bgColor} rounded-lg p-3 flex items-center gap-2 text-sm`)
+                    .html(`<i class="fas ${icon}"></i><span>${message}</span>`);
+                
+                if (type === 'success') {
+                    setTimeout(() => $freezeAlert.addClass('hidden'), 3000);
+                }
+            }
         });
     </script>
 </body>

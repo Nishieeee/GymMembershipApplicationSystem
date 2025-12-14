@@ -45,7 +45,7 @@
                     <div>
                         <div class="flex items-center justify-between mb-1">
                             <label for="password" class="block text-sm font-medium text-slate-700">Password</label>
-                            <a href="#" class="text-xs font-medium text-blue-600 hover:text-blue-800 hover:underline">Forgot Password?</a>
+                            <a href="index.php?controller=Auth&action=ForgotPassword" class="text-xs font-medium text-blue-600 hover:text-blue-800 hover:underline">Forgot Password?</a>
                         </div>
                         <input type="password" name="password" id="password" placeholder="••••••••" 
                                value="<?= htmlspecialchars($login['password'] ?? "") ?>" 
