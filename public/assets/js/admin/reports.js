@@ -1,142 +1,10 @@
-// Reports and Analytics JavaScript
-
-$(document).ready(function () {
-  // Period filter change handler
-  $("#reportPeriod").on("change", function () {
-    const period = $(this).val();
-    loadReportData(period);
-  });
-
-  // Export PDF functionality
-  $('.export-pdf-btn, button:contains("Export PDF")').on("click", function (e) {
-    e.preventDefault();
-    exportReportToPDF();
-  });
-
-  // Load report data based on selected period
-  function loadReportData(period) {
-    $.ajax({
-      url: "index.php?controller=Admin&action=getReportData",
-      method: "GET",
-      data: { period: period },
-      dataType: "json",
-      success: function (response) {
-        if (response.success) {
-          updateCharts(response.data);
-          updateKPIs(response.data);
-        }
-      },
-      error: function () {
-        showAlert("Error loading report data", "error");
-      },
-    });
-  }
-
-  // Update charts with new data
-  function updateCharts(data) {
-    // Update revenue trend chart
-    if (window.revenueTrendChart) {
-      window.revenueTrendChart.data.labels = data.revenue_trend.labels;
-      window.revenueTrendChart.data.datasets[0].data =
-        data.revenue_trend.values;
-      window.revenueTrendChart.update();
-    }
-
-    // Update other charts similarly
-  }
-
-  // Update KPI cards
-  function updateKPIs(data) {
-    // Update KPI values dynamically
-    $(".total-revenue").text("₱" + formatNumber(data.total_revenue));
-    $(".pending-revenue").text("₱" + formatNumber(data.pending_revenue));
-    $(".active-members").text(data.active_members);
-    $(".retention-rate").text(data.retention_rate + "%");
-  }
-
-  // Format number with commas
-  function formatNumber(num) {
-    return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-  }
-
-  // Export report to PDF
-  function exportReportToPDF() {
-    showAlert("Generating PDF report...", "info");
-
-    // You can use a library like jsPDF or send request to server
-    window.print(); // Simple print dialog for now
-  }
-
-  // Show alert message
-  function showAlert(message, type) {
-    const alertClass =
-      type === "success"
-        ? "bg-green-600"
-        : type === "error"
-        ? "bg-red-600"
-        : "bg-blue-600";
-
-    const alert = $(`
-            <div class="alert ${alertClass} text-white px-6 py-4 rounded-lg shadow-lg mb-4">
-                ${message}
-            </div>
-        `);
-
-    $("#alertContainer").append(alert);
-
-    setTimeout(() => {
-      alert.fadeOut(300, function () {
-        $(this).remove();
-      });
-    }, 3000);
-  }
-
-  function printReportPDF() {
-    // Add print class to body
-    document.body.classList.add("printing");
-
-    // Set print-friendly title
-    const originalTitle = document.title;
-    document.title = `Gymazing Report - ${new Date().toLocaleDateString()}`;
-
-    // Trigger print
-    setTimeout(() => {
-      window.print();
-
-      // Restore after print
-      setTimeout(() => {
-        document.title = originalTitle;
-        document.body.classList.remove("printing");
-      }, 100);
-    }, 500);
-  }
-  // Real-time data refresh (optional)
-  function startAutoRefresh() {
-    setInterval(function () {
-      const period = $("#reportPeriod").val();
-      loadReportData(period);
-    }, 300000); // Refresh every 5 minutes
-  }
-
-  // Uncomment to enable auto-refresh
-  // startAutoRefresh();
-});
-
-// Chart interaction handlers
-function chartClickHandler(evt, item) {
-  if (item.length > 0) {
-    const index = item[0].index;
-    const label = item[0].chart.data.labels[index];
-    console.log("Clicked:", label);
-    // Add custom drill-down functionality here
-  }
-}
-// Add to reports.js or create admin-reports-filter.js
+// Admin Reports & Analytics Logic
 
 $(document).ready(function () {
   // Store chart instances globally
   window.chartInstances = {};
 
+  // 1. Filter Logic
   // Show/hide custom date range
   $("#dateRangeFilter").on("change", function () {
     if ($(this).val() === "custom") {
@@ -167,6 +35,12 @@ $(document).ready(function () {
     location.reload(); // Reload page to show original data
   });
 
+  // 2. Export Logic
+  $("#btnExportCSV").on("click", function () {
+    exportToCSV();
+  });
+
+  // 3. Core Functions
   function applyChartFilters() {
     const dateRange = $("#dateRangeFilter").val();
     const chartType = $("#chartTypeFilter").val();
@@ -228,7 +102,56 @@ $(document).ready(function () {
     });
   }
 
+  function updateKPIs(data) {
+    // Safe check for data existence
+    if (!data) return;
+
+    // Money formatting helper
+    const formatMoney = (amount) => '₱' + parseFloat(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const formatNum = (num) => parseInt(num).toLocaleString('en-US');
+
+    // Revenue
+    if (data.payment_stats) {
+      $('#kpiTotalRevenue').text(formatMoney(data.payment_stats.total_paid));
+      $('#kpiTransactionCount').text(formatNum(data.payment_stats.paid_count) + ' successful transactions');
+
+      // Avg Transaction
+      const avg = data.payment_stats.paid_count > 0 ? (data.payment_stats.total_paid / data.payment_stats.paid_count) : 0;
+      $('#kpiAvgTransaction').text(formatMoney(avg));
+
+      // Success Rate
+      const totalTrans = data.payment_stats.total_transactions;
+      const successRate = totalTrans > 0 ? ((data.payment_stats.paid_count / totalTrans) * 100).toFixed(1) : 0;
+      $('#kpiSuccessRate').text(successRate + '%');
+      $('#kpiFailedCount').text(data.payment_stats.failed_count || 0);
+    }
+
+    // Pending
+    if (data.pending_payments) {
+      $('#kpiPendingCount').text(formatNum(data.pending_payments.pending_count));
+      $('#kpiPendingAmount').text(formatMoney(data.pending_payments.pending_amount));
+    }
+
+    // Members
+    if (data.active_inactive_count) {
+      $('#kpiActiveMembers').text(formatNum(data.active_inactive_count.active_count));
+      $('#kpiInactiveMembers').text(formatNum(data.active_inactive_count.inactive_count));
+    }
+
+    // Retention
+    if (data.retention_rate) {
+      $('#kpiRetentionRate').text(data.retention_rate.rate + '%');
+    }
+
+    // Expiring
+    if (data.expiring_subscriptions) {
+      $('#kpiExpiringCount').text(formatNum(data.expiring_subscriptions.expiring_count));
+    }
+  }
+
   function updateAllCharts(data, chartType) {
+    console.log("Updating charts with:", data);
+
     // Update Revenue Trend Chart
     if (chartType === "all" || chartType === "revenue") {
       updateChart("revenueTrendChart", {
@@ -341,6 +264,22 @@ $(document).ready(function () {
         ],
       });
     }
+
+    // Members Status and Subscription Status charts can also be updated here if data exists
+    if (data.active_inactive_count && (chartType === "all" || chartType === "members")) {
+      updateChart("memberStatusChart", {
+        labels: ['Active Members', 'Inactive Members'],
+        datasets: [{
+          data: [data.active_inactive_count.active_count, data.active_inactive_count.inactive_count],
+          backgroundColor: [
+            'rgba(34, 197, 94, 0.8)',
+            'rgba(239, 68, 68, 0.8)'
+          ],
+          borderWidth: 2,
+          borderColor: '#1e293b'
+        }]
+      });
+    }
   }
 
   function updateChart(chartId, newData) {
@@ -357,12 +296,38 @@ $(document).ready(function () {
     }
   }
 
-  function updateKPIs(data) {
-    // Update KPI values based on filtered data
-    if (data.payment_stats) {
-      // Update revenue KPIs
-      // You can add specific selectors for your KPI cards here
+  function exportToCSV() {
+    // Collect data from the DOM or last requested data
+    // For simplicity, we'll export the summary table data from the view
+    let csv = [];
+    const rows = document.querySelectorAll("table tr");
+
+    for (let i = 0; i < rows.length; i++) {
+      let row = [], cols = rows[i].querySelectorAll("td, th");
+      for (let j = 0; j < cols.length; j++)
+        row.push(cols[j].innerText.replace(/,/g, "")); // Clean commas
+      csv.push(row.join(","));
     }
+
+    // Also add header info
+    const revenue = $('#kpiTotalRevenue').text().replace(/,/g, "");
+    csv.unshift(["Total Revenue", revenue]);
+    csv.unshift(["Report Generated", new Date().toLocaleString()]);
+
+    downloadCSV(csv.join("\n"), "gymazing_report.csv");
+  }
+
+  function downloadCSV(csv, filename) {
+    let csvFile;
+    let downloadLink;
+
+    csvFile = new Blob([csv], { type: "text/csv" });
+    downloadLink = document.createElement("a");
+    downloadLink.download = filename;
+    downloadLink.href = window.URL.createObjectURL(csvFile);
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+    downloadLink.click();
   }
 
   function showAlert(message, type) {
@@ -370,8 +335,8 @@ $(document).ready(function () {
       type === "success"
         ? "bg-green-600"
         : type === "error"
-        ? "bg-red-600"
-        : "bg-blue-600";
+          ? "bg-red-600"
+          : "bg-blue-600";
 
     const alert = $(`
             <div class="alert ${alertClass} text-white px-6 py-4 rounded-lg shadow-lg mb-4 animate-fade-in">

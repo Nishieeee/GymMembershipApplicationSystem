@@ -209,7 +209,10 @@
                         <button id="btnResetFilter" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 text-slate-300 rounded-lg transition-colors">
                             <i class="fas fa-redo"></i>
                         </button>
-                        <button onclick="window.print()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors shadow-lg shadow-emerald-900/20">
+                        <button id="btnExportCSV" class="px-3 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-lg transition-colors shadow-lg shadow-purple-900/20" title="Export CSV">
+                            <i class="fas fa-file-csv"></i>
+                        </button>
+                        <button onclick="window.print()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg transition-colors shadow-lg shadow-emerald-900/20" title="Print Report">
                             <i class="fas fa-print"></i>
                         </button>
                     </div>
@@ -238,13 +241,10 @@
                         <div class="icon-bg bg-emerald-500/10 text-emerald-400">
                             <i class="fa-regular fa-money-bill-1"></i>
                         </div>
-                        <span class="px-2 py-1 rounded bg-emerald-500/10 text-emerald-400 text-xs font-bold border border-emerald-500/20">
-                            +<?= number_format((($paymentStats['total_paid'] ?? 0) / max(($totalEarned['total_earned'] ?? 1), 1) * 100), 1) ?>%
-                        </span>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-1">₱<?= number_format($paymentStats['total_paid'] ?? 0, 2) ?></h3>
+                    <h3 id="kpiTotalRevenue" class="text-3xl font-bold text-white mb-1">₱<?= number_format($paymentStats['total_paid'] ?? 0, 2) ?></h3>
                     <p class="text-slate-400 text-sm mb-1">Total Revenue</p>
-                    <p class="text-slate-500 text-xs"><?= $paymentStats['paid_count'] ?? 0 ?> successful transactions</p>
+                    <p id="kpiTransactionCount" class="text-slate-500 text-xs"><?= $paymentStats['paid_count'] ?? 0 ?> successful transactions</p>
                 </div>
 
                 <div class="stat-card rounded-2xl p-6">
@@ -253,10 +253,10 @@
                             <i class="fa-regular fa-hourglass"></i>
                         </div>
                         <span class="px-2 py-1 rounded bg-yellow-500/10 text-yellow-400 text-xs font-bold border border-yellow-500/20">
-                            <?= $pendingPayments['pending_count'] ?> pending
+                            <span id="kpiPendingCount"><?= $pendingPayments['pending_count'] ?></span> pending
                         </span>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-1">₱<?= number_format($pendingPayments['pending_amount'] ?? 0, 2) ?></h3>
+                    <h3 id="kpiPendingAmount" class="text-3xl font-bold text-white mb-1">₱<?= number_format($pendingPayments['pending_amount'] ?? 0, 2) ?></h3>
                     <p class="text-slate-400 text-sm mb-1">Pending Revenue</p>
                     <p class="text-slate-500 text-xs">Expected receivable</p>
                 </div>
@@ -266,13 +266,10 @@
                         <div class="icon-bg bg-blue-500/10 text-blue-400">
                             <i class="fa-solid fa-user"></i>
                         </div>
-                        <span class="px-2 py-1 rounded bg-blue-500/10 text-blue-400 text-xs font-bold border border-blue-500/20">
-                            <?= round(($activeInactiveCount['active_count'] / max(($memberCount['active_member_count'] ?? 1), 1)) * 100, 1) ?>%
-                        </span>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-1"><?= $activeInactiveCount['active_count'] ?? 0 ?></h3>
+                    <h3 id="kpiActiveMembers" class="text-3xl font-bold text-white mb-1"><?= $activeInactiveCount['active_count'] ?? 0 ?></h3>
                     <p class="text-slate-400 text-sm mb-1">Active Members</p>
-                    <p class="text-slate-500 text-xs"><?= $activeInactiveCount['inactive_count'] ?? 0 ?> currently inactive</p>
+                    <p class="text-slate-500 text-xs"><span id="kpiInactiveMembers"><?= $activeInactiveCount['inactive_count'] ?? 0 ?></span> currently inactive</p>
                 </div>
 
                 <div class="stat-card rounded-2xl p-6">
@@ -281,9 +278,9 @@
                             <i class="fa-regular fa-chart-bar"></i>
                         </div>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-1"><?= $retentionRate['rate'] ?>%</h3>
+                    <h3 id="kpiRetentionRate" class="text-3xl font-bold text-white mb-1"><?= $retentionRate['rate'] ?>%</h3>
                     <p class="text-slate-400 text-sm mb-1">Retention Rate</p>
-                    <p class="text-slate-500 text-xs"><?= $retentionRate['active'] ?> of <?= $retentionRate['total'] ?> retained</p>
+                    <p class="text-slate-500 text-xs">Based on active vs total</p>
                 </div>
 
                 <div class="stat-card rounded-2xl p-6">
@@ -293,7 +290,7 @@
                         </div>
                         <span class="px-2 py-1 rounded bg-orange-500/10 text-orange-400 text-xs font-bold border border-orange-500/20">Urgent</span>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-1"><?= $expiringSubscriptions['expiring_count'] ?? 0 ?></h3>
+                    <h3 id="kpiExpiringCount" class="text-3xl font-bold text-white mb-1"><?= $expiringSubscriptions['expiring_count'] ?? 0 ?></h3>
                     <p class="text-slate-400 text-sm mb-1">Expiring Soon</p>
                     <p class="text-slate-500 text-xs">Within next 7 days</p>
                 </div>
@@ -304,7 +301,7 @@
                             <i class="fa-regular fa-credit-card"></i>
                         </div>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-1">₱<?= number_format(($paymentStats['total_paid'] ?? 0) / max(($paymentStats['paid_count'] ?? 1), 1), 2) ?></h3>
+                    <h3 id="kpiAvgTransaction" class="text-3xl font-bold text-white mb-1">₱<?= number_format(($paymentStats['total_paid'] ?? 0) / max(($paymentStats['paid_count'] ?? 1), 1), 2) ?></h3>
                     <p class="text-slate-400 text-sm mb-1">Avg Transaction</p>
                     <p class="text-slate-500 text-xs">Per successful payment</p>
                 </div>
@@ -329,9 +326,9 @@
                             <i class="fa-regular fa-circle-check"></i>
                         </div>
                     </div>
-                    <h3 class="text-3xl font-bold text-white mb-1"><?= round((($paymentStats['paid_count'] ?? 0) / max(($paymentStats['total_transactions'] ?? 1), 1)) * 100, 1) ?>%</h3>
+                    <h3 id="kpiSuccessRate" class="text-3xl font-bold text-white mb-1"><?= round((($paymentStats['paid_count'] ?? 0) / max(($paymentStats['total_transactions'] ?? 1), 1)) * 100, 1) ?>%</h3>
                     <p class="text-slate-400 text-sm mb-1">Success Rate</p>
-                    <p class="text-slate-500 text-xs"><?= $paymentStats['failed_count'] ?? 0 ?> failed attempts</p>
+                    <p class="text-slate-500 text-xs"><span id="kpiFailedCount"><?= $paymentStats['failed_count'] ?? 0 ?></span> failed attempts</p>
                 </div>
             </div>
 
