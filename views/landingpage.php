@@ -19,6 +19,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gymazing - Transform Your Body & Mind</title>
     <script src="public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <link rel="stylesheet" href="public/assets/css/style.css">
     <style>
         /* Custom gradient background */
@@ -394,6 +395,6 @@
     <!-- footer -->
     <?php include __DIR__ . '/layouts/footer.php' ?>
     
-    <script src="public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+
 </body>
 </html>

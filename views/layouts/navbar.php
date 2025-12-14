@@ -241,7 +241,7 @@ $user_initial = substr($user_name, 0, 1);
         </nav>
 
         <div class="p-4 border-t border-gray-800">
-            <a href="views/auth/logout.php" class="block px-4 py-3 rounded-lg text-red-400 font-medium hover:bg-gray-800 transition text-center">
+            <a href="index.php?controller=Home&action=index" class="block px-4 py-3 rounded-lg text-red-400 font-medium hover:bg-gray-800 transition text-center">
                 <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
