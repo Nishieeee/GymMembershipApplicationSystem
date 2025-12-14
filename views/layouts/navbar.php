@@ -236,7 +236,7 @@ $user_initial = substr($user_name, 0, 1);
                     </svg>
                 </button>
                 <div class="submenu" id="moreOptionsMenu">
-                    <a href="profile.php" class="block px-4 py-2 ml-8 text-gray-400 hover:text-blue-400 rounded transition-colors text-sm">
+                    <a href="index.php?controller=User&action=editProfile" class="block px-4 py-2 ml-8 text-gray-400 hover:text-blue-400 rounded transition-colors text-sm">
                         Edit Profile
                     </a>
                     <a href="settings.php" class="block px-4 py-2 ml-8 text-gray-400 hover:text-blue-400 rounded transition-colors text-sm">

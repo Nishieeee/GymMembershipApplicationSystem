@@ -72,7 +72,7 @@
         }
         public function getMember($user_id) {
             $sql = "SELECT 
-                    user_id, CONCAT(first_name, ' ', last_name) as name, first_name, last_name, email, role, created_at 
+                    user_id, CONCAT(first_name, ' ', last_name) as name, first_name, last_name, phone_no, email, role, created_at 
                     FROM members 
                     WHERE user_id = :user_id";
 
@@ -267,6 +267,63 @@
                     'success' => false,
                     'Data' => NULL,
                 ]);
+            }
+        }
+
+        public function updateMemberProfile($user_id, $data) {
+            // Update only personal info, excluding role/status for security
+            $sql = "UPDATE members SET 
+                    first_name = :first_name, 
+                    last_name = :last_name, 
+                    middle_name = :middle_name, 
+                    email = :email, 
+                    phone_no = :phone_no 
+                    WHERE user_id = :user_id";
+
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":first_name", $data['first_name']);
+            $query->bindParam(":last_name", $data['last_name']);
+            $query->bindParam(":middle_name", $data['middle_name']);
+            $query->bindParam(":email", $data['email']);
+            $query->bindParam(":phone_no", $data['phone_no']);
+            $query->bindParam(":user_id", $user_id);
+
+            return $query->execute();
+        }
+
+        public function updateUserAddress($user_id, $zip, $street, $city) {
+            $db = $this->connect();
+            try {
+                $db->beginTransaction();
+
+                // 1. Insert or Update the Address Table
+                // Uses ON DUPLICATE KEY UPDATE to handle if the ZIP already exists
+                $sqlAddr = "INSERT INTO member_address (zip, street_address, city) 
+                            VALUES (:zip, :street, :city) 
+                            ON DUPLICATE KEY UPDATE street_address = :street, city = :city";
+                
+                $stmtAddr = $db->prepare($sqlAddr);
+                $stmtAddr->bindParam(':zip', $zip);
+                $stmtAddr->bindParam(':street', $street);
+                $stmtAddr->bindParam(':city', $city);
+                $stmtAddr->execute();
+
+                // 2. Update the Link Table to point to this Zip
+                // Uses INSERT ... ON DUPLICATE KEY UPDATE in case the link doesn't exist yet
+                $sqlLink = "INSERT INTO member_address_link (user_id, zip, address_type) 
+                            VALUES (:user_id, :zip, 'Home') 
+                            ON DUPLICATE KEY UPDATE zip = :zip";
+                
+                $stmtLink = $db->prepare($sqlLink);
+                $stmtLink->bindParam(':user_id', $user_id);
+                $stmtLink->bindParam(':zip', $zip);
+                $stmtLink->execute();
+
+                $db->commit();
+                return true;
+            } catch (Exception $e) {
+                $db->rollBack();
+                return false;
             }
         }
 

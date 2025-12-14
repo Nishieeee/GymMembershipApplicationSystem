@@ -235,5 +235,59 @@
             
             $this->view('profile', $profileData);
         }
+        public function editProfile() {
+            $this->requireLogin();
+            $user_id = $_SESSION['user_id'];
+            $userModel = new User();
+            
+            // Fetch existing data to pre-fill the form
+            $userInfo = $userModel->getMember($user_id);
+            
+            // Re-fetching specific details just to be safe if getMember is limited
+            $fullDetails = $userModel->getMemberDetailsById($user_id);
+            
+            $addressInfo = $userModel->getMemberAddress($user_id);
+            
+            $this->view('edit_profile', [
+                'user' => $userInfo,
+                'address' => $addressInfo
+            ]);
+        }
+
+        public function saveProfile() {
+            $this->requireLogin();
+            $user_id = $_SESSION['user_id'];
+            
+            if($_SERVER['REQUEST_METHOD'] == 'POST') {
+                $userModel = new User();
+                
+                // 1. Prepare Profile Data
+                $profileData = [
+                    'first_name' => trim(htmlspecialchars($_POST['first_name'])),
+                    'last_name'  => trim(htmlspecialchars($_POST['last_name'])),
+                    'middle_name'=> trim(htmlspecialchars($_POST['middle_name'])),
+                    'email'      => trim(htmlspecialchars($_POST['email'])),
+                    'phone_no'   => trim(htmlspecialchars($_POST['phone_no']))
+                ];
+
+                // 2. Prepare Address Data
+                $street = trim(htmlspecialchars($_POST['street_address']));
+                $city   = trim(htmlspecialchars($_POST['city']));
+                $zip    = trim(htmlspecialchars($_POST['zip']));
+
+                // 3. Update Database
+                $profileUpdated = $userModel->updateMemberProfile($user_id, $profileData);
+                $addressUpdated = $userModel->updateUserAddress($user_id, $zip, $street, $city);
+
+                if($profileUpdated && $addressUpdated) {
+                    // Success
+                    header("Location: index.php?controller=User&action=profile");
+                    exit;
+                } else {
+                    // Error handling
+                    echo "Failed to update profile.";
+                }
+            }
+        }
     }
 ?>

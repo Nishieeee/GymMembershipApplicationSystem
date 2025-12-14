@@ -209,7 +209,7 @@
                 <?php endif; ?>
             </section>
 
-            <section class="mb-12 fadeIn" style="animation-delay: 0.2s;">
+            <!-- <section class="mb-12 fadeIn" style="animation-delay: 0.2s;">
                 <div class="flex flex-col sm:flex-row items-center justify-between mb-6 gap-4">
                     <h2 class="text-xl font-bold text-white flex items-center">
                         <i class="fa-solid fa-wallet mr-3 text-blue-500"></i> Payment Methods
@@ -250,7 +250,7 @@
                         <span class="text-sm font-medium">Add Payment Method</span>
                     </button>
                 </div>
-            </section>
+            </section> -->
 
             <section id="transaction_history" class="fadeIn" style="animation-delay: 0.3s;">
                 <div class="flex items-center justify-between mb-6">
