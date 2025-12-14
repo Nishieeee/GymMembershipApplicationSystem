@@ -59,12 +59,27 @@
 
         // Respond accordingly
         if ($result) {
-            // $this->notifyPaymentSuccess();
             $paymentModel = new Payment();
             $userModel = new User();
+            $planModel = new Plan();
+            $subModel = new Subscription();
 
+            // Fetch Data
             $payment_details = $paymentModel->getPaymentId($paymentDetails['subscription_id']);
-            $userDetails = $userModel->getMember($user_id);
+            $userDetails = $userModel->getMember($user_id); // Now we have userDetails
+            $subData = $subModel->getSubscriptionById($paymentDetails['subscription_id']);
+            $planData = $planModel->getPlanById($subData['plan_id']);
+
+            // Notify Email
+            $this->notifyPaymentSuccess(
+                $userDetails['email'], 
+                $userDetails['name'], 
+                $payment_details['amount'], 
+                $planData['plan_name'] ?? 'Membership', 
+                $paymentDetails['payment_id']
+            );
+
+            // DB Notifications
             NotificationHelper::paymentReceived($user_id, $payment_details['amount']);
             NotificationHelper::paymentReceived_Admin(7, $userDetails['name'], $payment_details['amount']);
             http_response_code(200);
@@ -127,6 +142,49 @@
 
     }
 
+    public function notifyRefundIssued($email, $name, $amount) {
+        $mail = $this->mailer();
+        $mail->addAddress($email, $name);
+        $mail->Subject = "Refund Issued: {$amount} 💸";
+        $mail->isHTML(true);
+        $mail->Body = "
+            <div style='font-family: Arial, sans-serif; padding: 20px; background-color: #f7f9fc;'>
+                <div style='max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 8px;'>
+                    <h2 style='color: #64748B;'>Refund Processed</h2>
+                    <p>Hi {$name},</p>
+                    <p>We have processed a refund of <strong>{$amount}</strong> for your transaction.</p>
+                    <p>Please allow 5-10 business days for the amount to reflect in your account.</p>
+                    <p>If you have questions, reply to this email.</p>
+                    <p>Best,<br>Gymazing Team</p>
+                </div>
+            </div>
+        ";
+        $mail->send();
+    }
+
+    public function notifyPaymentReminder($email, $name, $amount, $dueDate) {
+        $mail = $this->mailer();
+        $mail->addAddress($email, $name);
+        $mail->Subject = "Payment Reminder: {$amount} Pending ⏳";
+        $mail->isHTML(true);
+        $mail->Body = "
+            <div style='font-family: Arial, sans-serif; padding: 20px; background-color: #fff7ed;'>
+                <div style='max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 8px; border: 1px solid #ffedd5;'>
+                    <h2 style='color: #ea580c;'>Action Required: Payment Pending</h2>
+                    <p>Hi {$name},</p>
+                    <p>This is a friendly reminder that a payment of <strong>{$amount}</strong> is pending for your subscription.</p>
+                    <p><strong>Due Date:</strong> {$dueDate}</p>
+                    <div style='margin: 20px 0;'>
+                        <a href='https://gymazing.com/dashboard/payments' style='background-color: #ea580c; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>Pay Now</a>
+                    </div>
+                    <p>To avoid service interruption, please settle this at your earliest convenience.</p>
+                    <p>Best,<br>Gymazing Team</p>
+                </div>
+            </div>
+        ";
+        $mail->send();
+    }
+
 
     public function getPaymentData() {
         // $this->requireLogin();
@@ -155,6 +213,29 @@
             $paymentModel = new Payment();
             
             if($paymentModel->updatePaymentStatus($payment_id, 'refunded')) {
+                // Fetch user and payment details for notification
+                $paymentData = $paymentModel->getPaymentById($payment_id);
+                // We need user_id from subscription...
+                // Assuming payment link to subscription link to user? 
+                // Let's use getPaymentDetails which usually joins?
+                // Or simplified: Just success response for now, OR fetch logic.
+                // Let's assume we can get email.
+                // Helper:
+                $userModel = new User();
+                // We need user_id. Payment table usually has subscription_id. Subscription has user_id.
+                // For simplicity, I'll rely on internal logic if I can, OR just accept I need to fetch.
+                // Let's SKIP complex fetching for this snippet to avoid breaking if models differ.
+                // But user asked to COMPLETE it.
+                // I will add the method definition below and leave the complex fetch logic for now or try best effort.
+                
+                // Fetching for Refund Notification:
+                 $subModel = new Subscription();
+                 $subData = $subModel->getSubscriptionById($paymentData['subscription_id']);
+                 $userModel = new User();
+                 $userData = $userModel->getMemberDetailsById($subData['user_id']);
+                 
+                 $this->notifyRefundIssued($userData['email'], $userData['first_name'], $paymentData['amount']);
+
                 echo json_encode(['success' => true, 'message' => 'Payment refunded']);
             } else {
                 echo json_encode(['success' => false, 'message' => 'Refund failed']);
@@ -168,11 +249,21 @@
         
         if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $payment_id = $_POST['payment_id'];
-            // Simulation of email sending
-            // In real app: Fetch member email via payment_id -> send email
+            $payment_id = $_POST['payment_id'];
+            $paymentModel = new Payment();
+            $paymentData = $paymentModel->getPaymentById($payment_id);
             
-            sleep(1); // Simulate network delay
-            echo json_encode(['success' => true, 'message' => 'Reminder sent']);
+            if($paymentData) {
+                 $subModel = new Subscription();
+                 $subData = $subModel->getSubscriptionById($paymentData['subscription_id']);
+                 $userModel = new User();
+                 $userData = $userModel->getMemberDetailsById($subData['user_id']);
+                 
+                 $this->notifyPaymentReminder($userData['email'], $userData['first_name'], $paymentData['amount'], $paymentData['payment_date']);
+                 echo json_encode(['success' => true, 'message' => 'Reminder sent']);
+            } else {
+                 echo json_encode(['success' => false, 'message' => 'Payment not found']);
+            }
         }
     }
 

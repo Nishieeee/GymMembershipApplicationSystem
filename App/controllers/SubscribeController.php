@@ -75,7 +75,8 @@
 
                 // 3. Proceed with Subscription Logic
                 $userCurrentPlan = $subscribe->checkUserCurrentPlan($subscriptionDetails['user_id']);
-                
+                $currentUser = $userModel->getMember($subscriptionDetails['user_id']); // Fetch user details
+
                 if ($userCurrentPlan) {
                     // --- SCENARIO A: Upgrade/Change Plan (Overwrite old plan) ---
                     if ($subscribe->subscripePlan($subscriptionDetails)) {
@@ -92,6 +93,8 @@
 
                             if ($paymentModel->openPayment($paymentDetails)) {
                                 NotificationHelper::membershipRenewed($user_id, $subscriptionDetails['end_date']);
+                                // Notify Upgrade
+                                $this->notifyUpgradedPlan($currentUser['email'], $currentUser['first_name'], $planInfo['plan_name']);
                                 $this->feedback('subscription_success');
                             } else {
                                 $this->feedback('subscription_failed', ['error_message' => "Error setting up payment."]);
@@ -115,7 +118,8 @@
                         $paymentDetails['status'] = "pending";
 
                         if ($paymentModel->openPayment($paymentDetails)) {
-                            // $this->notifySubscription($user['email'], $user['name']); 
+                            // Notify New Subscription
+                            $this->notifySubscription($currentUser['email'], $currentUser['first_name']); 
                             $this->feedback('subscription_success');
                         } else {
                             $this->feedback('subscription_failed', ['error_message' => "Error setting up payment."]);
@@ -271,8 +275,34 @@
             $mail->send();
         }
 
-        public function notifyUpgradedPlan($email, $name) {
-            
+        public function notifyUpgradedPlan($email, $name, $newPlanName) {
+            $mail = $this->mailer();
+            $mail->addAddress($email, $name);
+            $mail->Subject = "Membership Plan Upgraded! 🚀";
+            $mail->isHTML(true);
+            $mail->Body = "
+                <div style='font-family: Arial, sans-serif; padding: 20px; background-color: #fce7f3;'>
+                    <div style='max-width: 600px; margin: auto; background-color: #ffffff; padding: 20px; border-radius: 8px;'>
+                        <h2 style='color: #db2777;'>Plan Upgrade Successful! 💎</h2>
+
+                        <p>Hi <strong>{$name}</strong>,</p>
+                        <p>You have successfully upgraded your membership!</p>
+
+                        <div style='margin: 20px 0; padding: 15px; background-color: #fdf2f8; border-left: 4px solid #db2777;'>
+                            <p style='margin: 0; font-size: 16px;'>You are now on the <strong>{$newPlanName}</strong> plan.</p>
+                        </div>
+
+                        <p>Enjoy the new perks and features unlocked with this upgrade.</p>
+
+                        <a href='https://gymazing.com/dashboard' style='display:inline-block; margin-top: 15px; background-color: #db2777; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;'>View My Plan</a>
+                        
+                        <p style='margin-top:20px; color:#666;'>Keep pushing your limits!</p>
+                        <p style='font-size: 12px; color: #777;'>&copy; " . date('Y') . " Gymazing.</p>
+                    </div>
+                </div>
+            ";
+            $mail->AltBody = "Hi {$name}, your plan has been upgraded to {$newPlanName}.";
+            $mail->send();
         }
     }
 

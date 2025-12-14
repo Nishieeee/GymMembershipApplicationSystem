@@ -661,9 +661,39 @@
         private function notifyUserRejection($email, $name) {
             $mail = $this->mailer();
             $mail->addAddress($email, $name);
-            $mail->Subject = "Account Registration Update";
+            $mail->Subject = "Update on Your Account Registration";
             $mail->isHTML(true);
-            $mail->Body = "Hi {$name},<br><br>Unfortunately, your account registration has been rejected. Please contact support for more details.<br><br>Best,<br>Gymazing Team";
+            $mail->Body = "
+                <div style='font-family: Arial, sans-serif; padding: 20px; background-color: #f4f7fa;'>
+                    <div style='max-width: 600px; margin: auto; background-color: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #e1e5ea;'>
+
+                        <h2 style='color: #EF4444;'>Application Update ⚠️</h2>
+
+                        <p>Hi {$name},</p>
+
+                        <p>Thank you for your interest in Gymazing.</p>
+
+                        <div style='margin: 15px 0; padding: 12px; background-color: #fef2f2; border-left: 4px solid #EF4444;'>
+                            <p style='margin: 0; font-size: 15px;'>We regret to inform you that your registration could not be approved at this time.</p>
+                        </div>
+
+                        <p>This decision may be due to incomplete information or issues with the uploaded ID verification document.</p>
+
+                        <p>If you believe this is a mistake or would like to try again, please contact our support team or register with corrected details.</p>
+
+                        <a href='mailto:support@gymazing.com' 
+                           style='display:inline-block; margin: 15px 0; background-color: #64748B; 
+                           color: white; padding: 12px 20px; text-decoration: none; border-radius: 6px;'>
+                           Contact Support
+                        </a>
+
+                        <hr style='margin-top: 30px;'>
+
+                        <p style='font-size: 12px; color: #777;'>&copy; " . date('Y') . " Gymazing. All rights reserved.</p>
+                    </div>
+                </div>
+            ";
+            $mail->AltBody = "Hi {$name}, your registration was rejected. Please contact support context for more details.";
             $mail->send();
         }
 
