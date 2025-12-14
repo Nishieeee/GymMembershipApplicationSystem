@@ -1,3 +1,25 @@
+// Alert Function
+function showAlert(message, type) {
+  const alertClass = type === "success" ? "bg-green-500" : "bg-red-500";
+  const icon = type === "success" ? "✓" : "✕";
+
+  const alert = `
+          <div class="alert ${alertClass} text-white px-6 py-4 rounded-lg shadow-lg flex items-center">
+              <span class="mr-3 text-2xl">${icon}</span>
+              <span>${message}</span>
+          </div>
+      `;
+
+  $("#alertContainer").append(alert);
+
+  setTimeout(() => {
+    $("#alertContainer .alert")
+      .first()
+      .fadeOut(300, function () {
+        $(this).remove();
+      });
+  }, 5000);
+}
 $(document).ready(function () {
   // ===== TAB SWITCHING =====
   $(".tab-button").on("click", function () {
@@ -10,15 +32,6 @@ $(document).ready(function () {
     // Add active class to clicked button and corresponding content
     $(this).addClass("active").removeClass("text-gray-400");
     $("#" + tabName).addClass("active");
-  });
-
-  // ===== PLAN MODAL =====
-  $("#btnAddPlan").on("click", function () {
-    $("#planForm")[0].reset();
-    $("#planForm h3").text("Add New Plan");
-    $("#submitPlanBtn").text("Create Plan");
-    $("#planModal").addClass("show");
-    $("body").css("overflow", "hidden");
   });
 
   // Close plan modal
@@ -34,11 +47,6 @@ $(document).ready(function () {
       $("body").css("overflow", "auto");
     }
   });
-});
-
-// ===== PLAN ACTIONS =====
-$(document).on("click", ".btn-edit-plan", function () {
-  showAlert("Edit plan functionality - Add your implementation", "info");
 });
 
 $(document).on("click", ".btn-delete-plan", function () {
@@ -189,32 +197,28 @@ $(document).ready(function () {
       },
     });
   });
-  $(document).ready(function() {
-    
-      // --- View Walk-in Details ---
-      $(document).on('click', '.btn-view-walkin', function() {
-          // Find the closest tr to get the ID if stored there, or assume logic to get ID
-          // Note: Your table PHP loop doesn't have data-walkin-id on the tr, adding it assumes you will add it.
-          // If not, we find it from context or button attribute.
-          // Assuming you add data-walkin-id="<?= $walkin['walkin_id'] ?>" to the tr in adminDashboard.php
-          let walkinId = $(this).closest('tr').data('walkin-id'); // Make sure to add this to your table row HTML!
-          
-          if(!walkinId) return; 
+  $(document).ready(function () {
+    $(document).on("click", ".btn-view-walkin", function () {
+      let walkinId = $(this).closest("tr").data("walkin-id");
 
-          $.ajax({
-              url: 'index.php?controller=User&action=getWalkinData',
-              type: 'GET',
-              data: { walkin_id: walkinId },
-              dataType: 'json',
-              success: function(response) {
-                  if (response.success) {
-                      let w = response.data;
-                      let html = `
+      if (!walkinId) return;
+
+      $.ajax({
+        url: "index.php?controller=User&action=getWalkinData",
+        type: "GET",
+        data: { walkin_id: walkinId },
+        dataType: "json",
+        success: function (response) {
+          if (response.success) {
+            let w = response.data;
+            let html = `
                           <div class="space-y-6">
                               <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
                                   <div>
                                       <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Walk-in ID</p>
-                                      <p class="text-white font-mono text-lg tracking-wide">#${w.walkin_id}</p>
+                                      <p class="text-white font-mono text-lg tracking-wide">#${
+                                        w.walkin_id
+                                      }</p>
                                   </div>
                                   <span class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                                       ${w.session_type.toUpperCase()}
@@ -225,198 +229,221 @@ $(document).ready(function () {
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                       <div>
                                           <p class="text-slate-500 text-xs mb-1">Full Name</p>
-                                          <p class="text-white font-medium text-lg">${w.first_name} ${w.middle_name ? w.middle_name + ' ' : ''}${w.last_name}</p>
+                                          <p class="text-white font-medium text-lg">${
+                                            w.first_name
+                                          } ${
+              w.middle_name ? w.middle_name + " " : ""
+            }${w.last_name}</p>
                                       </div>
                                       <div>
                                           <p class="text-slate-500 text-xs mb-1">Contact</p>
-                                          <p class="text-white font-medium">${w.contact_no}</p>
-                                          <p class="text-slate-400 text-xs">${w.email || 'No email'}</p>
+                                          <p class="text-white font-medium">${
+                                            w.contact_no
+                                          }</p>
+                                          <p class="text-slate-400 text-xs">${
+                                            w.email || "No email"
+                                          }</p>
                                       </div>
                                   </div>
                                   <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
                                       <div>
                                           <p class="text-slate-500 text-xs mb-1">Visit Time</p>
-                                          <p class="text-white font-medium">${w.visit_time}</p>
+                                          <p class="text-white font-medium">${
+                                            w.visit_time
+                                          }</p>
                                       </div>
                                       <div>
                                           <p class="text-slate-500 text-xs mb-1">Valid Until</p>
-                                          <p class="text-white font-medium">${w.end_date}</p>
+                                          <p class="text-white font-medium">${
+                                            w.end_date
+                                          }</p>
                                       </div>
                                   </div>
                                   <div class="mt-4 pt-4 border-t border-slate-700/50">
                                       <p class="text-slate-500 text-xs mb-1">Payment</p>
-                                      <p class="text-white font-bold">₱${w.payment_amount} <span class="text-slate-400 font-normal text-xs">(${w.payment_method})</span></p>
+                                      <p class="text-white font-bold">₱${
+                                        w.payment_amount
+                                      } <span class="text-slate-400 font-normal text-xs">(${
+              w.payment_method
+            })</span></p>
                                   </div>
                               </div>
                           </div>
                       `;
-                      $('#walkinDetails').html(html);
-                      $('#btnEditWalkinFromView').data('walkin-id', w.walkin_id); // Store ID on edit button
-                      $('#viewWalkinModal').addClass('show');
-                  }
-              }
-          });
+            $("#walkinDetails").html(html);
+            $("#btnEditWalkinFromView").data("walkin-id", w.walkin_id); // Store ID on edit button
+            $("#viewWalkinModal").addClass("show");
+          }
+        },
       });
+    });
 
-      // Close View Modal
-      $('.view-walkin-close').click(function() {
-          $('#viewWalkinModal').removeClass('show');
+    // Close View Modal
+    $(".view-walkin-close").click(function () {
+      $("#viewWalkinModal").removeClass("show");
+    });
+
+    // --- Edit Walk-in Details ---
+
+    // Trigger from Table
+    $(document).on("click", ".btn-edit-walkin", function () {
+      let walkinId = $(this).closest("tr").data("walkin-id"); // Ensure TR has data-walkin-id
+      openEditWalkinModal(walkinId);
+    });
+
+    // Trigger from View Modal
+    $("#btnEditWalkinFromView").click(function () {
+      let walkinId = $(this).data("walkin-id");
+      $("#viewWalkinModal").removeClass("show");
+      openEditWalkinModal(walkinId);
+    });
+
+    function openEditWalkinModal(walkinId) {
+      if (!walkinId) return;
+
+      $.ajax({
+        url: "index.php?controller=User&action=getWalkinData",
+        type: "GET",
+        data: { walkin_id: walkinId },
+        dataType: "json",
+        success: function (response) {
+          if (response.success) {
+            let w = response.data;
+            $("#edit_walkin_id").val(w.walkin_id);
+            $("#edit_walkin_first_name").val(w.first_name);
+            $("#edit_walkin_middle_name").val(w.middle_name);
+            $("#edit_walkin_last_name").val(w.last_name);
+            $("#edit_walkin_email").val(w.email);
+            $("#edit_walkin_contact_no").val(w.contact_no);
+            $("#edit_walkin_session_type").val(w.session_type);
+            $("#edit_walkin_payment_amount").val(w.payment_amount);
+            $("#edit_walkin_payment_method").val(w.payment_method);
+
+            // Format datetime for datetime-local input (YYYY-MM-DDTHH:MM)
+            let visitTime = w.visit_time ? w.visit_time.replace(" ", "T") : "";
+            let endDate = w.end_date ? w.end_date.replace(" ", "T") : "";
+
+            $("#edit_walkin_visit_time").val(visitTime.substring(0, 16));
+            $("#edit_walkin_end_date").val(endDate.substring(0, 16));
+
+            $("#editWalkinModal").addClass("show");
+          }
+        },
       });
+    }
 
-      // --- Edit Walk-in Details ---
-      
-      // Trigger from Table
-      $(document).on('click', '.btn-edit-walkin', function() {
-          let walkinId = $(this).closest('tr').data('walkin-id'); // Ensure TR has data-walkin-id
-          openEditWalkinModal(walkinId);
+    // Close Edit Modal
+    $(".edit-walkin-close, .edit-walkin-cancel").click(function () {
+      $("#editWalkinModal").removeClass("show");
+    });
+
+    // Submit Edit Form
+    $("#editWalkinForm").submit(function (e) {
+      e.preventDefault();
+
+      // Disable button to prevent double clicks
+      const $btn = $("#btnUpdateWalkin");
+      const originalText = $btn.html();
+      $btn
+        .prop("disabled", true)
+        .html('<i class="fas fa-spinner fa-spin"></i> Updating...');
+
+      // Select the message container
+      const $msgBox = $("#editWalkinMessage");
+
+      $.ajax({
+        url: $(this).attr("action"),
+        type: "POST",
+        data: $(this).serialize(),
+        dataType: "json",
+        success: function (response) {
+          if (response.success) {
+            // 1. Show Success Message inside the modal (Green styling)
+            $msgBox
+              .removeClass("hidden text-red-400 bg-red-500/10") // Remove error styles
+              .addClass("text-emerald-400 bg-emerald-500/10") // Add success styles
+              .html(
+                `<i class="fas fa-check-circle mr-2"></i> ${response.message}`
+              )
+              .fadeIn();
+
+            // 2. Wait 1.5 seconds, then close modal and reload
+            setTimeout(function () {
+              $("#editWalkinModal").removeClass("show"); // Close modal
+              location.reload(); // Reload page to reflect changes
+            }, 1500);
+          } else {
+            // Show Error Message inside the modal (Red styling)
+            $msgBox
+              .removeClass("hidden text-emerald-400 bg-emerald-500/10") // Remove success styles
+              .addClass("text-red-400 bg-red-500/10") // Add error styles
+              .html(
+                `<i class="fas fa-exclamation-triangle mr-2"></i> ${response.message}`
+              )
+              .fadeIn();
+
+            // Re-enable button so they can try again
+            $btn.prop("disabled", false).html(originalText);
+          }
+        },
+        error: function () {
+          // Generic Error
+          $msgBox
+            .removeClass("hidden text-emerald-400 bg-emerald-500/10")
+            .addClass("text-red-400 bg-red-500/10")
+            .html(
+              `<i class="fas fa-times-circle mr-2"></i> An unexpected error occurred.`
+            )
+            .fadeIn();
+
+          $btn.prop("disabled", false).html(originalText);
+        },
       });
-
-      // Trigger from View Modal
-      $('#btnEditWalkinFromView').click(function() {
-          let walkinId = $(this).data('walkin-id');
-          $('#viewWalkinModal').removeClass('show');
-          openEditWalkinModal(walkinId);
-      });
-
-      function openEditWalkinModal(walkinId) {
-          if(!walkinId) return;
-          
-          $.ajax({
-              url: 'index.php?controller=User&action=getWalkinData',
-              type: 'GET',
-              data: { walkin_id: walkinId },
-              dataType: 'json',
-              success: function(response) {
-                  if (response.success) {
-                      let w = response.data;
-                      $('#edit_walkin_id').val(w.walkin_id);
-                      $('#edit_walkin_first_name').val(w.first_name);
-                      $('#edit_walkin_middle_name').val(w.middle_name);
-                      $('#edit_walkin_last_name').val(w.last_name);
-                      $('#edit_walkin_email').val(w.email);
-                      $('#edit_walkin_contact_no').val(w.contact_no);
-                      $('#edit_walkin_session_type').val(w.session_type);
-                      $('#edit_walkin_payment_amount').val(w.payment_amount);
-                      $('#edit_walkin_payment_method').val(w.payment_method);
-                      
-                      // Format datetime for datetime-local input (YYYY-MM-DDTHH:MM)
-                      let visitTime = w.visit_time ? w.visit_time.replace(' ', 'T') : '';
-                      let endDate = w.end_date ? w.end_date.replace(' ', 'T') : '';
-                      
-                      $('#edit_walkin_visit_time').val(visitTime.substring(0, 16)); 
-                      $('#edit_walkin_end_date').val(endDate.substring(0, 16));
-
-                      $('#editWalkinModal').addClass('show');
-                  }
-              }
-          });
-      }
-
-      // Close Edit Modal
-      $('.edit-walkin-close, .edit-walkin-cancel').click(function() {
-          $('#editWalkinModal').removeClass('show');
-      });
-
-      // Submit Edit Form
-      $('#editWalkinForm').submit(function(e) {
-          e.preventDefault();
-          
-          // Disable button to prevent double clicks
-          const $btn = $('#btnUpdateWalkin');
-          const originalText = $btn.html();
-          $btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i> Updating...');
-
-          // Select the message container
-          const $msgBox = $('#editWalkinMessage');
-
-          $.ajax({
-              url: $(this).attr('action'),
-              type: 'POST',
-              data: $(this).serialize(),
-              dataType: 'json',
-              success: function(response) {
-                  if (response.success) {
-                      // 1. Show Success Message inside the modal (Green styling)
-                      $msgBox
-                          .removeClass('hidden text-red-400 bg-red-500/10') // Remove error styles
-                          .addClass('text-emerald-400 bg-emerald-500/10')   // Add success styles
-                          .html(`<i class="fas fa-check-circle mr-2"></i> ${response.message}`)
-                          .fadeIn();
-
-                      // 2. Wait 1.5 seconds, then close modal and reload
-                      setTimeout(function() {
-                          $('#editWalkinModal').removeClass('show'); // Close modal
-                          location.reload(); // Reload page to reflect changes
-                      }, 1500);
-
-                  } else {
-                      // Show Error Message inside the modal (Red styling)
-                      $msgBox
-                          .removeClass('hidden text-emerald-400 bg-emerald-500/10') // Remove success styles
-                          .addClass('text-red-400 bg-red-500/10')               // Add error styles
-                          .html(`<i class="fas fa-exclamation-triangle mr-2"></i> ${response.message}`)
-                          .fadeIn();
-                          
-                      // Re-enable button so they can try again
-                      $btn.prop('disabled', false).html(originalText);
-                  }
-              },
-              error: function() {
-                  // Generic Error
-                  $msgBox
-                      .removeClass('hidden text-emerald-400 bg-emerald-500/10')
-                      .addClass('text-red-400 bg-red-500/10')
-                      .html(`<i class="fas fa-times-circle mr-2"></i> An unexpected error occurred.`)
-                      .fadeIn();
-                      
-                  $btn.prop('disabled', false).html(originalText);
-              }
-          });
-      });
+    });
   });
 
   // Function to show Toast Notifications
   function showNotification(type, message) {
-      const container = $('#alertContainer');
-      
-      // Define colors and icons based on type
-      let styles = '';
-      let icon = '';
-      
-      if (type === 'success') {
-          styles = 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400';
-          icon = '<i class="fa-solid fa-check-circle text-xl"></i>';
-      } else if (type === 'error') {
-          styles = 'bg-red-500/10 border-red-500/20 text-red-400';
-          icon = '<i class="fa-solid fa-circle-exclamation text-xl"></i>';
-      } else {
-          styles = 'bg-blue-500/10 border-blue-500/20 text-blue-400';
-          icon = '<i class="fa-solid fa-info-circle text-xl"></i>';
-      }
+    const container = $("#alertContainer");
 
-      // Create the Toast HTML
-      const toastHtml = `
+    // Define colors and icons based on type
+    let styles = "";
+    let icon = "";
+
+    if (type === "success") {
+      styles = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
+      icon = '<i class="fa-solid fa-check-circle text-xl"></i>';
+    } else if (type === "error") {
+      styles = "bg-red-500/10 border-red-500/20 text-red-400";
+      icon = '<i class="fa-solid fa-circle-exclamation text-xl"></i>';
+    } else {
+      styles = "bg-blue-500/10 border-blue-500/20 text-blue-400";
+      icon = '<i class="fa-solid fa-info-circle text-xl"></i>';
+    }
+
+    // Create the Toast HTML
+    const toastHtml = `
           <div class="glass-panel p-4 rounded-lg border flex items-center shadow-lg transform transition-all duration-300 translate-x-full opacity-0 ${styles}">
               <div class="mr-3">${icon}</div>
               <div class="font-medium text-sm">${message}</div>
           </div>
       `;
 
-      // Append to container
-      const $toast = $(toastHtml).appendTo(container);
+    // Append to container
+    const $toast = $(toastHtml).appendTo(container);
 
-      // Animate In (Slide from right)
-      setTimeout(() => {
-          $toast.removeClass('translate-x-full opacity-0');
-      }, 100);
+    // Animate In (Slide from right)
+    setTimeout(() => {
+      $toast.removeClass("translate-x-full opacity-0");
+    }, 100);
 
-      // Remove after 3 seconds
+    // Remove after 3 seconds
+    setTimeout(() => {
+      $toast.addClass("translate-x-full opacity-0"); // Slide out
       setTimeout(() => {
-          $toast.addClass('translate-x-full opacity-0'); // Slide out
-          setTimeout(() => {
-              $toast.remove(); // Remove from DOM
-          }, 300);
-      }, 3000);
+        $toast.remove(); // Remove from DOM
+      }, 300);
+    }, 3000);
   }
   // ===== ADD MEMBER FORM VALIDATION =====
   $("#addMemberForm").on("submit", function (e) {
@@ -566,15 +593,19 @@ $(document).ready(function () {
                   <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
                       <div>
                           <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">User ID</p>
-                          <p class="text-white font-mono text-lg tracking-wide">#${member.user_id}</p>
+                          <p class="text-white font-mono text-lg tracking-wide">#${
+                            member.user_id
+                          }</p>
                       </div>
                       <div>
                           <span class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border border-opacity-20 shadow-sm ${
-                              member.role === 'admin' ? 'bg-red-500/10 text-red-400 border-red-500' :
-                              member.role === 'trainer' ? 'bg-purple-500/10 text-purple-400 border-purple-500' :
-                              'bg-blue-500/10 text-blue-400 border-blue-500'
+                            member.role === "admin"
+                              ? "bg-red-500/10 text-red-400 border-red-500"
+                              : member.role === "trainer"
+                              ? "bg-purple-500/10 text-purple-400 border-purple-500"
+                              : "bg-blue-500/10 text-blue-400 border-blue-500"
                           }">
-                              ${member.role || 'user'}
+                              ${member.role || "user"}
                           </span>
                       </div>
                   </div>
@@ -588,15 +619,22 @@ $(document).ready(function () {
                           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5 pb-5 border-b border-slate-700/50">
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">First Name</p>
-                                  <p class="text-white font-medium truncate">${member.first_name}</p>
+                                  <p class="text-white font-medium truncate">${
+                                    member.first_name
+                                  }</p>
                               </div>
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">Middle Name</p>
-                                  <p class="text-white font-medium truncate">${member.middle_name || '<span class="text-slate-600">-</span>'}</p>
+                                  <p class="text-white font-medium truncate">${
+                                    member.middle_name ||
+                                    '<span class="text-slate-600">-</span>'
+                                  }</p>
                               </div>
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">Last Name</p>
-                                  <p class="text-white font-medium truncate">${member.last_name}</p>
+                                  <p class="text-white font-medium truncate">${
+                                    member.last_name
+                                  }</p>
                               </div>
                           </div>
 
@@ -605,7 +643,9 @@ $(document).ready(function () {
                                   <p class="text-slate-500 text-xs mb-1">Email Address</p>
                                   <div class="flex items-center gap-2 text-white font-medium">
                                       <i class="fa-regular fa-envelope text-slate-500 text-xs"></i>
-                                      <span class="truncate">${member.email}</span>
+                                      <span class="truncate">${
+                                        member.email
+                                      }</span>
                                   </div>
                               </div>
                               <div>
@@ -626,13 +666,21 @@ $(document).ready(function () {
                       <div class="grid grid-cols-2 gap-4">
                           <div class="bg-slate-700/20 p-4 rounded-xl border border-slate-700/50">
                               <p class="text-slate-500 text-xs mb-1">Current Plan</p>
-                              <p class="text-white font-bold text-lg tracking-tight">${member.plan_name || 'No Active Plan'}</p>
+                              <p class="text-white font-bold text-lg tracking-tight">${
+                                member.plan_name || "No Active Plan"
+                              }</p>
                           </div>
                           <div class="bg-slate-700/20 p-4 rounded-xl border border-slate-700/50">
                               <p class="text-slate-500 text-xs mb-1">Account Status</p>
                               <div class="flex items-center gap-2 mt-1">
-                                  <span class="w-2.5 h-2.5 rounded-full ${member.status === 'active' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-500'}"></span>
-                                  <span class="text-white font-medium capitalize">${member.status || 'inactive'}</span>
+                                  <span class="w-2.5 h-2.5 rounded-full ${
+                                    member.status === "active"
+                                      ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                                      : "bg-slate-500"
+                                  }"></span>
+                                  <span class="text-white font-medium capitalize">${
+                                    member.status || "inactive"
+                                  }</span>
                               </div>
                           </div>
                       </div>
@@ -973,12 +1021,15 @@ $(document).ready(function () {
                   <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
                       <div>
                           <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Trainer ID</p>
-                          <p class="text-white font-mono text-lg tracking-wide">#${trainer.trainer_id}</p>
+                          <p class="text-white font-mono text-lg tracking-wide">#${
+                            trainer.trainer_id
+                          }</p>
                       </div>
                       <div>
                           <span class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border border-opacity-20 shadow-sm ${
-                              trainer.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500' : 
-                              'bg-slate-500/10 text-slate-400 border-slate-500'
+                            trainer.status === "active"
+                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500"
+                              : "bg-slate-500/10 text-slate-400 border-slate-500"
                           }">
                               ${trainer.status}
                           </span>
@@ -993,7 +1044,9 @@ $(document).ready(function () {
                       <div class="bg-slate-700/20 rounded-xl p-5 border border-slate-700/50">
                           <div class="mb-5 pb-5 border-b border-slate-700/50">
                               <p class="text-slate-500 text-xs mb-1">Full Name</p>
-                              <p class="text-white font-medium text-lg">${trainer.name}</p>
+                              <p class="text-white font-medium text-lg">${
+                                trainer.name
+                              }</p>
                           </div>
 
                           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1001,14 +1054,19 @@ $(document).ready(function () {
                                   <p class="text-slate-500 text-xs mb-1">Email Address</p>
                                   <div class="flex items-center gap-2 text-white font-medium">
                                       <i class="fa-regular fa-envelope text-slate-500 text-xs"></i>
-                                      <span class="truncate">${trainer.email}</span>
+                                      <span class="truncate">${
+                                        trainer.email
+                                      }</span>
                                   </div>
                               </div>
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">Contact Number</p>
                                   <div class="flex items-center gap-2 text-white font-medium">
                                       <i class="fa-solid fa-phone text-slate-500 text-xs"></i>
-                                      <span>${trainer.contact_no || '<span class="text-slate-600 italic">N/A</span>'}</span>
+                                      <span>${
+                                        trainer.contact_no ||
+                                        '<span class="text-slate-600 italic">N/A</span>'
+                                      }</span>
                                   </div>
                               </div>
                           </div>
@@ -1033,7 +1091,9 @@ $(document).ready(function () {
                           <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">Experience</p>
-                                  <p class="text-white font-bold text-lg">${trainer.experience_years} <span class="text-sm font-normal text-slate-400">Years</span></p>
+                                  <p class="text-white font-bold text-lg">${
+                                    trainer.experience_years
+                                  } <span class="text-sm font-normal text-slate-400">Years</span></p>
                               </div>
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">Joined Team</p>
@@ -1321,26 +1381,26 @@ $(document).ready(function () {
     }
   }
   // Add Member as Trainer Button
-  $('#btnAddMemberNewTrainer').click(function() {
-      // First, load available members
-      $.ajax({
-          url: 'index.php?controller=Admin&action=getNonTrainerMembers',
-          method: 'GET',
-          dataType: 'json',
-          success: function(response) {
-              if(response.success) {
-                  showAddMemberAsTrainerModal(response.data);
-              }
-          },
-          error: function() {
-              showAlert('Failed to load members', 'error');
-          }
-      });
+  $("#btnAddMemberNewTrainer").click(function () {
+    // First, load available members
+    $.ajax({
+      url: "index.php?controller=Admin&action=getNonTrainerMembers",
+      method: "GET",
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showAddMemberAsTrainerModal(response.data);
+        }
+      },
+      error: function () {
+        showAlert("Failed to load members", "error");
+      },
+    });
   });
 
   function showAddMemberAsTrainerModal(members) {
-      // Create modal dynamically
-      const modal = `
+    // Create modal dynamically
+    const modal = `
           <div id="addMemberAsTrainerModal" class="modal-backdrop fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
               <div class="modal-content bg-gray-900 rounded-2xl p-8 max-w-lg w-full border border-gray-700">
                   <button class="close-member-trainer-modal float-right text-gray-400 hover:text-white text-2xl mb-4">&times;</button>
@@ -1352,7 +1412,12 @@ $(document).ready(function () {
                           <label class="block text-white font-semibold mb-2">Select Member</label>
                           <select name="user_id" required class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg">
                               <option value="">Choose a member...</option>
-                              ${members.map(m => `<option value="${m.user_id}">${m.name} (${m.email})</option>`).join('')}
+                              ${members
+                                .map(
+                                  (m) =>
+                                    `<option value="${m.user_id}">${m.name} (${m.email})</option>`
+                                )
+                                .join("")}
                           </select>
                       </div>
                       
@@ -1395,345 +1460,542 @@ $(document).ready(function () {
               </div>
           </div>
       `;
-      
-      // Append modal to body
-      $('body').append(modal);
-      $('#addMemberAsTrainerModal').addClass('show');
-      
-      // Close modal handlers
-      $('.close-member-trainer-modal').click(function() {
-          $('#addMemberAsTrainerModal').removeClass('show');
-          setTimeout(() => $('#addMemberAsTrainerModal').remove(), 300);
-      });
+
+    // Append modal to body
+    $("body").append(modal);
+    $("#addMemberAsTrainerModal").addClass("show");
+
+    // Close modal handlers
+    $(".close-member-trainer-modal").click(function () {
+      $("#addMemberAsTrainerModal").removeClass("show");
+      setTimeout(() => $("#addMemberAsTrainerModal").remove(), 300);
+    });
   }
 
   // Handle Member to Trainer Form Submission
-  $(document).on('submit', '#addMemberAsTrainerForm', function(e) {
-      e.preventDefault();
-      
-      const formData = $(this).serialize();
-      const submitBtn = $(this).find('button[type="submit"]');
-      const originalText = submitBtn.text();
-      
-      submitBtn.prop('disabled', true).html('<span class="loading"></span> Processing...');
-      
-      $.ajax({
-          url: 'index.php?controller=Admin&action=addMemberAsTrainer',
-          method: 'POST',
-          data: formData,
-          dataType: 'json',
-          success: function(response) {
-              if(response.success) {
-                  showAlert(response.message, 'success');
-                  $('#addMemberAsTrainerModal').removeClass('show');
-                  setTimeout(() => {
-                      $('#addMemberAsTrainerModal').remove();
-                      location.reload();
-                  }, 1500);
-              } else {
-                  showAlert(response.message, 'error');
-                  submitBtn.prop('disabled', false).text(originalText);
-              }
-          },
-          error: function(xhr) {
-              const response = xhr.responseJSON || {};
-              showAlert(response.message || 'Failed to promote member to trainer', 'error');
-              submitBtn.prop('disabled', false).text(originalText);
-          }
-      });
+  $(document).on("submit", "#addMemberAsTrainerForm", function (e) {
+    e.preventDefault();
+
+    const formData = $(this).serialize();
+    const submitBtn = $(this).find('button[type="submit"]');
+    const originalText = submitBtn.text();
+
+    submitBtn
+      .prop("disabled", true)
+      .html('<span class="loading"></span> Processing...');
+
+    $.ajax({
+      url: "index.php?controller=Admin&action=addMemberAsTrainer",
+      method: "POST",
+      data: formData,
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showAlert(response.message, "success");
+          $("#addMemberAsTrainerModal").removeClass("show");
+          setTimeout(() => {
+            $("#addMemberAsTrainerModal").remove();
+            location.reload();
+          }, 1500);
+        } else {
+          showAlert(response.message, "error");
+          submitBtn.prop("disabled", false).text(originalText);
+        }
+      },
+      error: function (xhr) {
+        const response = xhr.responseJSON || {};
+        showAlert(
+          response.message || "Failed to promote member to trainer",
+          "error"
+        );
+        submitBtn.prop("disabled", false).text(originalText);
+      },
+    });
   });
 
   // Add New Trainer Button
-  $('#btnAddNewTrainer').click(function() {
-      $('#addTrainerModal').addClass('show');
+  $("#btnAddNewTrainer").click(function () {
+    $("#addTrainerModal").addClass("show");
   });
 
   // Close Add Trainer Modal
-  $('.add-trainer-close, .add-trainer-cancel').click(function() {
-      $('#addTrainerModal').removeClass('show');
-      $('#addTrainerForm')[0].reset();
-      $('#addTrainerMessage').addClass('hidden');
+  $(".add-trainer-close, .add-trainer-cancel").click(function () {
+    $("#addTrainerModal").removeClass("show");
+    $("#addTrainerForm")[0].reset();
+    $("#addTrainerMessage").addClass("hidden");
   });
 
   // Handle Add Trainer Form Submission
-  $('#addTrainerForm').submit(function(e) {
-      e.preventDefault();
-      
-      const formData = $(this).serialize();
-      const submitBtn = $('#btnAddTrainer');
-      const originalText = submitBtn.text();
-      
-      // Validate passwords match
-      const password = $('input[name="password"]').val();
-      const confirmPassword = $('input[name="confirm_password"]').val();
-      
-      if(password !== confirmPassword) {
-          showAlert('Passwords do not match', 'error');
-          return;
-      }
-      
-      submitBtn.prop('disabled', true).html('<span class="loading"></span> Adding Trainer...');
-      
-      $.ajax({
-          url: 'index.php?controller=Trainer&action=addTrainer',
-          method: 'POST',
-          data: formData,
-          dataType: 'json',
-          success: function(response) {
-              if(response.success) {
-                  showAlert(response.message, 'success');
-                  $('#addTrainerModal').removeClass('show');
-                  setTimeout(() => {
-                      location.reload();
-                  }, 1500);
-              } else {
-                  showAlert(response.message, 'error');
-                  submitBtn.prop('disabled', false).text(originalText);
-              }
-          },
-          error: function(xhr) {
-              const response = xhr.responseJSON || {};
-              showAlert(response.message || 'Failed to add trainer', 'error');
-              submitBtn.prop('disabled', false).text(originalText);
-          }
-      });
+  $("#addTrainerForm").submit(function (e) {
+    e.preventDefault();
+
+    const formData = $(this).serialize();
+    const submitBtn = $("#btnAddTrainer");
+    const originalText = submitBtn.text();
+
+    // Validate passwords match
+    const password = $('input[name="password"]').val();
+    const confirmPassword = $('input[name="confirm_password"]').val();
+
+    if (password !== confirmPassword) {
+      showAlert("Passwords do not match", "error");
+      return;
+    }
+
+    submitBtn
+      .prop("disabled", true)
+      .html('<span class="loading"></span> Adding Trainer...');
+
+    $.ajax({
+      url: "index.php?controller=Trainer&action=addTrainer",
+      method: "POST",
+      data: formData,
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showAlert(response.message, "success");
+          $("#addTrainerModal").removeClass("show");
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        } else {
+          showAlert(response.message, "error");
+          submitBtn.prop("disabled", false).text(originalText);
+        }
+      },
+      error: function (xhr) {
+        const response = xhr.responseJSON || {};
+        showAlert(response.message || "Failed to add trainer", "error");
+        submitBtn.prop("disabled", false).text(originalText);
+      },
+    });
   });
 
   // View Trainer Details
-  $(document).on('click', '.btn-view-trainer', function() {
-      const trainerId = $(this).closest('tr').data('trainer-id');
-      
-      $.ajax({
-          url: 'index.php?controller=Admin&action=getTrainerData',
-          method: 'GET',
-          data: { trainer_id: trainerId },
-          dataType: 'json',
-          success: function(response) {
-              if(response.success) {
-                  displayTrainerDetails(response.data);
-                  $('#viewTrainerModal').addClass('show');
-              } else {
-                  showAlert('Failed to load trainer details', 'error');
-              }
-          },
-          error: function() {
-              showAlert('Error loading trainer details', 'error');
-          }
-      });
+  $(document).on("click", ".btn-view-trainer", function () {
+    const trainerId = $(this).closest("tr").data("trainer-id");
+
+    $.ajax({
+      url: "index.php?controller=Admin&action=getTrainerData",
+      method: "GET",
+      data: { trainer_id: trainerId },
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          displayTrainerDetails(response.data);
+          $("#viewTrainerModal").addClass("show");
+        } else {
+          showAlert("Failed to load trainer details", "error");
+        }
+      },
+      error: function () {
+        showAlert("Error loading trainer details", "error");
+      },
+    });
   });
 
   function displayTrainerDetails(trainer) {
-      const html = `
+    const html = `
           <div class="bg-gray-800 rounded-lg p-4 mb-3">
               <h4 class="text-lg font-semibold text-white mb-3">Personal Information</h4>
               <div class="space-y-2">
-                  <p class="text-gray-300"><strong>Name:</strong> ${trainer.name}</p>
-                  <p class="text-gray-300"><strong>Email:</strong> ${trainer.email}</p>
-                  <p class="text-gray-300"><strong>Contact:</strong> ${trainer.contact_no || 'N/A'}</p>
+                  <p class="text-gray-300"><strong>Name:</strong> ${
+                    trainer.name
+                  }</p>
+                  <p class="text-gray-300"><strong>Email:</strong> ${
+                    trainer.email
+                  }</p>
+                  <p class="text-gray-300"><strong>Contact:</strong> ${
+                    trainer.contact_no || "N/A"
+                  }</p>
               </div>
           </div>
           
           <div class="bg-gray-800 rounded-lg p-4 mb-3">
               <h4 class="text-lg font-semibold text-white mb-3">Trainer Details</h4>
               <div class="space-y-2">
-                  <p class="text-gray-300"><strong>Specialization:</strong> ${trainer.specialization}</p>
-                  <p class="text-gray-300"><strong>Experience:</strong> ${trainer.experience_years} years</p>
-                  <p class="text-gray-300"><strong>Join Date:</strong> ${trainer.join_date}</p>
+                  <p class="text-gray-300"><strong>Specialization:</strong> ${
+                    trainer.specialization
+                  }</p>
+                  <p class="text-gray-300"><strong>Experience:</strong> ${
+                    trainer.experience_years
+                  } years</p>
+                  <p class="text-gray-300"><strong>Join Date:</strong> ${
+                    trainer.join_date
+                  }</p>
                   <p class="text-gray-300">
                       <strong>Status:</strong> 
-                      <span class="status-badge ${trainer.status === 'active' ? 'status-active' : 'status-inactive'}">
+                      <span class="status-badge ${
+                        trainer.status === "active"
+                          ? "status-active"
+                          : "status-inactive"
+                      }">
                           ${trainer.status}
                       </span>
                   </p>
               </div>
           </div>
       `;
-      
-      $('#trainerDetails').html(html);
-      
-      // Store trainer data for edit
-      $('#btnEditTrainer').data('trainer-data', trainer);
+
+    $("#trainerDetails").html(html);
+
+    // Store trainer data for edit
+    $("#btnEditTrainer").data("trainer-data", trainer);
   }
 
   // Close View Trainer Modal
-  $('.view-trainer-close').click(function() {
-      $('#viewTrainerModal').removeClass('show');
+  $(".view-trainer-close").click(function () {
+    $("#viewTrainerModal").removeClass("show");
   });
 
   // Edit Trainer Button (from view modal)
-  $('#btnEditTrainer').click(function() {
-      const trainerData = $(this).data('trainer-data');
-      
-      // Populate edit form
-      $('#edit_trainer_id').val(trainerData.trainer_id);
-      $('#edit_user_trainer_id').val(trainerData.user_id);
-      $('#edit_trainer_first_name').val(trainerData.first_name);
-      $('#edit_trainer_last_name').val(trainerData.last_name);
-      $('#edit_trainer_middle_name').val(trainerData.middle_name);
-      $('#edit_trainer_email').val(trainerData.email);
-      $('#edit_trainer_contact_no').val(trainerData.contact_no);
-      $('#edit_specialization').val(trainerData.specialization);
-      $('#edit_experience_years').val(trainerData.experience_years);
-      $('#edit_trainer_status').val(trainerData.status);
-      
-      // Close view modal and open edit modal
-      $('#viewTrainerModal').removeClass('show');
-      $('#editTrainerModal').addClass('show');
+  $("#btnEditTrainer").click(function () {
+    const trainerData = $(this).data("trainer-data");
+
+    // Populate edit form
+    $("#edit_trainer_id").val(trainerData.trainer_id);
+    $("#edit_user_trainer_id").val(trainerData.user_id);
+    $("#edit_trainer_first_name").val(trainerData.first_name);
+    $("#edit_trainer_last_name").val(trainerData.last_name);
+    $("#edit_trainer_middle_name").val(trainerData.middle_name);
+    $("#edit_trainer_email").val(trainerData.email);
+    $("#edit_trainer_contact_no").val(trainerData.contact_no);
+    $("#edit_specialization").val(trainerData.specialization);
+    $("#edit_experience_years").val(trainerData.experience_years);
+    $("#edit_trainer_status").val(trainerData.status);
+
+    // Close view modal and open edit modal
+    $("#viewTrainerModal").removeClass("show");
+    $("#editTrainerModal").addClass("show");
   });
 
   // Edit Trainer Direct Button
-  $(document).on('click', '.btn-edit-trainer', function() {
-      const trainerId = $(this).closest('tr').data('trainer-id');
-      
-      $.ajax({
-          url: 'index.php?controller=Admin&action=getTrainerData',
-          method: 'GET',
-          data: { trainer_id: trainerId },
-          dataType: 'json',
-          success: function(response) {
-              if(response.success) {
-                  const trainer = response.data;
-                  
-                  // Populate edit form
-                  $('#edit_trainer_id').val(trainer.trainer_id);
-                  $('#edit_user_trainer_id').val(trainer.user_id);
-                  $('#edit_trainer_first_name').val(trainer.first_name);
-                  $('#edit_trainer_last_name').val(trainer.last_name);
-                  $('#edit_trainer_middle_name').val(trainer.middle_name);
-                  $('#edit_trainer_email').val(trainer.email);
-                  $('#edit_trainer_contact_no').val(trainer.contact_no);
-                  $('#edit_specialization').val(trainer.specialization);
-                  $('#edit_experience_years').val(trainer.experience_years);
-                  $('#edit_trainer_status').val(trainer.status);
-                  
-                  $('#editTrainerModal').addClass('show');
-              } else {
-                  showAlert('Failed to load trainer details', 'error');
-              }
-          },
-          error: function() {
-              showAlert('Error loading trainer details', 'error');
-          }
-      });
+  $(document).on("click", ".btn-edit-trainer", function () {
+    const trainerId = $(this).closest("tr").data("trainer-id");
+
+    $.ajax({
+      url: "index.php?controller=Admin&action=getTrainerData",
+      method: "GET",
+      data: { trainer_id: trainerId },
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          const trainer = response.data;
+
+          // Populate edit form
+          $("#edit_trainer_id").val(trainer.trainer_id);
+          $("#edit_user_trainer_id").val(trainer.user_id);
+          $("#edit_trainer_first_name").val(trainer.first_name);
+          $("#edit_trainer_last_name").val(trainer.last_name);
+          $("#edit_trainer_middle_name").val(trainer.middle_name);
+          $("#edit_trainer_email").val(trainer.email);
+          $("#edit_trainer_contact_no").val(trainer.contact_no);
+          $("#edit_specialization").val(trainer.specialization);
+          $("#edit_experience_years").val(trainer.experience_years);
+          $("#edit_trainer_status").val(trainer.status);
+
+          $("#editTrainerModal").addClass("show");
+        } else {
+          showAlert("Failed to load trainer details", "error");
+        }
+      },
+      error: function () {
+        showAlert("Error loading trainer details", "error");
+      },
+    });
   });
 
   // Close Edit Trainer Modal
-  $('.edit-trainer-close, .edit-trainer-cancel').click(function() {
-      $('#editTrainerModal').removeClass('show');
-      $('#editTrainerForm')[0].reset();
-      $('#editTrainerMessage').addClass('hidden');
+  $(".edit-trainer-close, .edit-trainer-cancel").click(function () {
+    $("#editTrainerModal").removeClass("show");
+    $("#editTrainerForm")[0].reset();
+    $("#editTrainerMessage").addClass("hidden");
   });
 
   // Handle Update Trainer Form Submission
-  $('#editTrainerForm').submit(function(e) {
-      e.preventDefault();
-      
-      const formData = $(this).serialize();
-      const submitBtn = $('#btnUpdateTrainer');
-      const originalText = submitBtn.text();
-      
-      // Validate passwords match if provided
-      const password = $('#edit_trainer_password').val();
-      const confirmPassword = $('#edit_confirm_trainer_password').val();
-      
-      if(password && password !== confirmPassword) {
-          showAlert('Passwords do not match', 'error');
-          return;
-      }
-      
-      submitBtn.prop('disabled', true).html('<span class="loading"></span> Updating...');
-      
-      $.ajax({
-          url: 'index.php?controller=Trainer&action=updateTrainer',
-          method: 'POST',
-          data: formData,
-          dataType: 'json',
-          success: function(response) {
-              if(response.success) {
-                  showAlert(response.message, 'success');
-                  $('#editTrainerModal').removeClass('show');
-                  setTimeout(() => {
-                      location.reload();
-                  }, 1500);
-              } else {
-                  showAlert(response.message, 'error');
-                  submitBtn.prop('disabled', false).text(originalText);
-              }
-          },
-          error: function(xhr) {
-              const response = xhr.responseJSON || {};
-              showAlert(response.message || 'Failed to update trainer', 'error');
-              submitBtn.prop('disabled', false).text(originalText);
-          }
-      });
+  $("#editTrainerForm").submit(function (e) {
+    e.preventDefault();
+
+    const formData = $(this).serialize();
+    const submitBtn = $("#btnUpdateTrainer");
+    const originalText = submitBtn.text();
+
+    // Validate passwords match if provided
+    const password = $("#edit_trainer_password").val();
+    const confirmPassword = $("#edit_confirm_trainer_password").val();
+
+    if (password && password !== confirmPassword) {
+      showAlert("Passwords do not match", "error");
+      return;
+    }
+
+    submitBtn
+      .prop("disabled", true)
+      .html('<span class="loading"></span> Updating...');
+
+    $.ajax({
+      url: "index.php?controller=Trainer&action=updateTrainer",
+      method: "POST",
+      data: formData,
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showAlert(response.message, "success");
+          $("#editTrainerModal").removeClass("show");
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        } else {
+          showAlert(response.message, "error");
+          submitBtn.prop("disabled", false).text(originalText);
+        }
+      },
+      error: function (xhr) {
+        const response = xhr.responseJSON || {};
+        showAlert(response.message || "Failed to update trainer", "error");
+        submitBtn.prop("disabled", false).text(originalText);
+      },
+    });
   });
 
   // Delete/Deactivate Trainer
-  $(document).on('click', '.btn-delete-trainer', function() {
-      const trainerId = $(this).closest('tr').data('trainer-id');
-      
-      $('#delete_trainer_id').val(trainerId);
-      $('#deleteTrainerModal').addClass('show');
+  $(document).on("click", ".btn-delete-trainer", function () {
+    const trainerId = $(this).closest("tr").data("trainer-id");
+
+    $("#delete_trainer_id").val(trainerId);
+    $("#deleteTrainerModal").addClass("show");
   });
 
   // Close Delete Trainer Modal
-  $('.delete-trainer-modal-close, .delete-trainer-cancel').click(function() {
-      $('#deleteTrainerModal').removeClass('show');
+  $(".delete-trainer-modal-close, .delete-trainer-cancel").click(function () {
+    $("#deleteTrainerModal").removeClass("show");
   });
 
   // Handle Delete Trainer Form Submission
-  $('#deleteTrainerForm').submit(function(e) {
-      e.preventDefault();
-      
-      const trainerId = $('#delete_trainer_id').val();
-      const submitBtn = $('#deleteTrainerBtn');
-      const originalText = submitBtn.text();
-      
-      submitBtn.prop('disabled', true).html('<span class="loading"></span> Processing...');
-      
-      $.ajax({
-          url: 'index.php?controller=Trainer&action=deleteTrainer',
-          method: 'POST',
-          data: { trainer_id: trainerId },
-          dataType: 'json',
-          success: function(response) {
-              if(response.success) {
-                  showAlert(response.message, 'success');
-                  $('#deleteTrainerModal').removeClass('show');
-                  setTimeout(() => {
-                      location.reload();
-                  }, 1500);
-              } else {
-                  showAlert(response.message, 'error');
-                  submitBtn.prop('disabled', false).text(originalText);
-              }
-          },
-          error: function(xhr) {
-              const response = xhr.responseJSON || {};
-              showAlert(response.message || 'Failed to deactivate trainer', 'error');
-              submitBtn.prop('disabled', false).text(originalText);
-          }
-      });
+  $("#deleteTrainerForm").submit(function (e) {
+    e.preventDefault();
+
+    const trainerId = $("#delete_trainer_id").val();
+    const submitBtn = $("#deleteTrainerBtn");
+    const originalText = submitBtn.text();
+
+    submitBtn
+      .prop("disabled", true)
+      .html('<span class="loading"></span> Processing...');
+
+    $.ajax({
+      url: "index.php?controller=Trainer&action=deleteTrainer",
+      method: "POST",
+      data: { trainer_id: trainerId },
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showAlert(response.message, "success");
+          $("#deleteTrainerModal").removeClass("show");
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        } else {
+          showAlert(response.message, "error");
+          submitBtn.prop("disabled", false).text(originalText);
+        }
+      },
+      error: function (xhr) {
+        const response = xhr.responseJSON || {};
+        showAlert(response.message || "Failed to deactivate trainer", "error");
+        submitBtn.prop("disabled", false).text(originalText);
+      },
+    });
+  });
+  // 1. Open Modal
+  $("#btnAddPlan").click(function () {
+    $("#addPlanModal").addClass("show");
   });
 
+  // 2. Close Modal
+  $(".add-plan-close, .add-plan-cancel").click(function () {
+    $("#addPlanModal").removeClass("show");
+  });
+
+  // 3. Submit Form
+  $("#addPlanForm").submit(function (e) {
+    e.preventDefault();
+
+    const $btn = $("#btnAddPlanSubmit");
+    const originalText = $btn.html();
+    $btn
+      .prop("disabled", true)
+      .html('<i class="fas fa-spinner fa-spin"></i> Creating...');
+
+    const $msgBox = $("#addPlanMessage");
+
+    $.ajax({
+      url: $(this).attr("action"),
+      type: "POST",
+      data: $(this).serialize(),
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          // Success Message (Green)
+          $msgBox
+            .removeClass("hidden text-red-400 bg-red-500/10")
+            .addClass("text-emerald-400 bg-emerald-500/10")
+            .html(
+              `<i class="fas fa-check-circle mr-2"></i> ${response.message}`
+            )
+            .fadeIn();
+
+          // Reload after delay
+          setTimeout(function () {
+            $("#addPlanModal").removeClass("show");
+            location.reload();
+          }, 1500);
+        } else {
+          // Error Message (Red)
+          $msgBox
+            .removeClass("hidden text-emerald-400 bg-emerald-500/10")
+            .addClass("text-red-400 bg-red-500/10")
+            .html(
+              `<i class="fas fa-exclamation-triangle mr-2"></i> ${response.message}`
+            )
+            .fadeIn();
+
+          $btn.prop("disabled", false).html(originalText);
+        }
+      },
+      error: function () {
+        $msgBox
+          .removeClass("hidden text-emerald-400 bg-emerald-500/10")
+          .addClass("text-red-400 bg-red-500/10")
+          .html(
+            `<i class="fas fa-times-circle mr-2"></i> An unexpected error occurred.`
+          )
+          .fadeIn();
+
+        $btn.prop("disabled", false).html(originalText);
+      },
+    });
+  });
+  // 1. Open Modal & Fetch Data
+  $(document).on("click", ".btn-edit-plan", function () {
+    let planId = $(this).data("plan-id");
+
+    if (!planId) return;
+
+    // Fetch data
+    $.ajax({
+      url: "index.php?controller=Plan&action=getPlanData",
+      type: "GET",
+      data: { plan_id: planId },
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          let p = response.data;
+
+          // Populate fields
+          $("#edit_plan_id").val(p.plan_id);
+          $("#edit_plan_name").val(p.plan_name);
+          $("#edit_plan_price").val(p.price);
+          $("#edit_plan_duration").val(p.duration_months);
+          $("#edit_plan_description").val(p.description);
+          $("#edit_plan_status").val(p.status);
+
+          // Show Modal
+          $("#editPlanModal").addClass("show");
+        } else {
+          showNotification("error", response.message);
+        }
+      },
+      error: function () {
+        showNotification("error", "Failed to load plan details.");
+      },
+    });
+  });
+
+  // 2. Close Modal
+  $(".edit-plan-close, .edit-plan-cancel").click(function () {
+    $("#editPlanModal").removeClass("show");
+  });
+
+  // 3. Submit Form
+  $("#editPlanForm").submit(function (e) {
+    e.preventDefault();
+
+    const $btn = $("#btnUpdatePlan");
+    const originalText = $btn.html();
+    $btn
+      .prop("disabled", true)
+      .html('<i class="fas fa-spinner fa-spin"></i> Updating...');
+
+    const $msgBox = $("#editPlanMessage");
+
+    $.ajax({
+      url: $(this).attr("action"),
+      type: "POST",
+      data: $(this).serialize(),
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          // Success Message
+          $msgBox
+            .removeClass("hidden text-red-400 bg-red-500/10")
+            .addClass("text-emerald-400 bg-emerald-500/10")
+            .html(
+              `<i class="fas fa-check-circle mr-2"></i> ${response.message}`
+            )
+            .fadeIn();
+
+          // Reload after delay
+          setTimeout(function () {
+            $("#editPlanModal").removeClass("show");
+            location.reload();
+          }, 1500);
+        } else {
+          // Error Message
+          $msgBox
+            .removeClass("hidden text-emerald-400 bg-emerald-500/10")
+            .addClass("text-red-400 bg-red-500/10")
+            .html(
+              `<i class="fas fa-exclamation-triangle mr-2"></i> ${response.message}`
+            )
+            .fadeIn();
+
+          $btn.prop("disabled", false).html(originalText);
+        }
+      },
+      error: function () {
+        $msgBox
+          .removeClass("hidden text-emerald-400 bg-emerald-500/10")
+          .addClass("text-red-400 bg-red-500/10")
+          .html(
+            `<i class="fas fa-times-circle mr-2"></i> An unexpected error occurred.`
+          )
+          .fadeIn();
+
+        $btn.prop("disabled", false).html(originalText);
+      },
+    });
+  });
   // Alert Function
   function showAlert(message, type) {
-      const alertClass = type === 'success' ? 'bg-green-500' : 'bg-red-500';
-      const icon = type === 'success' ? '✓' : '✕';
-      
-      const alert = `
+    const alertClass = type === "success" ? "bg-green-500" : "bg-red-500";
+    const icon = type === "success" ? "✓" : "✕";
+
+    const alert = `
           <div class="alert ${alertClass} text-white px-6 py-4 rounded-lg shadow-lg flex items-center">
               <span class="mr-3 text-2xl">${icon}</span>
               <span>${message}</span>
           </div>
       `;
-      
-      $('#alertContainer').append(alert);
-      
-      setTimeout(() => {
-          $('#alertContainer .alert').first().fadeOut(300, function() {
-              $(this).remove();
-          });
-      }, 5000);
+
+    $("#alertContainer").append(alert);
+
+    setTimeout(() => {
+      $("#alertContainer .alert")
+        .first()
+        .fadeOut(300, function () {
+          $(this).remove();
+        });
+    }, 5000);
   }
 });
