@@ -196,7 +196,7 @@
 
     <!-- Spacer to prevent content from hiding under fixed header -->
     <div class="h-20 lg:h-24"></div>
-
+    <script src="public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <script>
         $(document).ready(function() {
             $('#account').click((e) => {

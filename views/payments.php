@@ -131,7 +131,7 @@
 </head>
 <body class="gradient-bg min-h-screen">
     
-    <?php include_once '../views/layouts/navbar.php'?>
+    <?php include __DIR__ . "/layouts/navbar.php" ?>
 
     <div id="alertContainer" class="fixed top-24 md:top-6 right-4 z-50 space-y-4 max-w-sm"></div>
 
