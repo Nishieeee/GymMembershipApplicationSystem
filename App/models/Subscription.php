@@ -61,7 +61,7 @@
 
         public function getUserPayments() {
             $sql = "SELECT 
-            CONCAT(m.first_name, ' ', m.last_name) as name, pt.transaction_id, mp.plan_name, p.amount, p.payment_date, p.status
+            CONCAT(m.first_name, ' ', m.last_name) as name, pt.transaction_id, mp.plan_name, p.amount, p.payment_date, p.status, p.payment_id
             FROM members m
             LEFT JOIN subscriptions s ON s.user_id = m.user_id
             LEFT JOIN membership_plans mp ON mp.plan_id = s.plan_id

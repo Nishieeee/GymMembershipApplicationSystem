@@ -510,6 +510,18 @@
             }
             return null;
         }
+    
+    public function deleteWalkinViaId($walkin_id) {
+        $sql = "DELETE FROM walk_ins WHERE walkin_id = :walkin_id";
+        $query = $this->connect()->prepare($sql);
+        $query->bindParam(":walkin_id", $walkin_id);
+
+        if($query->execute()) {
+            return true;
+        } else {
+            return false;
+        }
     }
+}
 
 ?>

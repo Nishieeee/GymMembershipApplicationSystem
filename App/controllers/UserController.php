@@ -201,6 +201,22 @@
                 ]);
             }
         }
+        
+        public function deleteWalkin() {
+            $walkin_id = $_POST['walkin_id'];
+            $user = new User();
+            if($user->deleteWalkinViaId($walkin_id)) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Walk-in record deleted successfully',
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'An error occurred, Please try again.',
+                ]);
+            }
+        }
         public function profile() {
             $this->requireLogin();
             $user_id = $_SESSION['user_id'];

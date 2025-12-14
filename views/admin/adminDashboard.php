@@ -576,11 +576,11 @@
                                             </td>
                                             <td class="p-4 text-center">
                                                 <div class="flex items-center justify-center gap-2">
-                                                    <button class="btn-view text-slate-400 hover:text-white transition-colors" title="View"><i class="fas fa-file-invoice"></i></button>
+                                                    <button class="btn-view-payment text-slate-400 hover:text-white transition-colors" title="View" data-payment-id="<?= $paymentDetail['payment_id'] ?>"><i class="fas fa-file-invoice"></i></button>
                                                     <?php if($paymentDetail['status'] == 'pending') { ?>
-                                                        <button class="btn-remind text-orange-400 hover:text-orange-300 transition-colors" title="Send Reminder"><i class="fas fa-bell"></i></button>
+                                                        <button class="btn-remind-payment text-orange-400 hover:text-orange-300 transition-colors" title="Send Reminder" data-payment-id="<?= $paymentDetail['payment_id'] ?>"><i class="fas fa-bell"></i></button>
                                                     <?php } else if($paymentDetail['status'] == 'paid') { ?>
-                                                        <button class="btn-refund text-red-400 hover:text-red-300 transition-colors" title="Refund"><i class="fas fa-undo"></i></button>
+                                                        <button class="btn-refund-payment text-red-400 hover:text-red-300 transition-colors" title="Refund" data-payment-id="<?= $paymentDetail['payment_id'] ?>"><i class="fas fa-undo"></i></button>
                                                     <?php } ?>
                                                 </div>
                                             </td>
@@ -1302,5 +1302,82 @@
         </div>
     </div>
     <script src="../public/assets/js/admin/admin.js"></script>
+    <div id="deleteWalkinModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-content w-full max-w-md bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-trash-alt text-2xl text-red-500"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Delete Walk-in Record?</h3>
+                <p class="text-slate-400 mb-6">This action cannot be undone.</p>
+                <form id="deleteWalkinForm" method="POST">
+                    <input type="hidden" name="walkin_id" id="delete_walkin_id">
+                    <div id="deleteWalkinMessage" class="hidden mb-4"></div>
+                    <div class="flex gap-3">
+                        <button type="button" class="delete-walkin-cancel flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white">Cancel</button>
+                        <button type="submit" id="deleteWalkinBtn" class="flex-1 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="deletePlanModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-content w-full max-w-md bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-trash-alt text-2xl text-red-500"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Delete Plan?</h3>
+                <p class="text-slate-400 mb-6">This action will mark the plan as removed.</p>
+                <form id="deletePlanForm" method="POST">
+                    <input type="hidden" name="plan_id" id="delete_plan_id">
+                    <div id="deletePlanMessage" class="hidden mb-4"></div>
+                    <div class="flex gap-3">
+                        <button type="button" class="delete-plan-cancel flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white">Cancel</button>
+                        <button type="submit" id="deletePlanBtn" class="flex-1 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium">Delete</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div id="viewPaymentModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-content w-full max-w-lg bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+            <div class="p-6 border-b border-slate-800 flex justify-between items-center">
+                <h3 class="text-xl font-bold text-white">Payment Details</h3>
+                <button class="view-payment-close text-slate-400 hover:text-white">&times;</button>
+            </div>
+            <div class="p-6 space-y-4" id="viewPaymentContent">
+                <!-- Content loaded via AJAX -->
+                <div class="animate-pulse space-y-4">
+                    <div class="h-4 bg-slate-800 rounded w-3/4"></div>
+                    <div class="h-4 bg-slate-800 rounded w-1/2"></div>
+                </div>
+            </div>
+            <div class="p-4 border-t border-slate-800 bg-slate-900/50 flex justify-end">
+                <button class="view-payment-close px-4 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-lg">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="refundPaymentModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="modal-content w-full max-w-md bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
+            <div class="p-6 text-center">
+                <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="fas fa-undo text-2xl text-red-500"></i>
+                </div>
+                <h3 class="text-xl font-bold text-white mb-2">Refund Payment?</h3>
+                <p class="text-slate-400 mb-6">Are you sure you want to mark this transaction as refunded? This action cannot be undone.</p>
+                <form id="refundPaymentForm" method="POST">
+                    <input type="hidden" name="payment_id" id="refund_payment_id">
+                    <div id="refundPaymentMessage" class="hidden mb-4"></div>
+                    <div class="flex gap-3">
+                        <button type="button" class="refund-payment-cancel flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-white">Cancel</button>
+                        <button type="submit" id="refundPaymentBtn" class="flex-1 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium">Refund</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

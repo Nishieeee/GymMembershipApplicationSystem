@@ -386,7 +386,34 @@
             }
         }
 
+        public function getPaymentById($payment_id) {
+            $sql = "SELECT p.*, mp.plan_name, CONCAT(m.first_name, ' ', m.last_name) as member_name 
+                    FROM payments p 
+                    JOIN subscriptions s ON s.subscription_id = p.subscription_id
+                    JOIN membership_plans mp ON mp.plan_id = s.plan_id
+                    JOIN members m ON m.user_id = s.user_id
+                    WHERE p.payment_id = :payment_id";
+            
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":payment_id", $payment_id);
+            
+            if($query->execute()) {
+                return $query->fetch(PDO::FETCH_ASSOC);
+            } else {
+                return null;
+            }
+        }
+
+        public function updatePaymentStatus($payment_id, $status) {
+            $sql = "UPDATE payments SET status = :status WHERE payment_id = :payment_id";
+            
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":status", $status);
+            $query->bindParam(":payment_id", $payment_id);
+            
+            return $query->execute();
+        }
+
     }
     
-
 ?>

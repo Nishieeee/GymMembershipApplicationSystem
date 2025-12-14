@@ -49,14 +49,109 @@ $(document).ready(function () {
   });
 });
 
+// ===== DELETE PLAN LOGIC =====
 $(document).on("click", ".btn-delete-plan", function () {
-  const planCard = $(this).closest(".plan-card");
-  if (confirm("Are you sure you want to delete this plan?")) {
-    planCard.fadeOut(300, function () {
-      $(this).remove();
-      showAlert("Plan deleted successfully", "success");
-    });
-  }
+  const planId = $(this).data("plan-id");
+  $("#delete_plan_id").val(planId);
+  $("#deletePlanModal").addClass("show");
+  $("body").css("overflow", "hidden");
+});
+
+$(".delete-plan-cancel, .delete-plan-close").on("click", function () {
+  $("#deletePlanModal").removeClass("show");
+  $("body").css("overflow", "auto");
+});
+
+$("#deletePlanForm").on("submit", function (e) {
+  e.preventDefault();
+  const submitBtn = $("#deletePlanBtn");
+  const originalText = submitBtn.text();
+  submitBtn.html('<span class="loading"></span>').prop("disabled", true);
+
+  const formData = new FormData(this);
+
+  $.ajax({
+    type: "POST",
+    url: "index.php?controller=Plan&action=deletePlan",
+    data: formData,
+    processData: false,
+    contentType: false,
+    dataType: "json",
+    success: function (response) {
+      if (response.success) {
+        showAlert("✓ Plan deleted successfully", "success");
+        setTimeout(() => {
+          $("#deletePlanModal").removeClass("show");
+          $("body").css("overflow", "auto");
+          location.reload();
+        }, 1500);
+      } else {
+        $("#deletePlanMessage")
+          .html(response.message || "Failed to delete plan")
+          .removeClass("hidden");
+        submitBtn.html(originalText).prop("disabled", false);
+      }
+    },
+    error: function () {
+      $("#deletePlanMessage")
+        .html("An error occurred")
+        .removeClass("hidden");
+      submitBtn.html(originalText).prop("disabled", false);
+    }
+  });
+});
+
+// ===== DELETE WALK-IN LOGIC =====
+$(document).on("click", ".btn-delete-walkin", function () {
+  const row = $(this).closest("tr");
+  const walkinId = row.data("walkin-id");
+  $("#delete_walkin_id").val(walkinId);
+  $("#deleteWalkinModal").addClass("show");
+  $("body").css("overflow", "hidden");
+});
+
+$(".delete-walkin-cancel, .delete-walkin-close").on("click", function () {
+  $("#deleteWalkinModal").removeClass("show");
+  $("body").css("overflow", "auto");
+});
+
+$("#deleteWalkinForm").on("submit", function (e) {
+  e.preventDefault();
+  const submitBtn = $("#deleteWalkinBtn");
+  const originalText = submitBtn.text();
+  submitBtn.html('<span class="loading"></span>').prop("disabled", true);
+
+  const formData = new FormData(this);
+
+  $.ajax({
+    type: "POST",
+    url: "index.php?controller=User&action=deleteWalkin",
+    data: formData,
+    processData: false,
+    contentType: false,
+    dataType: "json",
+    success: function (response) {
+      if (response.success) {
+        showAlert("✓ Walk-in record deleted", "success");
+        setTimeout(() => {
+          $("#deleteWalkinModal").removeClass("show");
+          $("body").css("overflow", "auto");
+          location.reload();
+        }, 1500);
+      } else {
+        $("#deleteWalkinMessage")
+          .html(response.message || "Failed to delete record")
+          .removeClass("hidden");
+        submitBtn.html(originalText).prop("disabled", false);
+      }
+    },
+    error: function () {
+      $("#deleteWalkinMessage")
+        .html("An error occurred")
+        .removeClass("hidden");
+      submitBtn.html(originalText).prop("disabled", false);
+    }
+  });
 });
 // Close member modal
 $(".member-modal-close").on("click", function () {
@@ -216,9 +311,8 @@ $(document).ready(function () {
                               <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
                                   <div>
                                       <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Walk-in ID</p>
-                                      <p class="text-white font-mono text-lg tracking-wide">#${
-                                        w.walkin_id
-                                      }</p>
+                                      <p class="text-white font-mono text-lg tracking-wide">#${w.walkin_id
+              }</p>
                                   </div>
                                   <span class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                                       ${w.session_type.toUpperCase()}
@@ -229,43 +323,35 @@ $(document).ready(function () {
                                   <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                       <div>
                                           <p class="text-slate-500 text-xs mb-1">Full Name</p>
-                                          <p class="text-white font-medium text-lg">${
-                                            w.first_name
-                                          } ${
-              w.middle_name ? w.middle_name + " " : ""
-            }${w.last_name}</p>
+                                          <p class="text-white font-medium text-lg">${w.first_name
+              } ${w.middle_name ? w.middle_name + " " : ""
+              }${w.last_name}</p>
                                       </div>
                                       <div>
                                           <p class="text-slate-500 text-xs mb-1">Contact</p>
-                                          <p class="text-white font-medium">${
-                                            w.contact_no
-                                          }</p>
-                                          <p class="text-slate-400 text-xs">${
-                                            w.email || "No email"
-                                          }</p>
+                                          <p class="text-white font-medium">${w.contact_no
+              }</p>
+                                          <p class="text-slate-400 text-xs">${w.email || "No email"
+              }</p>
                                       </div>
                                   </div>
                                   <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
                                       <div>
                                           <p class="text-slate-500 text-xs mb-1">Visit Time</p>
-                                          <p class="text-white font-medium">${
-                                            w.visit_time
-                                          }</p>
+                                          <p class="text-white font-medium">${w.visit_time
+              }</p>
                                       </div>
                                       <div>
                                           <p class="text-slate-500 text-xs mb-1">Valid Until</p>
-                                          <p class="text-white font-medium">${
-                                            w.end_date
-                                          }</p>
+                                          <p class="text-white font-medium">${w.end_date
+              }</p>
                                       </div>
                                   </div>
                                   <div class="mt-4 pt-4 border-t border-slate-700/50">
                                       <p class="text-slate-500 text-xs mb-1">Payment</p>
-                                      <p class="text-white font-bold">₱${
-                                        w.payment_amount
-                                      } <span class="text-slate-400 font-normal text-xs">(${
-              w.payment_method
-            })</span></p>
+                                      <p class="text-white font-bold">₱${w.payment_amount
+              } <span class="text-slate-400 font-normal text-xs">(${w.payment_method
+              })</span></p>
                                   </div>
                               </div>
                           </div>
@@ -593,18 +679,16 @@ $(document).ready(function () {
                   <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
                       <div>
                           <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">User ID</p>
-                          <p class="text-white font-mono text-lg tracking-wide">#${
-                            member.user_id
-                          }</p>
+                          <p class="text-white font-mono text-lg tracking-wide">#${member.user_id
+            }</p>
                       </div>
                       <div>
-                          <span class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border border-opacity-20 shadow-sm ${
-                            member.role === "admin"
-                              ? "bg-red-500/10 text-red-400 border-red-500"
-                              : member.role === "trainer"
-                              ? "bg-purple-500/10 text-purple-400 border-purple-500"
-                              : "bg-blue-500/10 text-blue-400 border-blue-500"
-                          }">
+                          <span class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border border-opacity-20 shadow-sm ${member.role === "admin"
+              ? "bg-red-500/10 text-red-400 border-red-500"
+              : member.role === "trainer"
+                ? "bg-purple-500/10 text-purple-400 border-purple-500"
+                : "bg-blue-500/10 text-blue-400 border-blue-500"
+            }">
                               ${member.role || "user"}
                           </span>
                       </div>
@@ -619,22 +703,19 @@ $(document).ready(function () {
                           <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-5 pb-5 border-b border-slate-700/50">
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">First Name</p>
-                                  <p class="text-white font-medium truncate">${
-                                    member.first_name
-                                  }</p>
+                                  <p class="text-white font-medium truncate">${member.first_name
+            }</p>
                               </div>
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">Middle Name</p>
-                                  <p class="text-white font-medium truncate">${
-                                    member.middle_name ||
-                                    '<span class="text-slate-600">-</span>'
-                                  }</p>
+                                  <p class="text-white font-medium truncate">${member.middle_name ||
+            '<span class="text-slate-600">-</span>'
+            }</p>
                               </div>
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">Last Name</p>
-                                  <p class="text-white font-medium truncate">${
-                                    member.last_name
-                                  }</p>
+                                  <p class="text-white font-medium truncate">${member.last_name
+            }</p>
                               </div>
                           </div>
 
@@ -643,9 +724,8 @@ $(document).ready(function () {
                                   <p class="text-slate-500 text-xs mb-1">Email Address</p>
                                   <div class="flex items-center gap-2 text-white font-medium">
                                       <i class="fa-regular fa-envelope text-slate-500 text-xs"></i>
-                                      <span class="truncate">${
-                                        member.email
-                                      }</span>
+                                      <span class="truncate">${member.email
+            }</span>
                                   </div>
                               </div>
                               <div>
@@ -666,21 +746,18 @@ $(document).ready(function () {
                       <div class="grid grid-cols-2 gap-4">
                           <div class="bg-slate-700/20 p-4 rounded-xl border border-slate-700/50">
                               <p class="text-slate-500 text-xs mb-1">Current Plan</p>
-                              <p class="text-white font-bold text-lg tracking-tight">${
-                                member.plan_name || "No Active Plan"
-                              }</p>
+                              <p class="text-white font-bold text-lg tracking-tight">${member.plan_name || "No Active Plan"
+            }</p>
                           </div>
                           <div class="bg-slate-700/20 p-4 rounded-xl border border-slate-700/50">
                               <p class="text-slate-500 text-xs mb-1">Account Status</p>
                               <div class="flex items-center gap-2 mt-1">
-                                  <span class="w-2.5 h-2.5 rounded-full ${
-                                    member.status === "active"
-                                      ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
-                                      : "bg-slate-500"
-                                  }"></span>
-                                  <span class="text-white font-medium capitalize">${
-                                    member.status || "inactive"
-                                  }</span>
+                                  <span class="w-2.5 h-2.5 rounded-full ${member.status === "active"
+              ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+              : "bg-slate-500"
+            }"></span>
+                                  <span class="text-white font-medium capitalize">${member.status || "inactive"
+            }</span>
                               </div>
                           </div>
                       </div>
@@ -1021,16 +1098,14 @@ $(document).ready(function () {
                   <div class="flex items-center justify-between bg-slate-900/50 p-4 rounded-xl border border-slate-700/50">
                       <div>
                           <p class="text-slate-400 text-xs uppercase tracking-wider font-semibold">Trainer ID</p>
-                          <p class="text-white font-mono text-lg tracking-wide">#${
-                            trainer.trainer_id
-                          }</p>
+                          <p class="text-white font-mono text-lg tracking-wide">#${trainer.trainer_id
+            }</p>
                       </div>
                       <div>
-                          <span class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border border-opacity-20 shadow-sm ${
-                            trainer.status === "active"
-                              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500"
-                              : "bg-slate-500/10 text-slate-400 border-slate-500"
-                          }">
+                          <span class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wide border border-opacity-20 shadow-sm ${trainer.status === "active"
+              ? "bg-emerald-500/10 text-emerald-400 border-emerald-500"
+              : "bg-slate-500/10 text-slate-400 border-slate-500"
+            }">
                               ${trainer.status}
                           </span>
                       </div>
@@ -1044,9 +1119,8 @@ $(document).ready(function () {
                       <div class="bg-slate-700/20 rounded-xl p-5 border border-slate-700/50">
                           <div class="mb-5 pb-5 border-b border-slate-700/50">
                               <p class="text-slate-500 text-xs mb-1">Full Name</p>
-                              <p class="text-white font-medium text-lg">${
-                                trainer.name
-                              }</p>
+                              <p class="text-white font-medium text-lg">${trainer.name
+            }</p>
                           </div>
 
                           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1054,19 +1128,17 @@ $(document).ready(function () {
                                   <p class="text-slate-500 text-xs mb-1">Email Address</p>
                                   <div class="flex items-center gap-2 text-white font-medium">
                                       <i class="fa-regular fa-envelope text-slate-500 text-xs"></i>
-                                      <span class="truncate">${
-                                        trainer.email
-                                      }</span>
+                                      <span class="truncate">${trainer.email
+            }</span>
                                   </div>
                               </div>
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">Contact Number</p>
                                   <div class="flex items-center gap-2 text-white font-medium">
                                       <i class="fa-solid fa-phone text-slate-500 text-xs"></i>
-                                      <span>${
-                                        trainer.contact_no ||
-                                        '<span class="text-slate-600 italic">N/A</span>'
-                                      }</span>
+                                      <span>${trainer.contact_no ||
+            '<span class="text-slate-600 italic">N/A</span>'
+            }</span>
                                   </div>
                               </div>
                           </div>
@@ -1091,9 +1163,8 @@ $(document).ready(function () {
                           <div class="grid grid-cols-2 gap-4 pt-4 border-t border-slate-700/50">
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">Experience</p>
-                                  <p class="text-white font-bold text-lg">${
-                                    trainer.experience_years
-                                  } <span class="text-sm font-normal text-slate-400">Years</span></p>
+                                  <p class="text-white font-bold text-lg">${trainer.experience_years
+            } <span class="text-sm font-normal text-slate-400">Years</span></p>
                               </div>
                               <div>
                                   <p class="text-slate-500 text-xs mb-1">Joined Team</p>
@@ -1413,11 +1484,11 @@ $(document).ready(function () {
                           <select name="user_id" required class="w-full px-4 py-2 bg-gray-700 text-white border border-gray-600 rounded-lg">
                               <option value="">Choose a member...</option>
                               ${members
-                                .map(
-                                  (m) =>
-                                    `<option value="${m.user_id}">${m.name} (${m.email})</option>`
-                                )
-                                .join("")}
+        .map(
+          (m) =>
+            `<option value="${m.user_id}">${m.name} (${m.email})</option>`
+        )
+        .join("")}
                           </select>
                       </div>
                       
@@ -1599,37 +1670,30 @@ $(document).ready(function () {
           <div class="bg-gray-800 rounded-lg p-4 mb-3">
               <h4 class="text-lg font-semibold text-white mb-3">Personal Information</h4>
               <div class="space-y-2">
-                  <p class="text-gray-300"><strong>Name:</strong> ${
-                    trainer.name
-                  }</p>
-                  <p class="text-gray-300"><strong>Email:</strong> ${
-                    trainer.email
-                  }</p>
-                  <p class="text-gray-300"><strong>Contact:</strong> ${
-                    trainer.contact_no || "N/A"
-                  }</p>
+                  <p class="text-gray-300"><strong>Name:</strong> ${trainer.name
+      }</p>
+                  <p class="text-gray-300"><strong>Email:</strong> ${trainer.email
+      }</p>
+                  <p class="text-gray-300"><strong>Contact:</strong> ${trainer.contact_no || "N/A"
+      }</p>
               </div>
           </div>
           
           <div class="bg-gray-800 rounded-lg p-4 mb-3">
               <h4 class="text-lg font-semibold text-white mb-3">Trainer Details</h4>
               <div class="space-y-2">
-                  <p class="text-gray-300"><strong>Specialization:</strong> ${
-                    trainer.specialization
-                  }</p>
-                  <p class="text-gray-300"><strong>Experience:</strong> ${
-                    trainer.experience_years
-                  } years</p>
-                  <p class="text-gray-300"><strong>Join Date:</strong> ${
-                    trainer.join_date
-                  }</p>
+                  <p class="text-gray-300"><strong>Specialization:</strong> ${trainer.specialization
+      }</p>
+                  <p class="text-gray-300"><strong>Experience:</strong> ${trainer.experience_years
+      } years</p>
+                  <p class="text-gray-300"><strong>Join Date:</strong> ${trainer.join_date
+      }</p>
                   <p class="text-gray-300">
                       <strong>Status:</strong> 
-                      <span class="status-badge ${
-                        trainer.status === "active"
-                          ? "status-active"
-                          : "status-inactive"
-                      }">
+                      <span class="status-badge ${trainer.status === "active"
+        ? "status-active"
+        : "status-inactive"
+      }">
                           ${trainer.status}
                       </span>
                   </p>
@@ -1909,6 +1973,152 @@ $(document).ready(function () {
       error: function () {
         showNotification("error", "Failed to load plan details.");
       },
+    });
+  });
+  // ===== PAYMENT ACTIONS =====
+
+  // --- View Payment ---
+  $(document).on("click", ".btn-view-payment", function () {
+    const paymentId = $(this).data("payment-id");
+
+    // Show modal with loading state
+    $("#viewPaymentModal").addClass("show");
+
+    $.ajax({
+      url: "index.php?controller=Payment&action=getPaymentData",
+      type: "GET",
+      data: { payment_id: paymentId },
+      dataType: "json",
+      success: function (response) {
+        if (response.success && response.data) {
+          const p = response.data;
+          const date = new Date(p.payment_date).toLocaleDateString('en-US', {
+            year: 'numeric', month: 'long', day: 'numeric',
+            hour: '2-digit', minute: '2-digit'
+          });
+
+          const html = `
+                    <div class="space-y-4">
+                        <div class="flex justify-between items-center bg-slate-800 p-4 rounded-lg">
+                            <div>
+                                <p class="text-xs text-slate-400 uppercase">Amount Paid</p>
+                                <p class="text-2xl font-bold text-white">₱${new Intl.NumberFormat().format(p.amount)}</p>
+                            </div>
+                            <span class="status-badge ${p.status === 'paid' ? 'status-paid' : 'status-pending'}">
+                                ${p.status.charAt(0).toUpperCase() + p.status.slice(1)}
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-2 gap-4">
+                            <div class="bg-slate-800/50 p-3 rounded-lg">
+                                <p class="text-xs text-slate-500 mb-1">Transaction ID</p>
+                                <p class="text-white font-mono text-sm">${p.payment_id}</p>
+                            </div>
+                            <div class="bg-slate-800/50 p-3 rounded-lg">
+                                <p class="text-xs text-slate-500 mb-1">Date</p>
+                                <p class="text-white text-sm">${date}</p>
+                            </div>
+                            <div class="bg-slate-800/50 p-3 rounded-lg">
+                                <p class="text-xs text-slate-500 mb-1">Member</p>
+                                <p class="text-white text-sm">${p.member_name || 'N/A'}</p>
+                            </div>
+                            <div class="bg-slate-800/50 p-3 rounded-lg">
+                                <p class="text-xs text-slate-500 mb-1">Plan</p>
+                                <p class="text-white text-sm">${p.plan_name || 'N/A'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+          $("#viewPaymentContent").html(html);
+        } else {
+          $("#viewPaymentContent").html('<p class="text-red-400 text-center">Failed to load details</p>');
+        }
+      },
+      error: function () {
+        $("#viewPaymentContent").html('<p class="text-red-400 text-center">Error loading details</p>');
+      }
+    });
+  });
+
+  $(".view-payment-close").click(function () {
+    $("#viewPaymentModal").removeClass("show");
+    setTimeout(() => {
+      $("#viewPaymentContent").html(`
+            <div class="animate-pulse space-y-4">
+                <div class="h-4 bg-slate-800 rounded w-3/4"></div>
+                <div class="h-4 bg-slate-800 rounded w-1/2"></div>
+            </div>
+        `);
+    }, 300);
+  });
+
+  // --- Refund Payment ---
+  $(document).on("click", ".btn-refund-payment", function () {
+    const paymentId = $(this).data("payment-id");
+    $("#refund_payment_id").val(paymentId);
+    $("#refundPaymentModal").addClass("show");
+  });
+
+  $(".refund-payment-cancel").click(function () {
+    $("#refundPaymentModal").removeClass("show");
+  });
+
+  $("#refundPaymentForm").submit(function (e) {
+    e.preventDefault();
+    const btn = $("#refundPaymentBtn");
+    const originalText = btn.text();
+    btn.html('<span class="loading"></span>').prop("disabled", true);
+
+    $.ajax({
+      url: "index.php?controller=Payment&action=refundPayment",
+      type: "POST",
+      data: $(this).serialize(),
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showAlert("✓ Payment refunded successfully", "success");
+          setTimeout(() => {
+            location.reload();
+          }, 1500);
+        } else {
+          $("#refundPaymentMessage").html(response.message).removeClass("hidden").addClass("text-red-400");
+          btn.html(originalText).prop("disabled", false);
+        }
+      },
+      error: function () {
+        $("#refundPaymentMessage").html("An error occurred").removeClass("hidden").addClass("text-red-400");
+        btn.html(originalText).prop("disabled", false);
+      }
+    });
+  });
+
+  // --- Remind Payment ---
+  $(document).on("click", ".btn-remind-payment", function () {
+    const paymentId = $(this).data("payment-id");
+    const btn = $(this);
+    const originalContent = btn.html();
+
+    if (!confirm("Send payment reminder to member?")) return;
+
+    btn.html('<i class="fas fa-spinner fa-spin"></i>').prop("disabled", true);
+
+    $.ajax({
+      url: "index.php?controller=Payment&action=sendReminder",
+      type: "POST",
+      data: { payment_id: paymentId },
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          showAlert("✓ Reminder sent successfully", "success");
+        } else {
+          showAlert("Failed to send reminder", "error");
+        }
+        btn.html(originalContent).prop("disabled", false);
+      },
+      error: function () {
+        showAlert("Error sending reminder", "error");
+        btn.html(originalContent).prop("disabled", false);
+      }
     });
   });
 

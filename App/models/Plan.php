@@ -96,6 +96,13 @@
             }
             return null;
         }
+    public function deletePlanViaId($plan_id) {
+            $sql = "UPDATE membership_plans SET status = 'removed' WHERE plan_id = :plan_id";
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":plan_id", $plan_id);
+
+            return $query->execute();
+        }
     }
 
 ?>

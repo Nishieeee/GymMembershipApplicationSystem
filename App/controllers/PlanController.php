@@ -96,5 +96,27 @@
         }
     }
 
+    public function deletePlan() {
+        // Check login if needed: $this->requireLogin();
+        header('Content-Type: application/json');
+
+        if($_SERVER['REQUEST_METHOD'] == 'POST') {
+            $plan_id = $_POST['plan_id'];
+            $planModel = new Plan();
+            
+            if($planModel->deletePlanViaId($plan_id)) {
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Plan removed successfully',
+                ]);
+            } else {
+                echo json_encode([
+                    'success' => false,
+                    'message' => 'Failed to remove plan',
+                ]);
+            }
+        }
+    }
+
 
 ?>

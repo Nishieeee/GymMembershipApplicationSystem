@@ -127,4 +127,53 @@
 
     }
 
+
+    public function getPaymentData() {
+        // $this->requireLogin();
+        header('Content-Type: application/json');
+
+        if(isset($_GET['payment_id'])) {
+            $paymentModel = new Payment();
+            $data = $paymentModel->getPaymentById($_GET['payment_id']);
+            
+            if($data) {
+                echo json_encode(['success' => true, 'data' => $data]);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Payment not found']);
+            }
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Missing payment ID']);
+        }
+    }
+
+    public function refundPayment() {
+        // $this->requireLogin();
+        header('Content-Type: application/json');
+
+        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $payment_id = $_POST['payment_id'];
+            $paymentModel = new Payment();
+            
+            if($paymentModel->updatePaymentStatus($payment_id, 'refunded')) {
+                echo json_encode(['success' => true, 'message' => 'Payment refunded']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Refund failed']);
+            }
+        }
+    }
+
+    public function sendReminder() {
+        // $this->requireLogin();
+        header('Content-Type: application/json');
+        
+        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $payment_id = $_POST['payment_id'];
+            // Simulation of email sending
+            // In real app: Fetch member email via payment_id -> send email
+            
+            sleep(1); // Simulate network delay
+            echo json_encode(['success' => true, 'message' => 'Reminder sent']);
+        }
+    }
+
 }
