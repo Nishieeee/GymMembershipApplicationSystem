@@ -58,7 +58,7 @@
         }
 
         public function findByEmail($email) {
-            $sql = "SELECT user_id, role, email, password FROM members WHERE email = :email";
+            $sql = "SELECT user_id, role, email, password, status FROM members WHERE email = :email";
 
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":email", $email);
@@ -115,63 +115,67 @@
                 return null;
             }
         }
-        public function addMember(array $UserData) {
-            // 1. Get the database connection
+        public function addMember($data) {
+            $sql = "INSERT INTO members (first_name, last_name, middle_name, email, phone_no, date_of_birth, gender, password, role, created_at, status, valid_id_picture) 
+                    VALUES (:first_name, :last_name, :middle_name, :email, :phone_no, :date_of_birth, :gender, :password, :role, :created_at, 'pending_approval', :valid_id_picture)";
+            
+            $db = $this->connect(); // Capture connection
+            $query = $db->prepare($sql);
+            
+            $created_at = date('Y-m-d');
+            $role = 'member';
+            
+            $query->bindParam(":first_name", $data['first_name']);
+            $query->bindParam(":last_name", $data['last_name']);
+            $query->bindParam(":middle_name", $data['middle_name']);
+            $query->bindParam(":email", $data['email']);
+            $query->bindParam(":phone_no", $data['phone_no']);
+            $query->bindParam(":date_of_birth", $data['date_of_birth']);
+            $query->bindParam(":gender", $data['gender']);
+            $query->bindParam(":password", $data['password']);
+            $query->bindParam(":role", $role);
+            $query->bindParam(":created_at", $created_at);
+            $query->bindParam(":valid_id_picture", $data['valid_id_picture']);
+            
+            if($query->execute()) {
+                $user_id = $db->lastInsertId(); // Use same connection
+                return $this->addUserAddress($user_id, $data['zip'], $data['street_address'], $data['city']);
+            }
+            return false;
+        }
+        
+        // Helper function for adding user address, called by addMember
+        public function addUserAddress($user_id, $zip, $street, $city) {
             $db = $this->connect();
-
             try {
-                // 2. Start Transaction
                 $db->beginTransaction();
 
-                // --- A. INSERT INTO MEMBERS TABLE ---
-                $sql = "INSERT INTO `members` 
-                        (`first_name`, `last_name`, `middle_name`, `email`, `date_of_birth`, `gender`, `password`, `role`, `created_at`) 
-                        VALUES 
-                        (:first_name, :last_name, :middle_name, :email, :date_of_birth, :gender, :password, 'member', NOW())";
+                // 1. Insert or Update the Address Table
+                // Uses ON DUPLICATE KEY UPDATE to handle if the ZIP already exists
+                $sqlAddr = "INSERT INTO member_address (zip, street_address, city) 
+                            VALUES (:zip, :street, :city) 
+                            ON DUPLICATE KEY UPDATE street_address = :street, city = :city";
                 
-                $query = $db->prepare($sql);
-                $query->bindParam(":first_name", $UserData['first_name']);
-                $query->bindParam(":last_name", $UserData['last_name']);
-                $query->bindParam(":middle_name", $UserData['middle_name']);
-                $query->bindParam(":email", $UserData['email']);
-                $query->bindParam(":date_of_birth", $UserData['date_of_birth']);
-                $query->bindParam(":gender", $UserData['gender']);
-                $query->bindParam(":password", $UserData['password']);
-                
-                $query->execute();
-                
-                // Get the ID of the newly created user
-                $newUserId = $db->lastInsertId();
+                $stmtAddr = $db->prepare($sqlAddr);
+                $stmtAddr->bindParam(':zip', $zip);
+                $stmtAddr->bindParam(':street', $street);
+                $stmtAddr->bindParam(':city', $city);
+                $stmtAddr->execute();
 
-                // --- B. INSERT INTO ADDRESS TABLE ---
-                // We use INSERT IGNORE because 'zip' is the Primary Key. 
-                // If the zip exists, we skip this and just link the user to the existing zip.
-                $sqlAddr = "INSERT IGNORE INTO `member_address` (`zip`, `street_address`, `city`) 
-                            VALUES (:zip, :street_address, :city)";
+                // 2. Update the Link Table to point to this Zip
+                // Uses INSERT ... ON DUPLICATE KEY UPDATE in case the link doesn't exist yet
+                $sqlLink = "INSERT INTO member_address_link (user_id, zip, address_type) 
+                            VALUES (:user_id, :zip, 'Home') 
+                            ON DUPLICATE KEY UPDATE zip = :zip";
                 
-                $queryAddr = $db->prepare($sqlAddr);
-                $queryAddr->bindParam(":zip", $UserData['zip']);
-                $queryAddr->bindParam(":street_address", $UserData['street_address']);
-                $queryAddr->bindParam(":city", $UserData['city']);
-                
-                $queryAddr->execute();
+                $stmtLink = $db->prepare($sqlLink);
+                $stmtLink->bindParam(':user_id', $user_id);
+                $stmtLink->bindParam(':zip', $zip);
+                $stmtLink->execute();
 
-                // --- C. INSERT INTO LINK TABLE ---
-                $sqlLink = "INSERT INTO `member_address_link` (`user_id`, `zip`, `address_type`) 
-                            VALUES (:user_id, :zip, 'Home')";
-                
-                $queryLink = $db->prepare($sqlLink);
-                $queryLink->bindParam(":user_id", $newUserId);
-                $queryLink->bindParam(":zip", $UserData['zip']);
-                
-                $queryLink->execute();
-
-                // 3. Commit the Transaction (Save changes)
                 $db->commit();
                 return true;
-
             } catch (Exception $e) {
-                // If anything fails, rollback changes
                 $db->rollBack();
                 // Optional: Log error $e->getMessage();
                 return false;
@@ -523,6 +527,35 @@
         } else {
             return false;
         }
+    }
+
+    public function getPendingMembers() {
+        $sql = "SELECT m.user_id, CONCAT(m.first_name, ' ', m.last_name) as name, m.email, m.created_at, m.valid_id_picture 
+                FROM members m 
+                WHERE m.status = 'pending_approval'
+                ORDER BY m.created_at DESC";
+
+        $query = $this->connect()->prepare($sql);
+
+        if($query->execute()) {
+            return $query->fetchAll(PDO::FETCH_ASSOC);
+        } else {
+            return [];
+        }
+    }
+
+    public function approveMemberStatus($user_id) {
+        $sql = "UPDATE members SET status = 'active' WHERE user_id = :user_id";
+        $query = $this->connect()->prepare($sql);
+        $query->bindParam(":user_id", $user_id);
+        return $query->execute();
+    }
+
+    public function rejectMemberStatus($user_id) {
+        $sql = "UPDATE members SET status = 'rejected' WHERE user_id = :user_id";
+        $query = $this->connect()->prepare($sql);
+        $query->bindParam(":user_id", $user_id);
+        return $query->execute();
     }
 }
 

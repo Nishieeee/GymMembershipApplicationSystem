@@ -21,7 +21,7 @@
             </div>
 
             <div class="p-8 md:p-10">
-                <form method="POST" action="index.php?controller=auth&action=validateUserRegistration" class="space-y-8">
+                <form method="POST" action="index.php?controller=auth&action=validateUserRegistration" class="space-y-8" enctype="multipart/form-data">
                     
                     <div>
                         <h2 class="text-sm uppercase tracking-wide text-slate-500 font-semibold mb-4 border-b pb-2">Personal Details</h2>
@@ -44,6 +44,16 @@
                                        class="w-full rounded-lg border-gray-300 border px-3 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50 focus:bg-white" required>
                                 <?php if(!empty($registerError['last_name'])): ?>
                                     <p class="text-red-500 text-xs mt-1 font-medium flex items-center">⚠ <?= htmlspecialchars($registerError['last_name']) ?></p>
+                                <?php endif; ?>
+                            </div>
+
+                            <div class="md:col-span-12">
+                                <label for="phone_no" class="block text-sm font-medium text-slate-700 mb-1">Phone Number</label>
+                                <input type="tel" name="phone_no" id="phone_no" placeholder="09123456789" 
+                                       value="<?= htmlspecialchars($register['phone_no'] ?? '') ?>" 
+                                       class="w-full rounded-lg border-gray-300 border px-3 py-2.5 outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-slate-50 focus:bg-white" required>
+                                <?php if(!empty($registerError['phone_no'])): ?>
+                                    <p class="text-red-500 text-xs mt-1 font-medium flex items-center">⚠ <?= htmlspecialchars($registerError['phone_no']) ?></p>
                                 <?php endif; ?>
                             </div>
                             
@@ -120,6 +130,24 @@
                                     <p class="text-red-500 text-xs mt-1 font-medium">⚠ <?= htmlspecialchars($registerError['zip']) ?></p>
                                 <?php endif; ?>
                             </div>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h2 class="text-sm uppercase tracking-wide text-slate-500 font-semibold mb-4 border-b pb-2">Verification</h2>
+                        <div class="mb-4">
+                            <label for="valid_id_picture" class="block text-sm font-medium text-slate-700 mb-1">Upload Valid ID</label>
+                            <input type="file" name="valid_id_picture" id="valid_id_picture" accept="image/*"
+                                   class="block w-full text-sm text-slate-500
+                                   file:mr-4 file:py-2 file:px-4
+                                   file:rounded-full file:border-0
+                                   file:text-sm file:font-semibold
+                                   file:bg-blue-50 file:text-blue-700
+                                   hover:file:bg-blue-100" required>
+                            <p class="text-xs text-slate-500 mt-1">Please upload a clear picture of a valid government ID for account verification.</p>
+                            <?php if(!empty($registerError['valid_id_picture'])): ?>
+                                <p class="text-red-500 text-xs mt-1 font-medium">⚠ <?= htmlspecialchars($registerError['valid_id_picture']) ?></p>
+                            <?php endif; ?>
                         </div>
                     </div>
 

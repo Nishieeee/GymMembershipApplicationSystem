@@ -547,6 +547,126 @@
             exit;
         }
 
+        // ... existing getNonTrainerMembers method ...
+        
+        public function getPendingRegistrations() {
+            $this->requireLogin();
+            header('Content-Type: application/json');
+            $userModel = new User();
+            $pending = $userModel->getPendingMembers();
+            
+            echo json_encode([
+                'success' => true,
+                'data' => $pending
+            ]);
+        }
+        
+        public function approveUserId() {
+            $this->requireLogin();
+            header('Content-Type: application/json');
+            if($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                http_response_code(405);
+                echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+                exit;
+            }
+            
+            $user_id = $_POST['user_id'] ?? '';
+            if(empty($user_id)) {
+                 echo json_encode(['success' => false, 'message' => 'User ID is required']);
+                 exit;
+            }
+            
+            $userModel = new User();
+            if($userModel->approveMemberStatus($user_id)) {
+                
+                // Fetch user data for notification
+                $user = $userModel->getMemberDetailsById($user_id);
+                if($user) {
+                     $this->notifyUserApproval($user['email'], $user['first_name']);
+                }
+                
+                echo json_encode(['success' => true, 'message' => 'User approved successfully']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to approve user']);
+            }
+        }
+        
+        public function rejectUserId() {
+            $this->requireLogin();
+            header('Content-Type: application/json');
+            if($_SERVER['REQUEST_METHOD'] !== 'POST') {
+                http_response_code(405);
+                echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+                exit;
+            }
+            
+            $user_id = $_POST['user_id'] ?? '';
+            if(empty($user_id)) {
+                 echo json_encode(['success' => false, 'message' => 'User ID is required']);
+                 exit;
+            }
+             
+            $userModel = new User();
+            if($userModel->rejectMemberStatus($user_id)) {
+                
+                // Fetch user data for notification
+                $user = $userModel->getMemberDetailsById($user_id);
+                if($user) {
+                     $this->notifyUserRejection($user['email'], $user['first_name']);
+                }
+
+                echo json_encode(['success' => true, 'message' => 'User rejected successfully']);
+            } else {
+                echo json_encode(['success' => false, 'message' => 'Failed to reject user']);
+            }
+        }
+
+        private function notifyUserApproval($email, $name) {
+            $mail = $this->mailer();
+            $mail->addAddress($email, $name);
+            $mail->Subject = "Account Approved! Welcome to Gymazing! 🎉";
+            $mail->isHTML(true);
+            $mail->Body = "
+                <div style='font-family: Arial, sans-serif; padding: 20px; background-color: #f4f7fa;'>
+                    <div style='max-width: 600px; margin: auto; background-color: #ffffff; padding: 25px; border-radius: 8px; border: 1px solid #e1e5ea;'>
+
+                        <h2 style='color: #10B981;'>Approval Successful! ✅</h2>
+
+                        <p>Hi {$name},</p>
+
+                        <p>Great news! Your account verification is complete and has been <strong>APPROVED</strong>.</p>
+
+                        <div style='margin: 15px 0; padding: 12px; background-color: #ecfdf5; border-left: 4px solid #10B981;'>
+                            <p style='margin: 0; font-size: 15px;'>You can now log in to your dashboard, manage your profile, and subscribe to membership plans.</p>
+                        </div>
+
+                        <p>We are excited to be part of your fitness journey!</p>
+
+                        <a href='http://localhost/GymMembershipApplicationSystem/index.php?controller=auth&action=login' 
+                           style='display:inline-block; margin: 15px 0; background-color: #10B981; 
+                           color: white; padding: 12px 20px; text-decoration: none; border-radius: 6px; font-weight: bold;'>
+                           Log In Now
+                        </a>
+
+                        <hr style='margin-top: 30px;'>
+
+                        <p style='font-size: 12px; color: #777;'>&copy; " . date('Y') . " Gymazing. All rights reserved.</p>
+                    </div>
+                </div>
+            ";
+            $mail->AltBody = "Hi {$name}, your account has been approved! You can now log in.";
+            $mail->send();
+        }
+        
+        private function notifyUserRejection($email, $name) {
+            $mail = $this->mailer();
+            $mail->addAddress($email, $name);
+            $mail->Subject = "Account Registration Update";
+            $mail->isHTML(true);
+            $mail->Body = "Hi {$name},<br><br>Unfortunately, your account registration has been rejected. Please contact support for more details.<br><br>Best,<br>Gymazing Team";
+            $mail->send();
+        }
+
     }
 
 

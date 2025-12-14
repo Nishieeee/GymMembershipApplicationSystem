@@ -2209,3 +2209,195 @@ $(document).ready(function () {
     }, 5000);
   }
 });
+
+$(document).ready(function () {
+  // ===== PENDING REGISTRATIONS LOGIC =====
+
+  // 1. Tab Click Event
+  $(".tab-button[data-tab='pending']").on("click", function () {
+    loadPendingUsers();
+  });
+
+  // 2. Refresh Button
+  $("#btnRefreshPending").on("click", function () {
+    loadPendingUsers();
+  });
+
+  // 3. Load Data Function
+  function loadPendingUsers() {
+    $("#pendingUsersTableBody").html('<tr><td colspan="5" class="p-6 text-center text-slate-500">Loading...</td></tr>');
+
+    $.ajax({
+      url: "index.php?controller=Admin&action=getPendingRegistrations",
+      type: "GET",
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          renderPendingUsers(response.data);
+        } else {
+          $("#pendingUsersTableBody").html('<tr><td colspan="5" class="p-6 text-center text-red-400">Failed to load data</td></tr>');
+        }
+      },
+      error: function () {
+        $("#pendingUsersTableBody").html('<tr><td colspan="5" class="p-6 text-center text-red-400">Error fetching data</td></tr>');
+      }
+    });
+  }
+
+  // 4. Render Table
+  function renderPendingUsers(users) {
+    if (!users || users.length === 0) {
+      $("#pendingUsersTableBody").html('<tr><td colspan="5" class="p-6 text-center text-slate-500">No pending registrations found.</td></tr>');
+      return;
+    }
+
+    let html = "";
+    users.forEach((user) => {
+      // Fix path issue: DB stores 'public/uploads/...', but app runs in 'public/', 
+      // so relative link becomes 'public/public/...'. We must strip 'public/' prefix.
+
+      let dbPath = user.valid_id_picture;
+      if (dbPath && dbPath.startsWith('public/')) {
+        dbPath = dbPath.substring(7); // Remove 'public/'
+      }
+
+      // Default path should also be relative to public/ (so just 'assets/...')
+      let idProof = dbPath || 'assets/images/default-id.png';
+      // Assuming response gives 'public/uploads/...'
+      // If we are in 'views/admin/', we might need to adjust or use absolute path
+      // Ideally backend returns 'public/uploads/...', so we can prepend root or '../' if needed.
+      // Let's assume root-relative path for safety if using <base> or just '../'
+      // Since we are in /views/admin/ (via URL routing), assets are usually relative to root index.php
+      // So 'public/uploads/...' should work fine if <img src="public/...">
+
+      html += `
+        <tr class="table-row">
+            <td class="p-4">
+                <div class="flex items-center">
+                    <div class="w-9 h-9 bg-orange-500/20 text-orange-400 rounded-full flex items-center justify-center font-bold text-sm mr-3">
+                        <i class="fas fa-user-clock"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-white">${user.name}</p>
+                        <p class="text-xs text-slate-500">ID: ${user.user_id}</p>
+                    </div>
+                </div>
+            </td>
+            <td class="p-4 text-sm text-slate-400">${user.email}</td>
+            <td class="p-4 text-sm text-slate-400">${user.created_at}</td>
+            <td class="p-4">
+                <div class="w-12 h-8 rounded overflow-hidden cursor-pointer border border-slate-600 hover:border-blue-500 transition-colors btn-view-id-preview" 
+                     data-img="${idProof}">
+                    <img src="${idProof}" alt="ID" class="w-full h-full object-cover">
+                </div>
+            </td>
+            <td class="p-4 text-center">
+                <button class="btn-view-pending px-3 py-1.5 bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-medium rounded-lg transition-colors border border-slate-600"
+                    data-user-id="${user.user_id}"
+                    data-name="${user.name}"
+                    data-email="${user.email}"
+                    data-img="${idProof}"
+                    data-joined="${user.created_at}"
+                >
+                    Review
+                </button>
+            </td>
+        </tr>
+      `;
+    });
+    $("#pendingUsersTableBody").html(html);
+  }
+
+  // 5. Open View Modal
+  $(document).on("click", ".btn-view-pending, .btn-view-id-preview", function (e) {
+    e.stopPropagation();
+    let btn = $(this);
+
+    if ($(this).hasClass('btn-view-id-preview')) {
+      btn = $(this).closest('tr').find('.btn-view-pending');
+    }
+
+    const userId = btn.data("user-id");
+    const name = btn.data("name");
+    const email = btn.data("email");
+    const img = btn.data("img");
+    const joined = btn.data("joined");
+
+    $("#viewIdImage").attr("src", img);
+    $("#viewIdUserDetails").html(`
+          <div class="grid grid-cols-2 gap-4">
+              <div>
+                  <p class="text-slate-500 text-xs text-center md:text-left">Full Name</p>
+                  <p class="text-white font-medium text-center md:text-left">${name}</p>
+              </div>
+               <div>
+                  <p class="text-slate-500 text-xs text-center md:text-left">Email</p>
+                  <p class="text-white font-medium text-center md:text-left">${email}</p>
+              </div>
+               <div>
+                  <p class="text-slate-500 text-xs text-center md:text-left">Registered On</p>
+                  <p class="text-white font-medium text-center md:text-left">${joined}</p>
+              </div>
+          </div>
+      `);
+
+    $("#btnApproveUser").data("user-id", userId);
+    $("#btnRejectUser").data("user-id", userId);
+
+    $("#viewIdModal").addClass("show");
+  });
+
+  $(".view-id-close").click(function () {
+    $("#viewIdModal").removeClass("show");
+  });
+
+  // 6. Action Buttons
+  $("#btnApproveUser").click(function () {
+    const userId = $(this).data("user-id");
+    processUserApproval(userId, 'approveUserId');
+  });
+
+  $("#btnRejectUser").click(function () {
+    const userId = $(this).data("user-id");
+    if (confirm('Are you sure you want to REJECT this registration?')) {
+      processUserApproval(userId, 'rejectUserId');
+    }
+  });
+
+  function processUserApproval(userId, action) {
+    const btn = action === 'approveUserId' ? $("#btnApproveUser") : $("#btnRejectUser");
+    const originalText = btn.text();
+    btn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+
+    $.ajax({
+      url: "index.php?controller=Admin&action=" + action,
+      type: "POST",
+      data: { user_id: userId },
+      dataType: "json",
+      success: function (response) {
+        if (response.success) {
+          // Re-use external showAlert if available, otherwise fallback
+          if (typeof showAlert === 'function') {
+            showAlert("✓ " + response.message, "success");
+          } else {
+            alert(response.message);
+          }
+
+          $("#viewIdModal").removeClass("show");
+          loadPendingUsers();
+        } else {
+          if (typeof showAlert === 'function') {
+            showAlert("Error: " + response.message, "error");
+          } else {
+            alert("Error: " + response.message);
+          }
+        }
+        btn.prop('disabled', false).text(originalText);
+      },
+      error: function () {
+        alert("An error occurred");
+        btn.prop('disabled', false).text(originalText);
+      }
+    });
+  }
+});

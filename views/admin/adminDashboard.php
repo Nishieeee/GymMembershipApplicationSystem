@@ -250,6 +250,9 @@
                     <button class="tab-button px-6 py-4 text-sm font-medium text-slate-300 whitespace-nowrap focus:outline-none" data-tab="payments">
                         <i class="fas fa-credit-card mr-2"></i> Payments
                     </button>
+                    <button class="tab-button px-6 py-4 text-sm font-medium text-slate-300 whitespace-nowrap focus:outline-none" data-tab="pending">
+                        <i class="fas fa-user-clock mr-2"></i> Pending
+                    </button>
                 </div>
 
                 <div id="members" class="tab-content active bg-[#162032]"> <div class="p-6">
@@ -586,6 +589,40 @@
                                             </td>
                                         </tr>
                                     <?php } ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pending" class="tab-content bg-[#162032]">
+                    <div class="p-6">
+                        <div class="flex flex-col xl:flex-row justify-between gap-4 mb-6">
+                            <h2 class="text-xl font-bold text-white flex items-center"><i class="fas fa-user-clock mr-2 text-slate-500"></i> Pending Registrations</h2>
+                            
+                            <div class="flex flex-col sm:flex-row gap-3 flex-1 xl:justify-end">
+                                <button id="btnRefreshPending" class="px-4 py-2.5 bg-slate-700 hover:bg-slate-600 text-white text-sm font-medium rounded-lg transition-colors border border-slate-600">
+                                    <i class="fas fa-sync-alt mr-2"></i> Refresh
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-x-auto rounded-lg border border-slate-700">
+                            <table class="w-full text-left custom-table" id="pendingUsersTable">
+                                <thead>
+                                    <tr>
+                                        <th class="p-4 rounded-tl-lg">Name</th>
+                                        <th class="p-4">Email</th>
+                                        <th class="p-4">Registered Date</th>
+                                        <th class="p-4">ID Proof</th>
+                                        <th class="p-4 text-center rounded-tr-lg">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pendingUsersTableBody">
+                                    <!-- Populated via AJAX -->
+                                    <tr class="text-slate-500 text-sm text-center">
+                                        <td colspan="5" class="p-6">Loading pending registrations...</td>
+                                    </tr>
                                 </tbody>
                             </table>
                         </div>
@@ -1376,6 +1413,43 @@
                         <button type="submit" id="refundPaymentBtn" class="flex-1 py-2 bg-red-600 hover:bg-red-700 rounded-lg text-white font-medium">Refund</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <div id="viewIdModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm transition-opacity duration-300">
+        <div class="modal-content w-full max-w-lg bg-slate-800 rounded-2xl shadow-2xl border border-slate-700/50 transform transition-all scale-100 overflow-hidden">
+            <div class="flex justify-between items-center px-6 py-5 border-b border-slate-700/50 bg-slate-800/50">
+                <h3 class="text-xl font-bold text-white flex items-center gap-3">
+                    <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400">
+                        <i class="fa-solid fa-id-card"></i>
+                    </span>
+                    ID Verification
+                </h3>
+                <button class="view-id-close w-8 h-8 flex items-center justify-center rounded-full text-slate-400 hover:text-white hover:bg-slate-700/50 transition-all duration-200">
+                    <i class="fa-solid fa-times text-lg"></i>
+                </button>
+            </div>
+            <div class="p-6">
+                
+                <div class="mb-6 flex justify-center bg-slate-900/50 rounded-lg p-2 border border-slate-700/30">
+                    <img id="viewIdImage" src="" alt="Valid ID" class="max-h-[70vh] w-auto max-w-full object-contain rounded shadow-sm">
+                </div>
+
+                <div id="viewIdUserDetails" class="space-y-3 text-slate-300 bg-slate-900/30 rounded-xl p-5 border border-slate-700/30 text-sm">
+                    <!-- Details here -->
+                </div>
+
+                <div class="flex gap-4 mt-6 pt-2">
+                    <button type="button" class="view-id-close flex-1 py-2.5 px-4 bg-slate-700/50 hover:bg-slate-700 border border-slate-600 rounded-lg text-slate-200 font-medium transition-all duration-200">
+                        Close
+                    </button>
+                    <button type="button" id="btnRejectUser" class="flex-1 py-2.5 px-4 bg-red-600/10 hover:bg-red-600/20 text-red-400 border border-red-600/30 hover:border-red-500 rounded-lg font-medium transition-all duration-200">
+                        Reject
+                    </button>
+                    <button type="button" id="btnApproveUser" class="flex-1 py-2.5 px-4 bg-green-600 hover:bg-green-500 text-white rounded-lg font-medium shadow-lg shadow-green-900/20 transition-all duration-200">
+                        Approve
+                    </button>
+                </div>
             </div>
         </div>
     </div>
