@@ -19,7 +19,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gymazing - Transform Your Body & Mind</title>
     <script src="public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <style href="public/assets/css/style.css">
+    <link rel="stylesheet" href="public/assets/css/style.css">
+    <style>
         /* Custom gradient background */
         .gradient-bg {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);
@@ -82,7 +83,7 @@
 <body class="gradient-bg min-h-screen">
     
     <!-- header -->
-    <?php include_once '../views/layouts/header.php'?>
+    <?php include_once __DIR__ . '/layouts/header.php'?>
 
     <!-- main content -->
     <main class="min-h-screen">
@@ -391,8 +392,8 @@
     </main>
 
     <!-- footer -->
-    <?php include '../views/layouts/footer.php' ?>
+    <?php include __DIR__ . '/layouts/footer.php' ?>
     
-    <script src="../assets/public/js/jquery/juery-3.7.1.min.js"></script>
+    <script src="public/assets/js/jquery/jquery-3.7.1.min.js"></script>
 </body>
 </html>

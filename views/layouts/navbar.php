@@ -1,5 +1,5 @@
 <?php
-include_once "./../App/models/User.php";
+include_once __DIR__ . "/../../App/models/User.php";
 if(session_status() == PHP_SESSION_NONE) {
     session_set_cookie_params(['path' => "/"]);
     session_start();
@@ -12,13 +12,6 @@ $user_name = $me['first_name'];
 $user_initial = substr($user_name, 0, 1);
 ?>
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
         /* Notification styles */
         @keyframes slideIn {
@@ -97,8 +90,6 @@ $user_initial = substr($user_name, 0, 1);
             transform: rotate(180deg);
         }
     </style>
-</head>
-<body>
     <header class="md:hidden fixed top-0 left-0 right-0 z-50 bg-neutral-900 border-b border-gray-800 shadow-lg">
         <div class="flex items-center justify-between p-4">
             <div class="flex items-center space-x-2">
@@ -250,7 +241,7 @@ $user_initial = substr($user_name, 0, 1);
         </nav>
 
         <div class="p-4 border-t border-gray-800">
-            <a href="../views/auth/logout.php" class="block px-4 py-3 rounded-lg text-red-400 font-medium hover:bg-gray-800 transition text-center">
+            <a href="views/auth/logout.php" class="block px-4 py-3 rounded-lg text-red-400 font-medium hover:bg-gray-800 transition text-center">
                 <svg class="w-5 h-5 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/>
                 </svg>
@@ -479,5 +470,3 @@ $user_initial = substr($user_name, 0, 1);
         // Auto-refresh every 30 seconds
         setInterval(updateUnreadCount, 30000);
     </script>
-</body>
-</html>

@@ -6,14 +6,6 @@
         ["navItem" => "Contact", "navLink" => "#contact"]
     ];
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gymazing!</title>
-    <script src="public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
         /* Smooth scroll behavior */
         html {
@@ -79,8 +71,6 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
         }
     </style>
-</head>
-<body>
     <header class="header-blur header-shadow fixed top-0 left-0 right-0 z-50 transition-all duration-300">
         <div class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between py-4 lg:py-5">
@@ -246,5 +236,3 @@
             });
         });
     </script>
-</body>
-</html>

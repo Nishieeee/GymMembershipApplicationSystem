@@ -2,9 +2,9 @@
     
     class Database {
         private $host = "localhost";
-        private $user = "u194078580_clein";
-        private $password = "Yukinoshita@002";
-        private $dbname = "u194078580_gym";
+        private $user = "root";
+        private $password = "";
+        private $dbname = "gym";
 
         protected $conn;
 
