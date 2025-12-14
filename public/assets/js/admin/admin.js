@@ -20,49 +20,49 @@ function showAlert(message, type) {
       });
   }, 5000);
 }
- // Function to show Toast Notifications
-  function showNotification(type, message) {
-    const container = $("#alertContainer");
+// Function to show Toast Notifications
+function showNotification(type, message) {
+  const container = $("#alertContainer");
 
-    // Define colors and icons based on type
-    let styles = "";
-    let icon = "";
+  // Define colors and icons based on type
+  let styles = "";
+  let icon = "";
 
-    if (type === "success") {
-      styles = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
-      icon = '<i class="fa-solid fa-check-circle text-xl"></i>';
-    } else if (type === "error") {
-      styles = "bg-red-500/10 border-red-500/20 text-red-400";
-      icon = '<i class="fa-solid fa-circle-exclamation text-xl"></i>';
-    } else {
-      styles = "bg-blue-500/10 border-blue-500/20 text-blue-400";
-      icon = '<i class="fa-solid fa-info-circle text-xl"></i>';
-    }
+  if (type === "success") {
+    styles = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
+    icon = '<i class="fa-solid fa-check-circle text-xl"></i>';
+  } else if (type === "error") {
+    styles = "bg-red-500/10 border-red-500/20 text-red-400";
+    icon = '<i class="fa-solid fa-circle-exclamation text-xl"></i>';
+  } else {
+    styles = "bg-blue-500/10 border-blue-500/20 text-blue-400";
+    icon = '<i class="fa-solid fa-info-circle text-xl"></i>';
+  }
 
-    // Create the Toast HTML
-    const toastHtml = `
+  // Create the Toast HTML
+  const toastHtml = `
           <div class="glass-panel p-4 rounded-lg border flex items-center shadow-lg transform transition-all duration-300 translate-x-full opacity-0 ${styles}">
               <div class="mr-3">${icon}</div>
               <div class="font-medium text-sm">${message}</div>
           </div>
       `;
 
-    // Append to container
-    const $toast = $(toastHtml).appendTo(container);
+  // Append to container
+  const $toast = $(toastHtml).appendTo(container);
 
-    // Animate In (Slide from right)
-    setTimeout(() => {
-      $toast.removeClass("translate-x-full opacity-0");
-    }, 100);
+  // Animate In (Slide from right)
+  setTimeout(() => {
+    $toast.removeClass("translate-x-full opacity-0");
+  }, 100);
 
-    // Remove after 3 seconds
+  // Remove after 3 seconds
+  setTimeout(() => {
+    $toast.addClass("translate-x-full opacity-0"); // Slide out
     setTimeout(() => {
-      $toast.addClass("translate-x-full opacity-0"); // Slide out
-      setTimeout(() => {
-        $toast.remove(); // Remove from DOM
-      }, 300);
-    }, 3000);
-  }
+      $toast.remove(); // Remove from DOM
+    }, 300);
+  }, 3000);
+}
 $(document).ready(function () {
   // ===== TAB SWITCHING =====
   $(".tab-button").on("click", function () {
@@ -531,49 +531,7 @@ $(document).ready(function () {
     });
   });
 
-  // Function to show Toast Notifications
-  function showNotification(type, message) {
-    const container = $("#alertContainer");
 
-    // Define colors and icons based on type
-    let styles = "";
-    let icon = "";
-
-    if (type === "success") {
-      styles = "bg-emerald-500/10 border-emerald-500/20 text-emerald-400";
-      icon = '<i class="fa-solid fa-check-circle text-xl"></i>';
-    } else if (type === "error") {
-      styles = "bg-red-500/10 border-red-500/20 text-red-400";
-      icon = '<i class="fa-solid fa-circle-exclamation text-xl"></i>';
-    } else {
-      styles = "bg-blue-500/10 border-blue-500/20 text-blue-400";
-      icon = '<i class="fa-solid fa-info-circle text-xl"></i>';
-    }
-
-    // Create the Toast HTML
-    const toastHtml = `
-          <div class="glass-panel p-4 rounded-lg border flex items-center shadow-lg transform transition-all duration-300 translate-x-full opacity-0 ${styles}">
-              <div class="mr-3">${icon}</div>
-              <div class="font-medium text-sm">${message}</div>
-          </div>
-      `;
-
-    // Append to container
-    const $toast = $(toastHtml).appendTo(container);
-
-    // Animate In (Slide from right)
-    setTimeout(() => {
-      $toast.removeClass("translate-x-full opacity-0");
-    }, 100);
-
-    // Remove after 3 seconds
-    setTimeout(() => {
-      $toast.addClass("translate-x-full opacity-0"); // Slide out
-      setTimeout(() => {
-        $toast.remove(); // Remove from DOM
-      }, 300);
-    }, 3000);
-  }
   // ===== ADD MEMBER FORM VALIDATION =====
   $("#addMemberForm").on("submit", function (e) {
     e.preventDefault();
@@ -2229,28 +2187,7 @@ $(document).ready(function () {
       },
     });
   });
-  // Alert Function
-  function showAlert(message, type) {
-    const alertClass = type === "success" ? "bg-green-500" : "bg-red-500";
-    const icon = type === "success" ? "✓" : "✕";
 
-    const alert = `
-          <div class="alert ${alertClass} text-white px-6 py-4 rounded-lg shadow-lg flex items-center">
-              <span class="mr-3 text-2xl">${icon}</span>
-              <span>${message}</span>
-          </div>
-      `;
-
-    $("#alertContainer").append(alert);
-
-    setTimeout(() => {
-      $("#alertContainer .alert")
-        .first()
-        .fadeOut(300, function () {
-          $(this).remove();
-        });
-    }, 5000);
-  }
 });
 
 $(document).ready(function () {

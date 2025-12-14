@@ -141,7 +141,7 @@ class AuthController extends Controller {
 
     public function logout() {
         session_destroy();
-        header("Location: ../../public/index.php");
+        header("Location: index.php?controller=Home&action=index");
         exit();
     }
 

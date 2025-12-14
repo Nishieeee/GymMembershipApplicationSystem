@@ -94,7 +94,7 @@
                 }
             }
         }
-    }
+
 
     public function deletePlan() {
         // Check login if needed: $this->requireLogin();
@@ -119,4 +119,5 @@
     }
 
 
+}
 ?>
