@@ -18,6 +18,10 @@
             require __DIR__ . "/../views/{$view}.php";
         }
 
+        protected function feedback($view, $data=[]) {
+            extract($data);
+            require __DIR__ . "/../views/layouts/{$view}.php";
+        }
         protected function adminView($view, $data=[]) {
             extract($data);
             require __DIR__ . "/../views/admin/admin{$view}.php";
