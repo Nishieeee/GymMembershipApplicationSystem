@@ -64,6 +64,27 @@
                 return false;
             }
         }
+
+        public function updatePlan($plan_id, $data) {
+            $sql = "UPDATE membership_plans SET 
+                    plan_name = :plan_name, 
+                    description = :description, 
+                    duration_months = :duration_months, 
+                    price = :price, 
+                    status = :status 
+                    WHERE plan_id = :plan_id";
+
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":plan_name", $data['plan_name']);
+            $query->bindParam(":description", $data['description']);
+            $query->bindParam(":duration_months", $data['duration_months']);
+            $query->bindParam(":price", $data['price']);
+            $query->bindParam(":status", $data['status']);
+            $query->bindParam(":plan_id", $plan_id);
+
+            return $query->execute();
+        }
+
         public function getPlanById($plan_id) {
             $sql = "SELECT * FROM membership_plans WHERE plan_id = :plan_id";
             

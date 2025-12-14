@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 17, 2025 at 05:40 PM
+-- Generation Time: Dec 14, 2025 at 04:00 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -51,11 +51,12 @@ INSERT INTO `members` (`user_id`, `first_name`, `last_name`, `middle_name`, `dat
 (4, 'John', 'Smith', 'Toribio', '2021-10-13', 'male', 'test02@gmail.com', '09366600119', 'test1234', 'member', '2025-10-05', 'active'),
 (7, 'Roboute', 'Guilliman', 'Smith', '2015-10-04', 'male', 'admin@gmail.com', '09366600119', 'admin123', 'admin', '2025-10-09', 'active'),
 (8, 'Jane', 'Doe', 'S', '2025-10-01', 'female', 'test03@gmail.com', '', 'test1234', 'member', '2025-10-21', 'inactive'),
-(17, 'Jamsik', 'Doe', '', '2010-07-21', 'male', 'test04@gmail.com', '', 'test1234', 'member', '2025-10-26', 'inactive'),
+(17, 'Jamsik', 'Doe', '', '2010-07-21', 'male', 'test04@gmail.com', '', '', 'member', '2025-10-26', 'active'),
 (18, 'Kevin', 'Herodias', 'Ramos', '2011-10-30', 'male', 'trainer@gmail.com', '09123456789', 'test1234', 'trainer', '2025-10-27', 'active'),
 (19, 'John', 'Doe', 'S.', '2005-10-30', 'male', 'demo@gmail.com', '', 'test1234', 'member', '2025-11-03', 'active'),
 (20, 'Shane', 'Doe', 'S', '2005-10-30', 'female', 'test05@gmail.com', '', 'test1234', 'member', '2025-11-16', 'active'),
-(21, 'Gray', 'Lockser', 'G', '2004-02-04', 'male', 'ae202401182@wmsu.edu.ph', '', 'test1234', 'member', '2025-11-18', 'active');
+(21, 'Gray', 'Lockser', 'G', '2004-02-04', 'male', 'ae202401182@wmsu.edu.ph', '', 'test1234', 'member', '2025-11-18', 'active'),
+(22, 'max', 'verstappen', 'd', '2003-02-02', 'male', 'test06@gmail.com', '', 'test1234', 'member', '2025-12-13', 'active');
 
 -- --------------------------------------------------------
 
@@ -80,8 +81,65 @@ INSERT INTO `membership_plans` (`plan_id`, `plan_name`, `description`, `duration
 (1, 'Basic Plan', 'Get access to gym equipment, locker room and with WIFI Access!', 1, 255.00, 'active'),
 (2, 'Premium Plan', 'All basic features plus a personal trainer for 2x a week (with Nutrition Consultation)', 1, 599.00, 'active'),
 (3, 'Elite Plan', 'All Premium features with unlimited personal training with Spa & Sauna Access!', 1, 899.00, 'active'),
-(4, 'Giga plan', 'Get all elite plan access plus an unli subscription to our gym products', 1, 2999.00, 'inactive'),
-(6, 'Mr.Oympia Plan', 'get trained by hardcore body builders to achieve a greek like physique', 2, 1599.00, 'inactive');
+(4, 'Giga plan', 'Get all elite plan access plus an unli subscription to our gym products', 1, 2899.00, 'inactive'),
+(6, 'Mr.Oympia Plan', 'get trained by hardcore body builders to achieve a greek like physique', 2, 1599.00, 'inactive'),
+(21, 'Xmas Special', 'Christmas Special Elite plan!', 1, 599.00, 'inactive');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `member_address`
+--
+
+CREATE TABLE `member_address` (
+  `zip` int(10) NOT NULL,
+  `street_address` varchar(100) NOT NULL,
+  `city` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `member_address`
+--
+
+INSERT INTO `member_address` (`zip`, `street_address`, `city`) VALUES
+(3000, '19 Malvar Road', 'Baguio City'),
+(4028, 'J-Block, San Pedro', 'Laguna'),
+(4029, '5th St. Zone 2', 'Cavite'),
+(5000, '78 Lopez Jaena St', 'Iloilo City'),
+(6000, 'A1-B Road Mandaue', 'Cebu City'),
+(6002, '30 Rizal Avenue', 'Lapu-Lapu City'),
+(7000, 'Sunflower Street', 'Zamboanga City'),
+(8000, '45 Aguinaldo St', 'Davao City'),
+(9000, '123 Kalayaan Ave', 'Cagayan de Oro City'),
+(9001, 'P12 Barangay Carmen', 'Cagayan de Oro City');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `member_address_link`
+--
+
+CREATE TABLE `member_address_link` (
+  `user_id` int(11) NOT NULL,
+  `zip` int(11) NOT NULL,
+  `address_type` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `member_address_link`
+--
+
+INSERT INTO `member_address_link` (`user_id`, `zip`, `address_type`) VALUES
+(1, 9000, 'Home'),
+(4, 9001, 'Home'),
+(7, 8000, 'Home'),
+(8, 7000, 'Home'),
+(17, 6000, 'Home'),
+(18, 6002, 'Home'),
+(19, 5000, 'Home'),
+(20, 4028, 'Home'),
+(21, 4029, 'Home'),
+(22, 7000, 'Home');
 
 -- --------------------------------------------------------
 
@@ -132,7 +190,34 @@ INSERT INTO `notifications` (`notification_id`, `user_id`, `title`, `message`, `
 (23, 1, 'Payment Received', 'We have received your payment of ₱899.00. Thank you!', 'success', 'payment', 1, 'index.php?controller=member&action=paymentHistory', '2025-11-17 16:02:55', '2025-11-17 16:29:31'),
 (24, 7, 'Payment Received', 'Jhon Clein Pagarogan has made a payment of ₱899.00.', 'success', 'payment', 1, 'index.php?controller=admin&action=payments', '2025-11-17 16:02:55', '2025-11-17 16:39:32'),
 (25, 21, 'Payment Received', 'We have received your payment of ₱899.00. Thank you!', 'success', 'payment', 1, 'index.php?controller=member&action=paymentHistory', '2025-11-17 16:37:53', '2025-11-17 16:39:10'),
-(26, 7, 'Payment Received', 'Gray Lockser has made a payment of ₱899.00.', 'success', 'payment', 1, 'index.php?controller=admin&action=payments', '2025-11-17 16:37:53', '2025-11-17 16:39:32');
+(26, 7, 'Payment Received', 'Gray Lockser has made a payment of ₱899.00.', 'success', 'payment', 1, 'index.php?controller=admin&action=payments', '2025-11-17 16:37:53', '2025-11-17 16:39:32'),
+(27, 1, 'You\'ve Been Promoted to Trainer!', 'Congratulations! You\'ve been promoted to a trainer role with specialization in Weight Training. Check your new dashboard to explore your trainer features.', 'success', 'trainer', 1, 'index.php?controller=trainer&action=dashboard', '2025-11-23 08:56:32', '2025-11-26 12:47:27'),
+(28, 1, 'You\'ve Been Promoted to Trainer!', 'Congratulations! You\'ve been promoted to a trainer role with specialization in Weight Training. Check your new dashboard to explore your trainer features.', 'success', 'trainer', 1, 'index.php?controller=trainer&action=dashboard', '2025-11-23 08:58:56', '2025-11-26 12:47:27'),
+(29, 1, 'You\'ve Been Promoted to Trainer!', 'Congratulations! You\'ve been promoted to a trainer role with specialization in Weight Training. Check your new dashboard to explore your trainer features.', 'success', 'trainer', 1, 'index.php?controller=trainer&action=dashboard', '2025-11-23 09:00:42', '2025-11-26 12:47:27'),
+(30, 1, 'You\'ve Been Promoted to Trainer!', 'Congratulations! You\'ve been promoted to a trainer role with specialization in Weight Training. Check your new dashboard to explore your trainer features.', 'success', 'trainer', 1, 'index.php?controller=trainer&action=dashboard', '2025-11-23 09:07:51', '2025-11-26 12:47:27'),
+(31, 1, 'You\'ve Been Promoted to Trainer!', 'Congratulations! You\'ve been promoted to a trainer role with specialization in Weight Training. Check your new dashboard to explore your trainer features.', 'success', 'trainer', 1, 'index.php?controller=trainer&action=dashboard', '2025-11-23 09:14:40', '2025-11-26 12:47:27'),
+(32, 1, 'You\'ve Been Promoted to Trainer!', 'Congratulations! You\'ve been promoted to a trainer role with specialization in Weight Training. Check your new dashboard to explore your trainer features.', 'success', 'trainer', 1, 'index.php?controller=trainer&action=dashboard', '2025-11-23 09:15:08', '2025-11-26 12:47:27'),
+(33, 1, 'You\'ve Been Promoted to Trainer!', 'Congratulations! You\'ve been promoted to a trainer role with specialization in Cardio. Check your new dashboard to explore your trainer features.', 'success', 'trainer', 1, 'index.php?controller=trainer&action=dashboard', '2025-11-26 12:37:09', '2025-11-26 12:47:27'),
+(34, 1, 'You\'ve Been Promoted to Trainer!', 'Congratulations! You\'ve been promoted to a trainer role with specialization in Cardio. Check your new dashboard to explore your trainer features.', 'success', 'trainer', 1, 'index.php?controller=trainer&action=dashboard', '2025-11-26 12:39:32', '2025-11-26 12:47:27'),
+(35, 1, 'Trainer Account Deactivated', 'Your trainer account has been deactivated. Please contact administration if you have any questions.', 'warning', 'trainer', 1, NULL, '2025-11-26 12:41:54', '2025-11-26 12:47:27'),
+(36, 1, 'Trainer Account Deactivated', 'Your trainer account has been deactivated. Please contact administration if you have any questions.', 'warning', 'trainer', 1, NULL, '2025-11-26 12:41:54', '2025-11-26 12:47:27'),
+(37, 1, 'You\'ve Been Promoted to Trainer!', 'Congratulations! You\'ve been promoted to a trainer role with specialization in Weight Training. Check your new dashboard to explore your trainer features.', 'success', 'trainer', 1, 'index.php?controller=trainer&action=dashboard', '2025-11-26 12:55:54', '2025-12-06 20:26:14'),
+(38, 1, 'You\'ve Been Promoted to Trainer!', 'Congratulations! You\'ve been promoted to a trainer role with specialization in Weight Training. Check your new dashboard to explore your trainer features.', 'success', 'trainer', 1, 'index.php?controller=trainer&action=dashboard', '2025-11-26 12:58:18', '2025-12-06 20:26:14'),
+(39, 1, 'You\'ve Been Promoted to Trainer!', 'Congratulations! You\'ve been promoted to a trainer role with specialization in Weight Training. Check your new dashboard to explore your trainer features.', 'success', 'trainer', 1, 'index.php?controller=trainer&action=dashboard', '2025-11-26 13:03:29', '2025-12-06 20:26:14'),
+(40, 8, 'Membership Expired', 'Your membership has expired. Please renew to continue using the gym.', 'error', 'membership', 0, 'index.php?controller=member&action=renewMembership', '2025-12-09 09:58:53', NULL),
+(41, 8, 'Plan Expiration', 'Your Current Plan has Expired', 'warning', 'membership', 0, NULL, '2025-12-09 09:58:53', NULL),
+(42, 18, 'Profile Updated', 'Your profile has been updated successfully.', 'success', 'general', 0, NULL, '2025-12-13 07:38:11', NULL),
+(43, 18, 'Profile Updated', 'Your profile has been updated successfully.', 'success', 'general', 0, NULL, '2025-12-13 07:38:11', NULL),
+(44, 8, 'Payment Received', 'We have received your payment of ₱599.00. Thank you!', 'success', 'payment', 0, 'index.php?controller=member&action=paymentHistory', '2025-12-13 09:28:45', NULL),
+(45, 7, 'Payment Received', 'Jane Doe has made a payment of ₱599.00.', 'success', 'payment', 0, 'index.php?controller=admin&action=payments', '2025-12-13 09:28:45', NULL),
+(46, 8, 'Payment Received', 'We have received your payment of ₱599.00. Thank you!', 'success', 'payment', 0, 'index.php?controller=member&action=paymentHistory', '2025-12-13 09:29:33', NULL),
+(47, 7, 'Payment Received', 'Jane Doe has made a payment of ₱599.00.', 'success', 'payment', 0, 'index.php?controller=admin&action=payments', '2025-12-13 09:29:33', NULL),
+(48, 8, 'Payment Received', 'We have received your payment of ₱599.00. Thank you!', 'success', 'payment', 0, 'index.php?controller=member&action=paymentHistory', '2025-12-13 09:30:06', NULL),
+(49, 7, 'Payment Received', 'Jane Doe has made a payment of ₱599.00.', 'success', 'payment', 0, 'index.php?controller=admin&action=payments', '2025-12-13 09:30:06', NULL),
+(50, 7, 'New Member Registered', 'A new member has registered: max verstappen.', 'info', 'general', 0, 'index.php?controller=admin&action=members', '2025-12-13 14:10:44', NULL),
+(51, 22, 'Plan cancellation', 'Your Current Plan has been Cancelled', 'warning', 'membership', 0, NULL, '2025-12-13 14:28:48', NULL),
+(52, 22, 'Plan cancellation', 'Your Current Plan has been Cancelled', 'warning', 'membership', 0, NULL, '2025-12-13 15:06:17', NULL),
+(53, 22, 'Plan Cancellation', 'Your Current Plan has been Cancelled.', 'warning', 'membership', 0, NULL, '2025-12-13 15:44:14', NULL);
 
 -- --------------------------------------------------------
 
@@ -162,7 +247,10 @@ INSERT INTO `payments` (`payment_id`, `subscription_id`, `amount`, `payment_date
 (16, 24, 899.00, '2025-12-02', 'paid'),
 (17, 25, 899.00, '2025-12-14', 'paid'),
 (18, 26, 899.00, '2025-12-17', 'paid'),
-(19, 27, 899.00, '2025-12-17', 'paid');
+(19, 27, 899.00, '2025-12-17', 'paid'),
+(20, 28, 599.00, '2026-01-12', 'paid'),
+(21, 29, 599.00, '2026-01-12', 'pending'),
+(22, 30, 599.00, '2025-12-13', 'pending');
 
 -- --------------------------------------------------------
 
@@ -206,7 +294,10 @@ INSERT INTO `payment_transaction` (`transaction_id`, `subscription_id`, `payment
 (66, 25, 17, 'gcash', 'new', 'completed', '', '2025-11-18 00:02:00', '2025-11-18 00:02:00'),
 (67, 25, 17, 'gcash', 'new', 'completed', '', '2025-11-18 00:02:10', '2025-11-18 00:02:10'),
 (68, 25, 17, 'gcash', 'new', 'completed', '', '2025-11-18 00:02:55', '2025-11-18 00:02:55'),
-(69, 27, 19, 'gcash', 'new', 'completed', '', '2025-11-18 00:37:52', '2025-11-18 00:37:52');
+(69, 27, 19, 'gcash', 'new', 'completed', '', '2025-11-18 00:37:52', '2025-11-18 00:37:52'),
+(70, 28, 20, 'gcash', 'new', 'completed', '', '2025-12-13 17:28:43', '2025-12-13 17:28:43'),
+(71, 28, 20, 'gcash', 'new', 'completed', '', '2025-12-13 17:29:33', '2025-12-13 17:29:33'),
+(72, 28, 20, 'gcash', 'new', 'completed', '', '2025-12-13 17:30:05', '2025-12-13 17:30:05');
 
 -- --------------------------------------------------------
 
@@ -242,7 +333,10 @@ CREATE TABLE `sessions` (
 INSERT INTO `sessions` (`session_id`, `user_id`, `trainer_id`, `session_date`, `status`, `notes`, `created_at`) VALUES
 (3, 1, 1, '2025-11-03 10:10:00', 'cancelled', 'cardio session', '2025-10-27'),
 (11, 1, 1, '2025-11-03 22:23:00', 'completed', '', '2025-10-27'),
-(13, 4, 1, '2025-11-27 22:26:00', 'scheduled', '', '2025-10-27');
+(13, 4, 1, '2025-11-27 22:26:00', 'scheduled', '', '2025-10-27'),
+(14, 8, 1, '2025-12-10 18:24:00', 'scheduled', '', '2025-12-09'),
+(15, 8, 1, '2025-12-27 18:27:00', 'scheduled', '', '2025-12-09'),
+(16, 8, 1, '2025-12-10 18:30:00', 'scheduled', '', '2025-12-09');
 
 -- --------------------------------------------------------
 
@@ -269,11 +363,14 @@ INSERT INTO `subscriptions` (`subscription_id`, `user_id`, `plan_id`, `start_dat
 (18, 4, 3, '2025-10-22', '2025-11-21', 'cancelled'),
 (19, 4, 3, '2025-10-22', '2025-11-21', 'active'),
 (22, 17, 2, '2025-10-26', '2025-11-04', 'expired'),
-(23, 8, 3, '2025-11-02', '2025-12-02', 'active'),
+(23, 8, 3, '2025-11-02', '2025-12-02', 'expired'),
 (24, 19, 3, '2025-11-02', '2025-12-02', 'expired'),
 (25, 1, 3, '2025-11-14', '2025-12-14', 'active'),
 (26, 19, 3, '2025-11-17', '2025-12-17', 'active'),
-(27, 21, 3, '2025-11-17', '2025-12-17', 'active');
+(27, 21, 3, '2025-11-17', '2025-12-17', 'active'),
+(28, 8, 2, '2025-12-13', '2026-01-12', 'active'),
+(29, 22, 2, '2025-12-13', '2026-01-12', 'cancelled'),
+(30, 22, 2, '2025-12-13', '2026-01-12', 'cancelled');
 
 -- --------------------------------------------------------
 
@@ -296,7 +393,7 @@ CREATE TABLE `trainers` (
 --
 
 INSERT INTO `trainers` (`trainer_id`, `user_id`, `specialization`, `experience_years`, `contact_no`, `status`, `join_date`) VALUES
-(1, 18, 'Weight Training', 10, '09123456789', 'active', '2025-10-27 00:00:00');
+(1, 18, 'Weight Training', 11, '09123456789', 'active', '2025-10-27 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -318,7 +415,8 @@ CREATE TABLE `trainer_members` (
 
 INSERT INTO `trainer_members` (`assignment_id`, `trainer_id`, `user_id`, `assigned_date`, `status`) VALUES
 (2, 1, 4, '2025-10-27 00:00:00', 'active'),
-(3, 1, 1, '2025-10-27 00:00:00', 'active');
+(3, 1, 1, '2025-10-27 00:00:00', 'active'),
+(10, 1, 8, '0000-00-00 00:00:00', '');
 
 -- --------------------------------------------------------
 
@@ -330,6 +428,7 @@ CREATE TABLE `trainer_requests` (
   `request_id` int(11) NOT NULL,
   `user_id` int(11) NOT NULL,
   `trainer_id` int(11) NOT NULL,
+  `note` text DEFAULT NULL,
   `status` enum('pending','accepted','rejected') DEFAULT 'pending',
   `created_at` datetime DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -338,8 +437,9 @@ CREATE TABLE `trainer_requests` (
 -- Dumping data for table `trainer_requests`
 --
 
-INSERT INTO `trainer_requests` (`request_id`, `user_id`, `trainer_id`, `status`, `created_at`) VALUES
-(1, 17, 1, 'pending', '2025-10-17 00:00:00');
+INSERT INTO `trainer_requests` (`request_id`, `user_id`, `trainer_id`, `note`, `status`, `created_at`) VALUES
+(1, 17, 1, NULL, 'pending', '2025-10-17 00:00:00'),
+(2, 8, 1, '', 'pending', '2025-12-09 19:59:13');
 
 -- --------------------------------------------------------
 
@@ -366,7 +466,7 @@ CREATE TABLE `walk_ins` (
 --
 
 INSERT INTO `walk_ins` (`walkin_id`, `first_name`, `last_name`, `middle_name`, `email`, `contact_no`, `session_type`, `payment_method`, `payment_amount`, `visit_time`, `end_date`) VALUES
-(1, 'Jhon Clein', 'Toribio', NULL, 'test@gmail.com', '09366600119', 'Day Pass', 'Gcash', 59, '2025-10-25 17:57:17', '2025-10-26 00:00:00'),
+(1, 'Jhon Clein', 'Toribio', '', 'test@gmail.com', '09366600119', 'weekend', 'cash', 60, '2025-10-25 17:57:00', '2025-10-26 00:00:00'),
 (2, 'Jane', 'Doe', 'S', 'test03@gmail.com', '+639694685197', 'single', 'gcash', 20, '2025-10-26 07:27:49', '2025-10-27 07:27:49');
 
 --
@@ -385,6 +485,19 @@ ALTER TABLE `members`
 --
 ALTER TABLE `membership_plans`
   ADD PRIMARY KEY (`plan_id`);
+
+--
+-- Indexes for table `member_address`
+--
+ALTER TABLE `member_address`
+  ADD PRIMARY KEY (`zip`);
+
+--
+-- Indexes for table `member_address_link`
+--
+ALTER TABLE `member_address_link`
+  ADD PRIMARY KEY (`user_id`,`zip`),
+  ADD KEY `fk_mal_zip` (`zip`);
 
 --
 -- Indexes for table `notifications`
@@ -467,61 +580,61 @@ ALTER TABLE `walk_ins`
 -- AUTO_INCREMENT for table `members`
 --
 ALTER TABLE `members`
-  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `user_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `membership_plans`
 --
 ALTER TABLE `membership_plans`
-  MODIFY `plan_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `plan_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `notification_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=54;
 
 --
 -- AUTO_INCREMENT for table `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `payment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT for table `payment_transaction`
 --
 ALTER TABLE `payment_transaction`
-  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=70;
+  MODIFY `transaction_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=73;
 
 --
 -- AUTO_INCREMENT for table `sessions`
 --
 ALTER TABLE `sessions`
-  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `session_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT for table `subscriptions`
 --
 ALTER TABLE `subscriptions`
-  MODIFY `subscription_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `subscription_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT for table `trainers`
 --
 ALTER TABLE `trainers`
-  MODIFY `trainer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `trainer_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `trainer_members`
 --
 ALTER TABLE `trainer_members`
-  MODIFY `assignment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `assignment_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `trainer_requests`
 --
 ALTER TABLE `trainer_requests`
-  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `request_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `walk_ins`
@@ -532,6 +645,13 @@ ALTER TABLE `walk_ins`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `member_address_link`
+--
+ALTER TABLE `member_address_link`
+  ADD CONSTRAINT `fk_mal_user` FOREIGN KEY (`user_id`) REFERENCES `members` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `fk_mal_zip` FOREIGN KEY (`zip`) REFERENCES `member_address` (`zip`) ON UPDATE CASCADE;
 
 --
 -- Constraints for table `notifications`

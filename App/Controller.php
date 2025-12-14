@@ -18,6 +18,10 @@
             require __DIR__ . "/../views/{$view}.php";
         }
 
+        protected function feedback($view, $data=[]) {
+            extract($data);
+            require __DIR__ . "/../views/layouts/{$view}.php";
+        }
         protected function adminView($view, $data=[]) {
             extract($data);
             require __DIR__ . "/../views/admin/admin{$view}.php";
@@ -41,6 +45,16 @@
             $mail->setFrom('pagaroganjhonclein@gmail.com', 'Gymazing!');
 
             return $mail;
+        }
+
+        protected function requireLogin() {
+            if (session_status() !== PHP_SESSION_ACTIVE) {
+                session_start();
+            }
+            if (!isset($_SESSION['user_id'])) {
+                header('Location: index.php?controller=Auth&action=Login');
+                exit();
+            }
         }
     }
 

@@ -1,4 +1,3 @@
-
 <?php
 require_once __DIR__ . '/../config/Database.php';
 
@@ -157,4 +156,26 @@ class Trainer extends Database {
             return false;
         }
     }
+
+    public function hasPendingOrActiveRequest($userId, $trainerId) {
+        $sql = "SELECT request_id FROM trainer_requests 
+                WHERE user_id = :user_id AND trainer_id = :trainer_id 
+                AND status IN ('pending','accepted')";
+        $query = $this->connect()->prepare($sql);
+        $query->bindParam(':user_id', $userId);
+        $query->bindParam(':trainer_id', $trainerId);
+        $query->execute();
+        return (bool) $query->fetch();
+    }
+
+    public function requestTrainer($userId, $trainerId, $note = '') {
+        $sql = "INSERT INTO trainer_requests (user_id, trainer_id, note, status, created_at)
+                VALUES (:user_id, :trainer_id, :note, 'pending', NOW())";
+        $query = $this->connect()->prepare($sql);
+        $query->bindParam(':user_id', $userId);
+        $query->bindParam(':trainer_id', $trainerId);
+        $query->bindParam(':note', $note);
+        return $query->execute();
+    }
+    
 }

@@ -13,7 +13,7 @@
         private $userPaymentDetails;
 
         public function planPayment() {
-            session_start();
+            $this->requireLogin();
             $paymentModel = new Payment();
 
             $user_id = $_SESSION['user_id'];
@@ -24,7 +24,7 @@
         }
 
     public function processPayment() {
-        session_start();
+        $this->requireLogin();
         $user_id = $_SESSION['user_id'];
         header('Content-Type: application/json');
 

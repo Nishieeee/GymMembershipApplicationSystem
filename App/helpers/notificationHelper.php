@@ -10,7 +10,22 @@ class NotificationHelper {
         }
         return self::$notificationModel;
     }
-    
+    private static function notify($userId, $title, $message, $type = 'info', $category = 'general', $link = null) {
+        try {
+            // Make sure Notification model exists
+            if(!class_exists('Notification')) {
+                error_log("Notification model not found");
+                return false;
+            }
+            
+            $notificationModel = new Notification();
+            return $notificationModel->create($userId, $title, $message, $type, $category, $link);
+            
+        } catch(Exception $e) {
+            error_log("Notification creation error: " . $e->getMessage());
+            return false;
+        }
+    }
     // ===== MEMBERSHIP NOTIFICATIONS =====
     
     public static function membershipExpiring($userId, $daysLeft) {
@@ -21,6 +36,47 @@ class NotificationHelper {
             'warning',
             'membership',
             'index.php?controller=member&action=renewMembership'
+        );
+    }
+
+    public static function welcome($userId, $firstName) {
+        return self::notify(
+            $userId,
+            "Welcome to Gymazing, $firstName!",
+            'Your account has been created successfully. Complete your profile to get started with your fitness journey.',
+            'success',
+            'general',
+            'index.php?controller=member&action=profile'
+        );
+    }
+
+    public static function profileUpdated($userId) {
+        return self::notify(
+            $userId,
+            'Profile Updated',
+            'Your profile has been updated successfully.',
+            'success',
+            'general'
+        );
+    }
+
+    public static function passwordChanged($userId) {
+        return self::notify(
+            $userId,
+            'Password Changed',
+            'Your password has been changed successfully. If this wasn\'t you, please contact support immediately.',
+            'warning',
+            'general'
+        );
+    }
+
+    public static function settingsUpdated($userId, $settingChanged = 'settings') {
+        return self::notify(
+            $userId,
+            'Settings Updated',
+            "Your $settingChanged have been updated successfully.",
+            'success',
+            'general'
         );
     }
     
@@ -150,9 +206,101 @@ class NotificationHelper {
             'index.php?controller=admin&action=payments'
         );
     }
+    public static function trainerAccountCreated($userId, $specialization) {
+    return self::notify(
+        $userId,
+        'Welcome to the Trainer Team!',
+        "Your trainer account has been created. You're now specializing in $specialization. Access your trainer dashboard to get started.",
+        'success',
+        'trainer',
+        'index.php?controller=trainer&action=dashboard'
+    );
+}
+
+    public static function trainerPromoted($userId, $specialization) {
+        try {
+            return self::notify(
+                $userId,
+                'You\'ve Been Promoted to Trainer!',
+                "Congratulations! You've been promoted to a trainer role with specialization in $specialization. Check your new dashboard to explore your trainer features.",
+                'success',
+                'trainer',
+                'index.php?controller=trainer&action=dashboard'
+            );
+        } catch(Exception $e) {
+            error_log("trainerPromoted error: " . $e->getMessage());
+            return false;
+        }
+    }
+
     
-    public static function notifyAllAdmins($title, $message, $type = 'info', $link = null) {
-        return self::getModel()->notifyByRole('admin', $title, $message, $type, 'general', $link);
+    public static function trainerDeactivated($userId) {
+        return self::notify(
+            $userId,
+            'Trainer Account Deactivated',
+            'Your trainer account has been deactivated. Please contact administration if you have any questions.',
+            'warning',
+            'trainer'
+        );
+    }
+
+    public static function trainerReactivated($userId) {
+        return self::notify(
+            $userId,
+            'Trainer Account Reactivated',
+            'Great news! Your trainer account has been reactivated. You can now access all trainer features.',
+            'success',
+            'trainer',
+            'index.php?controller=trainer&action=dashboard'
+        );
+    }
+    
+    public static function notifyAllAdmins($title, $message, $link = null) {
+        try {
+            return self::notifyByRole('admin', $title, $message, $link);
+        } catch(Exception $e) {
+            error_log("notifyAllAdmins error: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    public static function notifyByRole($role, $title, $message, $link = null) {
+        try {
+            require_once __DIR__ . '/../config/Database.php';
+            
+            $database = new Database();
+            $conn = $database->connect();
+            
+            // Get all users with specified role
+            $stmt = $conn->prepare("SELECT user_id FROM members WHERE role = ? AND is_active = 1");
+            $stmt->execute([$role]);
+            $users = $stmt->fetchAll(PDO::FETCH_COLUMN);
+            
+            if(empty($users)) {
+                error_log("No users found with role: $role");
+                return 0;
+            }
+            
+            $notificationModel = new Notification();
+            $successCount = 0;
+            
+            foreach($users as $userId) {
+                try {
+                    if($notificationModel->create($userId, $title, $message, 'info', 'general', $link)) {
+                        $successCount++;
+                    }
+                } catch(Exception $e) {
+                    error_log("Failed to create notification for user $userId: " . $e->getMessage());
+                    continue;
+                }
+            }
+            
+            return $successCount;
+            
+        } catch(Exception $e) {
+            error_log("notifyByRole error: " . $e->getMessage());
+            return 0;
+        }
     }
     
     // ===== GENERAL NOTIFICATIONS =====

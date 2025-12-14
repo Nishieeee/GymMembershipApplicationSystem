@@ -196,6 +196,21 @@
             }
         }
 
+        public function getUserPendingPayments($userId) {
+            $sql = "SELECT COUNT(s.subscription_id) FROM subscriptions s 
+                JOIN payments p ON p.subscription_id = s.subscription_id
+                WHERE s.user_id = :user_id AND p.status = 'pending'
+            ";
+
+            $query = $this->connect()->prepare($sql);
+            $query->bindParam(":user_id", $userId);
+            if($query->execute()) {
+                return $query->fetch();
+            } else {
+                return 0;
+            }
+        }
+
         public function getPaymentStats() {
             $sql = "SELECT 
                     COUNT(*) as total_transactions,
