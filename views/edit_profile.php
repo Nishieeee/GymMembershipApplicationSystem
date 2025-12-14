@@ -30,12 +30,38 @@
                 </a>
             </div>
 
-            <form action="index.php?controller=User&action=saveProfile" method="POST">
+            <form action="index.php?controller=User&action=saveProfile" method="POST" enctype="multipart/form-data">
                 
                 <div class="glass-panel rounded-2xl p-8 mb-6">
                     <h2 class="text-xl font-bold text-white mb-6 flex items-center">
                         <i class="fas fa-user-edit text-blue-500 mr-3"></i> Personal Information
                     </h2>
+                    
+                    <div class="mb-6 flex items-center gap-6">
+                        <div class="relative group">
+                            <div class="w-24 h-24 rounded-full overflow-hidden border-2 border-slate-700 bg-slate-800">
+                                <?php if(!empty($user['profile_picture'])): ?>
+                                    <img src="<?= htmlspecialchars($user['profile_picture']) ?>" alt="Profile" class="w-full h-full object-cover">
+                                <?php else: ?>
+                                    <div class="w-full h-full flex items-center justify-center text-slate-500 text-3xl">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-medium text-slate-400 mb-2">Profile Picture</label>
+                            <input type="file" name="profile_picture" accept="image/*" 
+                                   class="block w-full text-sm text-slate-400
+                                   file:mr-4 file:py-2 file:px-4
+                                   file:rounded-full file:border-0
+                                   file:text-xs file:font-semibold
+                                   file:bg-blue-600 file:text-white
+                                   hover:file:bg-blue-700
+                                   cursor-pointer">
+                            <p class="text-xs text-slate-500 mt-1">Allowed formats: JPG, PNG. Max size: 2MB.</p>
+                        </div>
+                    </div>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>

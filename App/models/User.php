@@ -72,7 +72,7 @@
         }
         public function getMember($user_id) {
             $sql = "SELECT 
-                    user_id, CONCAT(first_name, ' ', last_name) as name, first_name, last_name, phone_no, email, role, created_at 
+                    user_id, CONCAT(first_name, ' ', last_name) as name, first_name, last_name, phone_no, email, role, created_at, profile_picture 
                     FROM members 
                     WHERE user_id = :user_id";
 
@@ -104,7 +104,7 @@
         }
 
         public function getMemberDetailsById($userId) {
-            $sql = "SELECT m.user_id, m.first_name, m.middle_name, m.last_name, m.email, m.role, m.status, m.created_at, p.plan_name FROM members m JOIN subscriptions s ON s.user_id = m.user_id JOIN membership_plans p ON p.plan_id = s.plan_id WHERE m.user_id = :user_id";
+             $sql = "SELECT m.user_id, m.first_name, m.middle_name, m.last_name, m.email, m.role, m.status, m.created_at, m.profile_picture, p.plan_name FROM members m JOIN subscriptions s ON s.user_id = m.user_id JOIN membership_plans p ON p.plan_id = s.plan_id WHERE m.user_id = :user_id";
 
             $query = $this->connect()->prepare($sql);
             $query->bindParam(":user_id", $userId);
@@ -277,7 +277,8 @@
                     last_name = :last_name, 
                     middle_name = :middle_name, 
                     email = :email, 
-                    phone_no = :phone_no 
+                    phone_no = :phone_no,
+                    profile_picture = :profile_picture
                     WHERE user_id = :user_id";
 
             $query = $this->connect()->prepare($sql);
@@ -286,6 +287,7 @@
             $query->bindParam(":middle_name", $data['middle_name']);
             $query->bindParam(":email", $data['email']);
             $query->bindParam(":phone_no", $data['phone_no']);
+            $query->bindParam(":profile_picture", $data['profile_picture']);
             $query->bindParam(":user_id", $user_id);
 
             return $query->execute();

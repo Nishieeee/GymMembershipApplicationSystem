@@ -291,7 +291,40 @@
                 $city   = trim(htmlspecialchars($_POST['city']));
                 $zip    = trim(htmlspecialchars($_POST['zip']));
 
-                // 3. Update Database
+                // 3. Handle File Upload
+                $profilePicturePath = null;
+                if(isset($_FILES['profile_picture']) && $_FILES['profile_picture']['error'] == 0) {
+                    $targetDir = __DIR__ . "/../../public/uploads/profile_images/";
+                    
+                    // Create directory if not exists
+                    if (!file_exists($targetDir)) {
+                        mkdir($targetDir, 0777, true);
+                    }
+
+                    $fileExtension = strtolower(pathinfo($_FILES["profile_picture"]["name"], PATHINFO_EXTENSION));
+                    $newFileName = "user_" . $user_id . "_" . time() . "." . $fileExtension;
+                    $targetFile = $targetDir . $newFileName;
+                    $allowedTypes = ['jpg', 'jpeg', 'png', 'gif'];
+
+                    if(in_array($fileExtension, $allowedTypes)) {
+                        if(move_uploaded_file($_FILES["profile_picture"]["tmp_name"], $targetFile)) {
+                            $profilePicturePath = "public/uploads/profile_images/" . $newFileName;
+                        } else {
+                           // Handle upload error (optional)
+                        }
+                    }
+                }
+
+                // Append profile picture to data if uploaded, otherwise keep existing
+                if($profilePicturePath) {
+                    $profileData['profile_picture'] = $profilePicturePath;
+                } else {
+                     // Get existing picture if not updating
+                    $existingUser = $userModel->getMember($user_id);
+                    $profileData['profile_picture'] = $existingUser['profile_picture'];
+                }
+
+                // 4. Update Database
                 $profileUpdated = $userModel->updateMemberProfile($user_id, $profileData);
                 $addressUpdated = $userModel->updateUserAddress($user_id, $zip, $street, $city);
 

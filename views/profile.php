@@ -67,9 +67,15 @@
                 <div class="flex flex-col md:flex-row items-center relative z-10">
                     <div class="flex-shrink-0 mb-6 md:mb-0 md:mr-8 relative group">
                         <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
-                        <div class="relative w-28 h-28 rounded-full bg-slate-900 flex items-center justify-center text-5xl text-blue-400 border-2 border-slate-700">
-                            <i class="fa-solid fa-user"></i>
-                        </div>
+                        <?php if(!empty($userInfo['profile_picture'])): ?>
+                            <div class="w-28 h-28 rounded-full overflow-hidden border-2 border-slate-700 bg-slate-900">
+                                <img src="<?= htmlspecialchars($userInfo['profile_picture']) ?>" alt="Profile" class="w-full h-full object-cover">
+                            </div>
+                        <?php else: ?>
+                            <div class="relative w-28 h-28 rounded-full bg-slate-900 flex items-center justify-center text-5xl text-blue-400 border-2 border-slate-700">
+                                <i class="fa-solid fa-user"></i>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <div class="text-center md:text-left flex-1">
