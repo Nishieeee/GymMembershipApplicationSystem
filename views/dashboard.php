@@ -267,7 +267,7 @@
                             Quick Actions
                         </h2>
                         <div class="grid grid-cols-1 gap-3">
-                            <a href="profile.php" class="p-4 rounded-xl bg-slate-800/50 hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-900/40 border border-slate-700/50 hover:border-blue-500 transition-all group flex items-center gap-4">
+                            <a href="index.php?controller=User&action=editProfile" class="p-4 rounded-xl bg-slate-800/50 hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-900/40 border border-slate-700/50 hover:border-blue-500 transition-all group flex items-center gap-4">
                                 <div class="w-10 h-10 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center group-hover:bg-white group-hover:text-blue-600 transition-colors">
                                     <i class="fas fa-user-edit"></i>
                                 </div>
