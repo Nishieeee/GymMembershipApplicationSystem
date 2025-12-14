@@ -8,8 +8,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Gymazing</title>
-    <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <script src="public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -1406,7 +1406,7 @@
             </div>
         </div>
     </div>
-    <script src="../public/assets/js/admin/admin.js"></script>
+    <script src="public/assets/js/admin/admin.js"></script>
     <div id="deleteWalkinModal" class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4">
         <div class="modal-content w-full max-w-md bg-slate-900 rounded-2xl shadow-2xl overflow-hidden border border-slate-700">
             <div class="p-6 text-center">

@@ -57,9 +57,9 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
     
-    <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
-    <link rel="stylesheet" href="../public/assets/icons/fontawesome/css/all.min.css"></link>
+    <script src="public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet" href="public/assets/icons/fontawesome/css/all.min.css"></link>
     
     <style>
         body {
@@ -385,7 +385,7 @@
         </div>
     </div>
 
-    <script src="../public/assets/js/dashboard.js"></script>
+    <script src="public/assets/js/dashboard.js"></script>
     <script>
         $(function() {
             const $modal = $('#bookTrainerModal');

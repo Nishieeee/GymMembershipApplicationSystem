@@ -18,8 +18,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gymazing - Transform Your Body & Mind</title>
-    <script src="../public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <style href="../public/assets/css/style.css">
+    <script src="public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <style href="public/assets/css/style.css">
         /* Custom gradient background */
         .gradient-bg {
             background: linear-gradient(135deg, #1a1a1a 0%, #2d3748 50%, #1a1a1a 100%);

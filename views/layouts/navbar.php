@@ -17,8 +17,8 @@ $user_initial = substr($user_name, 0, 1);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="../../public/assets/js/tailwindcss/tailwindcss.js"></script>
-    <script src="../../public/assets/js/jquery/jquery-3.7.1.min.js"></script>
+    <script src="public/assets/js/tailwindcss/tailwindcss.js"></script>
+    <script src="public/assets/js/jquery/jquery-3.7.1.min.js"></script>
     <style>
         /* Notification styles */
         @keyframes slideIn {
