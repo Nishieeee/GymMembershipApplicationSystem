@@ -9,16 +9,38 @@
     
     $user['name'] = $userInfo['name'];
     $user['created_at'] = $userInfo['created_at'];
-    $user['plan_name'] = isset($userPlan['plan_name']) ? $userPlan['plan_name'] : "";
+    $user['plan_name'] = isset($userPlan['plan_name']) ? $userPlan['plan_name'] : "No Active Plan";
     $user['end_date'] = isset($userPlan['end_date']) ? $userPlan['end_date'] : "";
-    $user['status'] = isset($userPlan['status']) ? $userPlan['status'] : "";
+    $user['status'] = isset($userPlan['status']) ? $userPlan['status'] : "Inactive";
+
+    // Use the dynamic data passed from the controller ($dashboardStats)
+    // Fallback to 0 or 'N/A' if variable isn't set to prevent errors
+    $dStats = isset($dashboardStats) ? $dashboardStats : ['total'=>0, 'month'=>0, 'days'=>0, 'status'=>'Inactive'];
+
     $stats = [
-        ["label" => "Classes Attended", "value" => 24, "icon" => '<i class="fa-regular fa-rectangle-list text-yellow-400"></i>'],
-        ["label" => "Workouts This Month", "value" => 12, "icon" => '<i class="fa-regular fa-hand text-orange-400"></i>'],
-        ["label" => "Days Remaining", "value" => 30, "icon" => '<i class="fa-regular fa-calendar text-red-400"></i>'],
-        ["label" => "Personal Trainer", "value" => "Yes", "icon" => '<i class="fa-regular fa-user text-blue-400"></i>']
+        [
+            "label" => "Total Classes", 
+            "value" => $dStats['total'], 
+            "icon" => '<i class="fa-regular fa-rectangle-list text-yellow-400"></i>'
+        ],
+        [
+            "label" => "Workouts This Month", 
+            "value" => $dStats['month'], 
+            "icon" => '<i class="fa-regular fa-hand text-orange-400"></i>'
+        ],
+        [
+            "label" => "Days Remaining", 
+            "value" => $dStats['days'], 
+            "icon" => '<i class="fa-regular fa-calendar text-red-400"></i>'
+        ],
+        [
+            "label" => "Plan Status", 
+            "value" => $dStats['status'], 
+            "icon" => '<i class="fa-regular fa-id-card text-blue-400"></i>'
+        ]
     ];
 
+    // Upcoming classes logic preserved...
     $upcoming_classes = [
         ["name" => "CrossFit Training", "time" => "10:00 AM - 11:00 AM", "trainer" => "Coach Mike", "capacity" => "15/20"],
         ["name" => "Strength Building", "time" => "2:00 PM - 3:30 PM", "trainer" => "Coach Sarah", "capacity" => "12/15"],

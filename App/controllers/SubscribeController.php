@@ -191,7 +191,6 @@
 
         public function expirePlan() {
             $this->requireLogin();
-            session_start();
             $user_id = $_SESSION['user_id'];
 
             $userModel = new User();

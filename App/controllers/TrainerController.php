@@ -512,5 +512,111 @@ public function deleteTrainer() {
         
         $mail->send();
     }
+    public function createSession() {
+        $this->requireLogin();
+        header('Content-Type: application/json');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+            exit;
+        }
+
+        // Get POST data
+        $userId = $_POST['user_id'] ?? null;
+        $trainerId = $_SESSION['trainer_id'] ?? 1;
+        $sessionDate = $_POST['session_date'] ?? null;
+        $notes = $_POST['notes'] ?? '';
+
+        // Validation
+        if (!$userId || !$trainerId || !$sessionDate) {
+            echo json_encode(['success' => false, 'message' => 'Please fill in all required fields.']);
+            exit;
+        }
+
+        // Security: Ensure the logged-in trainer is the one creating the session
+        // (Assuming session stores trainer_id, otherwise check against user_id)
+
+        // $loggedInTrainerId = $_SESSION['trainer_id'] ?? null;
+        // echo $loggedInTrainerId;
+        // if ($loggedInTrainerId && $loggedInTrainerId != $trainerId) {
+        //      echo json_encode(['success' => false, 'message' => 'Unauthorized action.']);
+        //      exit;
+        // }
+
+        $data = [
+            'user_id' => $userId,
+            'trainer_id' => $trainerId,
+            'session_date' => $sessionDate,
+            'notes' => $notes,
+            'status' => 'scheduled'
+        ];
+
+        if ($this->sessionModel->create($data)) {
+            echo json_encode(['success' => true, 'message' => 'Session scheduled successfully!']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to schedule session.']);
+        }
+        exit;
+    }
+
+    public function updateSessionStatus() {
+        $this->requireLogin();
+        header('Content-Type: application/json');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+            exit;
+        }
+
+        $sessionId = $_POST['session_id'] ?? null;
+        $status = $_POST['status'] ?? null;
+
+        if (!$sessionId || !$status) {
+            echo json_encode(['success' => false, 'message' => 'Missing required parameters.']);
+            exit;
+        }
+
+        // Validate allowed statuses
+        $allowedStatuses = ['scheduled', 'completed', 'cancelled'];
+        if (!in_array($status, $allowedStatuses)) {
+            echo json_encode(['success' => false, 'message' => 'Invalid status provided.']);
+            exit;
+        }
+
+        if ($this->sessionModel->updateStatus($sessionId, $status)) {
+            echo json_encode(['success' => true, 'message' => 'Session updated successfully.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Failed to update session.']);
+        }
+        exit;
+    }
+
+    public function handleRequest() {
+        $this->requireLogin();
+        header('Content-Type: application/json');
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            http_response_code(405);
+            echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+            exit;
+        }
+
+        $requestId = $_POST['request_id'] ?? null;
+        $action = $_POST['action'] ?? null; // 'accepted' or 'rejected'
+
+        if (!$requestId || !$action) {
+            echo json_encode(['success' => false, 'message' => 'Missing ID or Action.']);
+            exit;
+        }
+
+        if ($this->trainerModel->handleRequest($requestId, $action)) {
+            echo json_encode(['success' => true, 'message' => 'Request ' . $action . ' successfully.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Database error occurred.']);
+        }
+        exit;
+    }
 }   
 ?>

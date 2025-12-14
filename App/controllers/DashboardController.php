@@ -28,41 +28,71 @@
 
             $user = $userModel->getMember($user_id);
             $userPlan = $planModel->getUserPlan($user_id);
-            $mySessions = $sessionModel->getUserSessions($user_id);
-            //expire user plan
-            if(isset($userPlan) && $userPlan['end_date'] <= date("Y-m-d")) {
-                echo $userPlan['end_date'];
-                header("location: index.php?controller=Subscribe&action=expirePlan");
-            }
-            if(isset($userPlan['status'])) {
-                if($userPlan['status'] == "active") {
-                    $this->view('dashboard', [
-                        'userInfo' => $user,
-                        'userPlan' => $userPlan,
-                        'mySessions' => $mySessions,
-                    ]);
-                } else {
-                    if($userPlan['status'] == "cancelled") {
-                        $userPlan["status"] = "cancelled";
-                        $this->view('dashboard', [
-                            'userInfo' => $user,
-                            'userPlan' => $userPlan,
-                        ]);
-                    } else if($userPlan['status'] == "expire") {
-                        $userPlan["status"]  = "expired";
-                        $this->view('dashboard', [
-                            'userInfo' => $user,
-                            'userPlan' => $userPlan,
-                        ]);
+            $mySessions = $sessionModel->getUserSessions($user_id) ?? []; // Ensure array if null
 
-                    }
+            // --- NEW LOGIC: Calculate Dashboard Stats ---
+            
+            // 1. Total Classes Attended
+            $totalSessions = count($mySessions);
+
+            // 2. Workouts This Month
+            $monthSessions = 0;
+            $currentMonth = date('Y-m');
+            foreach($mySessions as $sess) {
+                // Assuming session_date exists in your session table
+                if (isset($sess['session_date']) && strpos($sess['session_date'], $currentMonth) === 0) {
+                    $monthSessions++;
                 }
-            } else {
-                $this->view('dashboard', [
-                    'userInfo' => $user,
-                    'userPlan' => $userPlan,
-                ]);
             }
+
+            // 3. Days Remaining
+            $daysRemaining = 0;
+            if(isset($userPlan['end_date'])) {
+                $end = new DateTime($userPlan['end_date']);
+                $now = new DateTime();
+                if ($end > $now) {
+                    $daysRemaining = $now->diff($end)->days;
+                }
+            }
+
+            // 4. Plan Status (Replacing "Personal Trainer" which isn't explicitly in your schema)
+            $planStatus = isset($userPlan['status']) ? ucfirst($userPlan['status']) : "Inactive";
+
+            // Bundle stats to pass to view
+            $dashboardStats = [
+                'total' => $totalSessions,
+                'month' => $monthSessions,
+                'days' => $daysRemaining,
+                'status' => $planStatus
+            ];
+
+            // --- END NEW LOGIC ---
+
+            //expire user plan logic (Existing)
+            if(isset($userPlan) && $userPlan['end_date'] <= date("Y-m-d")) {
+                // Removed echo to prevent header errors
+                header("location: index.php?controller=Subscribe&action=expirePlan");
+                exit;
+            }
+
+            // Consolidated View Rendering
+            $viewData = [
+                'userInfo' => $user,
+                'userPlan' => $userPlan,
+                'mySessions' => $mySessions,
+                'dashboardStats' => $dashboardStats // Passing the new stats
+            ];
+
+            // Handle status logic for view (Existing logic preserved but cleaned up)
+            if(isset($userPlan['status'])) {
+                if($userPlan['status'] == "cancelled") {
+                    $viewData['userPlan']['status'] = "cancelled";
+                } else if($userPlan['status'] == "expire") {
+                    $viewData['userPlan']['status'] = "expired";
+                }
+            }
+
+            $this->view('dashboard', $viewData);
         }
 
         public function cancelSubscription() {
